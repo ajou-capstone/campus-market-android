@@ -45,11 +45,9 @@ android {
     productFlavors {
         create("development") {
             dimension = "server"
-            manifestPlaceholders["sentryEnvironment"] = "development" + manifestPlaceholders["sentryEnvironment"].toString()
         }
         create("production") {
             dimension = "server"
-            manifestPlaceholders["sentryEnvironment"] = "production" + manifestPlaceholders["sentryEnvironment"].toString()
         }
     }
 
