@@ -18,7 +18,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "template"
+rootProject.name = "boardlink"
 include(":app")
 include(":common")
 include(":presentation")

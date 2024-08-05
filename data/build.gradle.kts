@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ray.template.android.data"
+    namespace = "kr.linkerbell.boardlink.android.data"
     compileSdk = libs.versions.sdk.compile.get().toInt()
 
     defaultConfig {

@@ -10,7 +10,7 @@ plugins {
 
 // TODO : Android 종속성 제거
 android {
-    namespace = "com.ray.template.android.domain"
+    namespace = "kr.linkerbell.boardlink.android.domain"
     compileSdk = libs.versions.sdk.compile.get().toInt()
 
     defaultConfig {

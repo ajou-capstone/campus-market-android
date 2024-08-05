@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ray.template.android.presentation"
+    namespace = "kr.linkerbell.boardlink.android.presentation"
     compileSdk = libs.versions.sdk.compile.get().toInt()
 
     defaultConfig {

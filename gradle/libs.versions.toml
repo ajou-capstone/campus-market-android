@@ -8,7 +8,6 @@ sdk-target = "34"
 sdk-compile = "34"
 # Plugin Version
 plugin-gradle = "8.5.1"
-plugin-sentry = "4.5.1"
 plugin-gms = "4.4.2"
 plugin-firebase-crashlytics = "3.0.2"
 # Kotlin
@@ -44,7 +43,6 @@ holix-bottomsheet = "1.4.1"
 kakao = "2.20.1"
 # Logging
 timber = "5.0.1"
-sentry = "7.9.0"
 firebase-bom = "33.1.2"
 # Debug
 leakcanary = "2.14"
@@ -99,7 +97,6 @@ holix-bottomsheet = { module = "com.holix.android:bottomsheetdialog-compose", ve
 kakao-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakao" }
 # Logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-sentry = { module = "io.sentry:sentry-android", version.ref = "sentry" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
@@ -128,7 +125,6 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-sentry = { id = "io.sentry.android.gradle", version.ref = "plugin-sentry" }
 gms = { id = "com.google.gms.google-services", version.ref = "plugin-gms" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "plugin-firebase-crashlytics" }
 
@@ -142,7 +138,7 @@ androidx-data = ["androidx-room-runtime", "androidx-room-coroutine", "androidx-p
 network = ["ktor-core", "ktor-okhttp", "ktor-resources", "ktor-content-negotiation",
     "ktor-kotlinx-serialization", "ktor-auth", "kotlinx-serialization"]
 kakao = ["kakao-user"]
-logging = ["timber", "sentry", "firebase-analytics", "firebase-crashlytics"]
+logging = ["timber", "firebase-analytics", "firebase-crashlytics"]
 test = ["junit4", "kotlinx-coroutines-test", "hilt-android-testing", "androidx-test-core",
     "androidx-test-runner", "androidx-test-rules", "androidx-test-ext-junit",
     "androidx-test-ext-truth", "robolectric-robolectric"]

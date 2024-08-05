@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.sentry) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
 }
