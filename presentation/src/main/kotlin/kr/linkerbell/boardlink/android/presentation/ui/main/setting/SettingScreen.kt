@@ -1,12 +1,15 @@
 package kr.linkerbell.boardlink.android.presentation.ui.main.setting
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -45,15 +48,20 @@ fun SettingScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     Column(
-        modifier = Modifier.fillMaxSize().background(White).systemBarsPadding(),
-    ){
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White)
+            .systemBarsPadding(),
+    ) {
         // 임시로 생성한 TopBar
         TemporaryTopBar()
 
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth().padding(18.dp)
-        ){
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp)
+        ) {
 
             Text(text = "설정", style = MaterialTheme.typography.headlineMedium)
 
@@ -103,8 +111,10 @@ fun SettingScreen(
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            ){
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+            ) {
                 FixedSizeSettingButton("로그아웃",
                     menuIcon = {
                         Icon(
@@ -141,18 +151,18 @@ fun SettingScreen(
 
 @Composable
 fun FullSizeSettingButton(
-    menuName : String,
+    menuName: String,
     menuIcon: @Composable () -> Unit,
-    onClick : () -> Unit
-){
+    onClick: () -> Unit
+) {
     Button(
-        onClick = {  onClick()  },
+        onClick = { onClick() },
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
         modifier = Modifier
             .fillMaxWidth(),
         contentPadding = PaddingValues(0.dp) // 기본 패딩 제거 -> 혹시 기본 설정된 패딩이 있는지?
-    ){
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
@@ -171,17 +181,17 @@ fun FullSizeSettingButton(
 
 @Composable
 fun FixedSizeSettingButton(
-    menuName : String,
+    menuName: String,
     menuIcon: @Composable () -> Unit,
-    onClick : () -> Unit
-){
+    onClick: () -> Unit
+) {
     Button(
-        onClick = {  onClick()  },
+        onClick = { onClick() },
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
         contentPadding = PaddingValues(0.dp), // 기본 패딩 제거
         modifier = Modifier.size(140.dp, 38.dp)
-    ){
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
@@ -197,10 +207,30 @@ fun FixedSizeSettingButton(
     }
 }
 
+@Composable
+fun TemporaryTopBar(modifier: Modifier = Modifier){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp) //Android standard
+            //.background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFF00BCD4)) // Temp
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterStart
+    ){
+        Text(
+            text = "BoardLink Logo",
+            modifier = Modifier
+                .border(1.dp, Color(0xFF000000))
+                .padding(2.dp)
+        )
+    }
+
+}
 
 @Preview
 @Composable
-fun SettingMenusPreview(){
+fun SettingMenusPreview() {
 
     FullSizeSettingButton("Preview Menu Name",
         menuIcon = {
@@ -227,4 +257,10 @@ private fun SettingScreenPreview() {
             coroutineContext = Dispatchers.IO
         )
     )
+}
+
+@Preview
+@Composable
+private fun TemporaryTopBarPreview(){
+    TemporaryTopBar()
 }

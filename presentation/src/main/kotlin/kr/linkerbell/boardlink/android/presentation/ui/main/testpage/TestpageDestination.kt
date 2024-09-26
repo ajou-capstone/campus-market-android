@@ -1,4 +1,4 @@
-package kr.linkerbell.boardlink.android.presentation.ui.main.setting
+package kr.linkerbell.boardlink.android.presentation.ui.main.testpage
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -9,26 +9,25 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kr.linkerbell.boardlink.android.presentation.common.util.compose.ErrorObserver
-import kr.linkerbell.boardlink.android.presentation.ui.main.home.SettingConstant
 
-fun NavGraphBuilder.Destination(
+fun NavGraphBuilder.testpageDestination(
     navController: NavController
 ) {
     composable(
-        route = SettingConstant.ROUTE,
+        route = TestpageConstant.ROUTE,
         arguments = listOf(
-            navArgument(SettingConstant.ROUTE) {
+            navArgument(TestpageConstant.ROUTE) {
                 type = NavType.StringType
                 defaultValue = ""
             }
         )
     ) {
-        val viewModel: SettingViewModel = hiltViewModel()
+        val viewModel: TestpageViewModel = hiltViewModel()
 
-        val argument: SettingArgument = let {
+        val argument: testpageArgument = let {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            SettingArgument(
+            testpageArgument(
                 state = state,
                 event = viewModel.event,
                 intent = viewModel::onIntent,
@@ -37,11 +36,18 @@ fun NavGraphBuilder.Destination(
             )
         }
 
+//        val data: testpageData = let {
+//            val initialData = viewModel.initialData
+//
+//            testpageData(
+//                initialData = initialData
+//            )
+//        }
 
         ErrorObserver(viewModel)
-        SettingScreen(
+        TestpageScreen(
             navController = navController,
-            argument = argument
+            argument = argument,
         )
     }
 }
