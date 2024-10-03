@@ -1,21 +1,21 @@
 package kr.linkerbell.boardlink.android.presentation.ui.main.home.mypage
 
 import androidx.lifecycle.SavedStateHandle
-import kr.linkerbell.boardlink.android.common.util.coroutine.event.EventFlow
-import kr.linkerbell.boardlink.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.boardlink.android.common.util.coroutine.event.asEventFlow
-import kr.linkerbell.boardlink.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.boardlink.android.domain.model.nonfeature.user.Profile
-import kr.linkerbell.boardlink.android.domain.usecase.nonfeature.user.GetProfileUseCase
-import kr.linkerbell.boardlink.android.presentation.common.base.BaseViewModel
-import kr.linkerbell.boardlink.android.presentation.common.base.ErrorEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kr.linkerbell.boardlink.android.common.util.coroutine.event.EventFlow
+import kr.linkerbell.boardlink.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.boardlink.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.boardlink.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.boardlink.android.domain.model.nonfeature.randomuserprofile.RandomUserProfile
+import kr.linkerbell.boardlink.android.domain.model.nonfeature.user.Profile
 import kr.linkerbell.boardlink.android.domain.usecase.nonfeature.randomuserprofile.GetRandomUserProfileUseCase
+import kr.linkerbell.boardlink.android.domain.usecase.nonfeature.user.GetProfileUseCase
+import kr.linkerbell.boardlink.android.presentation.common.base.BaseViewModel
+import kr.linkerbell.boardlink.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
