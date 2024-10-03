@@ -5,6 +5,6 @@ import kr.linkerbell.boardlink.android.domain.model.nonfeature.randomuserprofile
 
 @Immutable
 data class TestPageData(
-    val randomUserProfile: RandomUserProfile?,
-    val currentSemester: String = "2024-2"
+    val randomUserProfile: RandomUserProfile,
+    val currentSemester: String = "2024-2",
 )

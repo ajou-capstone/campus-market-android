@@ -38,9 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.MutableEventFlow
@@ -50,15 +50,6 @@ import kr.linkerbell.boardlink.android.presentation.common.util.compose.Launched
 import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.CalenderBlock
 import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.DayOfTheWeek
 import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.UserCalender
-import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.UserGradeInformation
-
-@Composable
-fun TestPageScreen(
-    navController: NavController,
-    viewModel: TestPageViewModel = hiltViewModel()
-){
-
-}
 
 @Composable
 fun TestPageScreen(
@@ -70,36 +61,38 @@ fun TestPageScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    val userCalender = null
-
-    if(data.randomUserProfile != null){
+    runCatching {
+        data.randomUserProfile
+    }.onSuccess { randomUserProfile ->
         Scaffold(
             topBar = {
-                TestpageTopBar(data.randomUserProfile.fullName, data.currentSemester)
+                TestPageTopBar(randomUserProfile.fullName, data.currentSemester)
             },
             bottomBar = {
-                TestpageBottomBar()
+                TestPageBottomBar()
             },
             content = { paddingValues ->
                 //Main content
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color(0xFF111111)))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color(0xFF111111))
+                )
                 Column(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxWidth()
                         .padding(12.dp)
                 ) {
-                    //TimeTable(userCalender.blockList)
                     Spacer(Modifier.padding(top = 20.dp))
-                    GradeCalculator(UserGradeInformation())
-
+                    val grades = listOf(3.5, 3.7, 4.0, 3.95, 3.7)
+                    TestPageGradeCalculator(grades)
                 }
             }
         )
+    }.onFailure { exception ->
+        Text("Fail to load random user profile : $exception")
     }
-
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
@@ -108,12 +101,8 @@ fun TestPageScreen(
     }
 }
 
-
-// Top bar
-// - name, semester
-// - add block(+), settings (unused), show list (unused)
 @Composable
-private fun TestpageTopBar(userName: String, semester: String) {
+fun TestPageTopBar(userName: String, semester: String) {
 
     Box(
         modifier = Modifier
@@ -121,7 +110,6 @@ private fun TestpageTopBar(userName: String, semester: String) {
             .height(58.dp)
             .background(Color(0xFF111111))
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -180,7 +168,7 @@ private fun TestpageTopBar(userName: String, semester: String) {
 }
 
 @Composable
-private fun TestpageBottomBar() {
+fun TestPageBottomBar() {
 
     Box(
         modifier = Modifier
@@ -196,7 +184,6 @@ private fun TestpageBottomBar() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -271,7 +258,7 @@ val commonStyle = Modifier
     )
 
 @Composable
-fun TimeTable(blockList: MutableList<CalenderBlock>) {
+fun TestPageTimeTable(blockList: MutableList<CalenderBlock>) {
 
     Box(
         modifier = commonStyle.padding(8.dp)
@@ -348,7 +335,7 @@ fun BlockCell(isColored: Boolean, modifier: Modifier) {
 
 
 @Composable
-fun GradeCalculator(userGradeInformation: UserGradeInformation) {
+fun TestPageGradeCalculator(grades: List<Double>) {
 
     Column(
         modifier = commonStyle
@@ -384,7 +371,7 @@ fun GradeCalculator(userGradeInformation: UserGradeInformation) {
             ) {
                 Text(text = "평균 학점 ", color = Color(0xFFEFEFEF))
                 Text(
-                    text = "${userGradeInformation.calculateMean()}",
+                    text = "${(grades.average() * 100).roundToInt() / 100.0}",
                     color = Color(0xFFEF3D3A),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
@@ -399,7 +386,7 @@ fun GradeCalculator(userGradeInformation: UserGradeInformation) {
 
 @Preview
 @Composable
-private fun TestpageScreenPreview() {
+private fun TestPageScreenPreview() {
     TestPageScreen(
         navController = rememberNavController(),
         argument = TestPageArgument(
@@ -416,7 +403,7 @@ private fun TestpageScreenPreview() {
 
 @Preview
 @Composable
-fun TimetableViewer() {
+private fun TimetableViewer() {
 
     val userCalender = UserCalender("홍길동", "2024-1")
 
@@ -428,11 +415,11 @@ fun TimetableViewer() {
     userCalender.addBlock(14, 0, DayOfTheWeek.TUE)
     userCalender.addBlock(14, 1, DayOfTheWeek.TUE)
 
-    TimeTable(userCalender.blockList)
+    TestPageTimeTable(userCalender.blockList)
 }
 
 @Preview
 @Composable
-fun TestpageBottomBarViewer() {
-    TestpageBottomBar()
+private fun TestPageBottomBarViewer() {
+    TestPageBottomBar()
 }
