@@ -3,6 +3,9 @@
 app-versioncode = "1"
 app-versionname = "0.0.1"
 # SDK Version
+ktor-client-cio = "2.0.0"
+ktor-client-core = "2.0.0"
+ktor-serialization-kotlinx-json = "2.0.0"
 sdk-min = "24"
 sdk-target = "34"
 sdk-compile = "34"
@@ -81,6 +84,10 @@ androidx-paging-runtime = { module = "androidx.paging:paging-runtime-ktx", versi
 androidx-paging-common = { module = "androidx.paging:paging-common-ktx", version.ref = "androidx-paging" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 # Network
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor-client-cio" }
+ktor-client-core-v200 = { module = "io.ktor:ktor-client-core", version.ref = "ktor-client-core" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor-client-cio" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor-client-cio" }
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-resources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
@@ -90,6 +97,7 @@ ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 # UI
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+ktor-serialization-kotlinx-json-v200 = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-serialization-kotlinx-json" }
 ted-permission = { module = "io.github.ParkSangGwon:tedpermission-coroutine", version.ref = "ted-permission" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 holix-bottomsheet = { module = "com.holix.android:bottomsheetdialog-compose", version.ref = "holix-bottomsheet" }

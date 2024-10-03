@@ -1,25 +1,30 @@
 package kr.linkerbell.boardlink.android.presentation.ui.main.home.mypage
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.plus
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.eventObserve
+import kr.linkerbell.boardlink.android.domain.model.nonfeature.randomuserprofile.RandomUserProfile
 import kr.linkerbell.boardlink.android.domain.model.nonfeature.user.Profile
 import kr.linkerbell.boardlink.android.presentation.common.theme.Body0
 import kr.linkerbell.boardlink.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.boardlink.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.plus
 
 @Composable
 fun MyPageScreen(
@@ -40,9 +45,11 @@ fun MyPageScreen(
 
     val data: MyPageData = Unit.let {
         val profile by viewModel.profile.collectAsStateWithLifecycle()
+        val randomUserProfile by viewModel.randomUserProfile.collectAsStateWithLifecycle()
 
         MyPageData(
-            profile = profile
+            profile = profile,
+            randomUserProfile = randomUserProfile
         )
     }
 
@@ -66,10 +73,17 @@ private fun MyPageScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "MyPageScreen",
-            style = Body0
-        )
+        Column(modifier = Modifier.padding(top = 50.dp)) {
+            Text(
+                text = "MyPageScreen",
+                style = Body0
+            )
+            Spacer(modifier = Modifier.padding(50.dp))
+            Text(
+                text = "${data.randomUserProfile.fullName}, (${data.randomUserProfile.gender})"
+            )
+        }
+
     }
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
@@ -92,7 +106,8 @@ private fun MyPageScreenPreview() {
             coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = MyPageData(
-            profile = Profile.empty
+            profile = Profile.empty,
+            randomUserProfile = RandomUserProfile.empty
         )
     )
 }

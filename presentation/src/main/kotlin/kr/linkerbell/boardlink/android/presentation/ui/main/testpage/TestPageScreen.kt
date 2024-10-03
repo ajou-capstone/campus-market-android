@@ -38,12 +38,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.eventObserve
+import kr.linkerbell.boardlink.android.domain.model.nonfeature.randomuserprofile.RandomUserProfile
 import kr.linkerbell.boardlink.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.CalenderBlock
 import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.DayOfTheWeek
@@ -51,42 +53,53 @@ import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageDat
 import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.UserGradeInformation
 
 @Composable
-fun TestpageScreen(
+fun TestPageScreen(
     navController: NavController,
-    argument: testpageArgument,
+    viewModel: TestPageViewModel = hiltViewModel()
+){
+
+}
+
+@Composable
+fun TestPageScreen(
+    navController: NavController,
+    argument: TestPageArgument,
+    data: TestPageData,
 ) {
 
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    // viewModel 구독 필ㅇ
-    val userCalender by
+    val userCalender = null
 
-    Scaffold(
-        topBar = {
-            TestpageTopBar(userCalender.userName, userCalender.semester)
-        },
-        bottomBar = {
-            TestpageBottomBar()
-        },
-        content = { paddingValues ->
-            //Main content
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0xFF111111)))
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
-                TimeTable(userCalender.blockList)
-                Spacer(Modifier.padding(top = 20.dp))
-                GradeCalculator(UserGradeInformation())
+    if(data.randomUserProfile != null){
+        Scaffold(
+            topBar = {
+                TestpageTopBar(data.randomUserProfile.fullName, data.currentSemester)
+            },
+            bottomBar = {
+                TestpageBottomBar()
+            },
+            content = { paddingValues ->
+                //Main content
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color(0xFF111111)))
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    //TimeTable(userCalender.blockList)
+                    Spacer(Modifier.padding(top = 20.dp))
+                    GradeCalculator(UserGradeInformation())
 
+                }
             }
-        }
-    )
+        )
+    }
+
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
@@ -387,15 +400,16 @@ fun GradeCalculator(userGradeInformation: UserGradeInformation) {
 @Preview
 @Composable
 private fun TestpageScreenPreview() {
-    TestpageScreen(
+    TestPageScreen(
         navController = rememberNavController(),
-        argument = testpageArgument(
-            state = testpageState.Init,
+        argument = TestPageArgument(
+            state = TestPageState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
             coroutineContext = Dispatchers.IO,
-        )
+        ),
+        data = TestPageData(RandomUserProfile.empty)
     )
 }
 

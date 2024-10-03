@@ -10,24 +10,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kr.linkerbell.boardlink.android.presentation.common.util.compose.ErrorObserver
 
-fun NavGraphBuilder.testpageDestination(
+fun NavGraphBuilder.TestPageDestination(
     navController: NavController
 ) {
     composable(
-        route = TestpageConstant.ROUTE,
+        route = TestPageConstant.ROUTE,
         arguments = listOf(
-            navArgument(TestpageConstant.ROUTE) {
+            navArgument(TestPageConstant.ROUTE) {
                 type = NavType.StringType
                 defaultValue = ""
             }
         )
     ) {
-        val viewModel: TestpageViewModel = hiltViewModel()
+        val viewModel: TestPageViewModel = hiltViewModel()
 
-        val argument: testpageArgument = let {
+        val argument: TestPageArgument = let {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            testpageArgument(
+            TestPageArgument(
                 state = state,
                 event = viewModel.event,
                 intent = viewModel::onIntent,
@@ -36,18 +36,20 @@ fun NavGraphBuilder.testpageDestination(
             )
         }
 
-//        val data: testpageData = let {
-//            val initialData = viewModel.initialData
-//
-//            testpageData(
-//                initialData = initialData
-//            )
-//        }
+        val data: TestPageData = let {
+            val randomUserProfile by viewModel.userProfile.collectAsStateWithLifecycle()
+
+            TestPageData(
+                randomUserProfile = randomUserProfile,
+                currentSemester = "2024-2" // 기본 값
+            )
+        }
 
         ErrorObserver(viewModel)
-        TestpageScreen(
+        TestPageScreen(
             navController = navController,
             argument = argument,
+            data = data
         )
     }
 }

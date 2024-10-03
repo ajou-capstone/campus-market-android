@@ -1,25 +1,23 @@
 package kr.linkerbell.boardlink.android.presentation.ui.main.testpage
 
 import androidx.compose.runtime.Immutable
-import kr.linkerbell.boardlink.android.common.util.coroutine.event.EventFlow
 import kotlin.coroutines.CoroutineContext
-import kr.linkerbell.boardlink.android.presentation.ui.main.testpage.testpageData.UserCalender
+import kr.linkerbell.boardlink.android.common.util.coroutine.event.EventFlow
 
 @Immutable
-data class testpageArgument(
-    val state: testpageState,
-    val event: EventFlow<testpageEvent>,
-    val intent: (testpageIntent) -> Unit,
+data class TestPageArgument(
+    val state: TestPageState,
+    val event: EventFlow<TestPageEvent>,
+    val intent: (TestPageIntent) -> Unit,
     val logEvent: (eventName: String, params: Map<String, Any>) -> Unit,
     val coroutineContext: CoroutineContext
 )
 
-sealed interface testpageState {
-    data object Init : testpageState
-    data class Loaded(val userCalender: UserCalender) : testpageState
+sealed interface TestPageState {
+    data object Init : TestPageState
+    data object Loading : TestPageState
 }
 
+sealed interface TestPageEvent
 
-sealed interface testpageEvent
-
-sealed interface testpageIntent
+sealed interface TestPageIntent

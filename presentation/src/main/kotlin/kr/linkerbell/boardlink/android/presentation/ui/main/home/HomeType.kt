@@ -2,9 +2,9 @@ package kr.linkerbell.boardlink.android.presentation.ui.main.home
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
+import kotlinx.parcelize.Parcelize
 import kr.linkerbell.boardlink.android.presentation.R
 import kr.linkerbell.boardlink.android.presentation.ui.main.home.mypage.MyPageConstant
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class HomeType(

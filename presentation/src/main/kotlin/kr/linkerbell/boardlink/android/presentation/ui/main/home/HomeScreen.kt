@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.plus
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.boardlink.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.boardlink.android.presentation.common.theme.BlueGray300
@@ -34,8 +36,6 @@ import kr.linkerbell.boardlink.android.presentation.common.theme.Space24
 import kr.linkerbell.boardlink.android.presentation.common.theme.Space56
 import kr.linkerbell.boardlink.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.boardlink.android.presentation.ui.main.home.mypage.MyPageScreen
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.plus
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

@@ -14,11 +14,14 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kr.linkerbell.boardlink.android.domain.model.nonfeature.randomuserprofile.RandomUserProfile
+import kr.linkerbell.boardlink.android.domain.usecase.nonfeature.randomuserprofile.GetRandomUserProfileUseCase
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getProfileUseCase: GetProfileUseCase
+    private val getProfileUseCase: GetProfileUseCase,
+    private val getRandomUserProfileUseCase: GetRandomUserProfileUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<MyPageState> = MutableStateFlow(MyPageState.Init)
@@ -29,6 +32,11 @@ class MyPageViewModel @Inject constructor(
 
     private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
     val profile: StateFlow<Profile> = _profile.asStateFlow()
+
+    //Temp
+    private val _randomUserProfile: MutableStateFlow<RandomUserProfile> =
+        MutableStateFlow(RandomUserProfile.empty)
+    val randomUserProfile: StateFlow<RandomUserProfile> = _randomUserProfile.asStateFlow()
 
     init {
         launch {
@@ -48,6 +56,23 @@ class MyPageViewModel @Inject constructor(
                     }
                 }
             }
+
+            getRandomUserProfileUseCase().onSuccess {
+                _state.value = MyPageState.Init
+                _randomUserProfile.value = it
+            }.onFailure { exception ->
+                _state.value = MyPageState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+
         }
     }
 
