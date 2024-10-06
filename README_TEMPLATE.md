@@ -1,6 +1,6 @@
-# Boardlink
+# CampusMarket
 
-[![android-ci](https://github.com/ajou-capstone/board-link-android/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/ajou-capstone/board-link-android/actions/workflows/android-ci.yml)
+[![android-ci](https://github.com/ajou-capstone/campus-market-android/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/ajou-capstone/campus-market-android/actions/workflows/android-ci.yml)
 
 ## Description
 

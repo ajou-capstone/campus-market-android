@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "kr.linkerbell.boardlink.android.presentation"
+    namespace = "kr.linkerbell.campusmarket.android.presentation"
     compileSdk = libs.versions.sdk.compile.get().toInt()
 
     defaultConfig {

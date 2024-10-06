@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".BoardlinkDebugApplication"
+        android:name=".CampusMarketDebugApplication"
         android:icon="@drawable/ic_launcher"
         tools:node="merge"
         tools:replace="android:name" />

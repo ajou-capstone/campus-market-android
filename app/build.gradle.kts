@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "kr.linkerbell.boardlink.android"
+    namespace = "kr.linkerbell.campusmarket.android"
     compileSdk = libs.versions.sdk.compile.get().toInt()
 
     defaultConfig {
-        applicationId = "kr.linkerbell.boardlink.android"
+        applicationId = "kr.linkerbell.campusmarket.android"
         minSdk = libs.versions.sdk.min.get().toInt()
         targetSdk = libs.versions.sdk.target.get().toInt()
         versionCode = libs.versions.app.versioncode.get().toInt()

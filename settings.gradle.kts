@@ -18,7 +18,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "boardlink"
+rootProject.name = "campusmarket"
 include(":app")
 include(":common")
 include(":presentation")
