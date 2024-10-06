@@ -22,6 +22,18 @@
         android:theme="@style/Theme.CampusMarket">
 
         <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/channel_community" />
+
+        <service
+            android:name="kr.linkerbell.campusmarket.android.CampusMarketFcmService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="${kakaoAppKey}" />
 

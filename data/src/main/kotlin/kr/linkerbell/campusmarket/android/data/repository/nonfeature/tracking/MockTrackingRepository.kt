@@ -1,11 +1,31 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.tracking
 
 import androidx.annotation.Size
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TrackingRepository
-import javax.inject.Inject
 
-class MockTrackingRepository @Inject constructor() : TrackingRepository {
+class MockTrackingRepository @Inject constructor(
+    private val dataStore: DataStore<Preferences>
+) : TrackingRepository {
+
+    override suspend fun setFcmToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(FCM_TOKEN)] = token
+        }
+    }
+
+    override suspend fun getFcmToken(): String {
+        return dataStore.data.map { preferences ->
+            preferences[stringPreferencesKey(FCM_TOKEN)]
+        }.first().orEmpty()
+    }
 
     override suspend fun setProfile(
         profile: Profile
@@ -26,5 +46,9 @@ class MockTrackingRepository @Inject constructor() : TrackingRepository {
         } else {
             Result.success(Unit)
         }
+    }
+
+    companion object {
+        private const val FCM_TOKEN = "fcm_token"
     }
 }

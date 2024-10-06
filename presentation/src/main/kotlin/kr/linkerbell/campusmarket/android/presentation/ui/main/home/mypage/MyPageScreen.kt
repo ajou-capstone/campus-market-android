@@ -1,25 +1,33 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.plus
 
 @Composable
 fun MyPageScreen(
@@ -40,9 +48,11 @@ fun MyPageScreen(
 
     val data: MyPageData = Unit.let {
         val profile by viewModel.profile.collectAsStateWithLifecycle()
+        val fcmToken by viewModel.fcmToken.collectAsStateWithLifecycle()
 
         MyPageData(
-            profile = profile
+            profile = profile,
+            fcmToken = fcmToken
         )
     }
 
@@ -63,13 +73,31 @@ private fun MyPageScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "MyPageScreen",
-            style = Body0
-        )
+        SelectionContainer(
+            modifier = Modifier.padding(30.dp)
+        ) {
+            Text(
+                text = data.fcmToken,
+                style = Body0
+            )
+        }
+    }
+
+    LaunchedEffect(permissionLauncher) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
     }
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
@@ -92,7 +120,8 @@ private fun MyPageScreenPreview() {
             coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = MyPageData(
-            profile = Profile.empty
+            profile = Profile.empty,
+            fcmToken = "fcmToken"
         )
     )
 }
