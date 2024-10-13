@@ -26,5 +26,5 @@ sealed interface LoginEvent {
 }
 
 sealed interface LoginIntent {
-    data object OnConfirm : LoginIntent
+    data class Login(val idToken: String) : LoginIntent
 }

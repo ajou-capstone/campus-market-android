@@ -1,6 +1,10 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.login
 
 import androidx.lifecycle.SavedStateHandle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
@@ -8,11 +12,7 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerEx
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authentication.LoginUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -28,13 +28,15 @@ class LoginViewModel @Inject constructor(
 
     fun onIntent(intent: LoginIntent) {
         when (intent) {
-            is LoginIntent.OnConfirm -> {
-                login()
+            is LoginIntent.Login -> {
+                login(
+                    idToken = intent.idToken
+                )
             }
         }
     }
 
-    private fun login() {
+    private fun login(idToken: String) {
         launch {
             _state.value = LoginState.Loading
 

@@ -29,3 +29,7 @@
 -dontwarn org.openjsse.**
 
 -dontwarn org.slf4j.**
+
+-if class androidx.credentials.CredentialManager
+-keep class androidx.credentials.playservices.** {
+  *;
