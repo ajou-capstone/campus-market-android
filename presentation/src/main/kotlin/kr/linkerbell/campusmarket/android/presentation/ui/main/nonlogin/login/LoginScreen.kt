@@ -45,7 +45,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.Confi
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.HomeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.entry.EntryConstant
 import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -64,8 +64,8 @@ fun LoginScreen(
     val googleOAuthClientId = stringResource(id = R.string.id_google_oauth_client)
     val isConfirmButtonEnabled = argument.state != LoginState.Loading
 
-    fun navigateToHome() {
-        navController.navigate(HomeConstant.ROUTE) {
+    fun navigateToEntry() {
+        navController.navigate(EntryConstant.ROUTE) {
             popUpTo(LoginConstant.ROUTE) {
                 inclusive = true
             }
@@ -155,7 +155,7 @@ fun LoginScreen(
     fun login(event: LoginEvent.Login) {
         when (event) {
             LoginEvent.Login.Success -> {
-                navigateToHome()
+                navigateToEntry()
             }
         }
     }

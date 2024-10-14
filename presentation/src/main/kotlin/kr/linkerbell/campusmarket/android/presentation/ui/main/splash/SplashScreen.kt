@@ -16,15 +16,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.HomeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.NonLoginConstant
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.plus
+import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.entry.EntryConstant
 
 @Composable
 fun SplashScreen(
@@ -34,8 +34,8 @@ fun SplashScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    fun navigateToHome() {
-        navController.navigate(HomeConstant.ROUTE) {
+    fun navigateToEntry() {
+        navController.navigate(EntryConstant.ROUTE) {
             popUpTo(SplashConstant.ROUTE) {
                 inclusive = true
             }
@@ -53,7 +53,7 @@ fun SplashScreen(
     fun login(event: SplashEvent.Login) {
         when (event) {
             is SplashEvent.Login.Success -> {
-                navigateToHome()
+                navigateToEntry()
             }
 
             is SplashEvent.Login.Fail -> {
