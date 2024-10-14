@@ -32,6 +32,7 @@ androidx-compose-constraintlayout = "1.0.1"
 androidx-test = "1.6.1"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-ext-truth = "1.6.0"
+androidx-credentials="1.3.0"
 # Network
 ktor = "2.3.11"
 kotlinx-serialization = "1.6.3"
@@ -39,6 +40,7 @@ kotlinx-serialization = "1.6.3"
 coil-compose = "2.6.0"
 lottie = "6.4.0"
 holix-bottomsheet = "1.4.1"
+googleid = "1.1.1"
 # Kakao
 kakao = "2.20.1"
 # Logging
@@ -73,6 +75,8 @@ androidx-compose-navigation = { module = "androidx.navigation:navigation-compose
 androidx-compose-lifecycle = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-compose-lifecycle" }
 androidx-compose-constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "androidx-compose-constraintlayout" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
+androidx-credentials-play-services = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
 # AndroidX Data
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
@@ -93,6 +97,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose
 ted-permission = { module = "io.github.ParkSangGwon:tedpermission-coroutine", version.ref = "ted-permission" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 holix-bottomsheet = { module = "com.holix.android:bottomsheetdialog-compose", version.ref = "holix-bottomsheet" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 # Kakao
 kakao-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakao" }
 # Logging
@@ -132,7 +137,8 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 kotlin = ["kotlin", "kotlinx-coroutines-android", "kotlinx-coroutines-core", "kotlinx-datetime"]
 androidx-presentation = ["androidx-core", "androidx-appcompat", "androidx-compose-ui",
     "androidx-compose-material3", "androidx-compose-navigation", "androidx-compose-constraintlayout",
-    "androidx-compose-lifecycle", "holix-bottomsheet", "androidx-paging-compose"]
+    "androidx-compose-lifecycle", "holix-bottomsheet", "androidx-paging-compose",
+    "androidx-credentials", "androidx-credentials-play-services", "googleid"]
 androidx-data = ["androidx-room-runtime", "androidx-room-coroutine", "androidx-paging-runtime",
     "androidx-datastore-preferences"]
 network = ["ktor-core", "ktor-okhttp", "ktor-resources", "ktor-content-negotiation",

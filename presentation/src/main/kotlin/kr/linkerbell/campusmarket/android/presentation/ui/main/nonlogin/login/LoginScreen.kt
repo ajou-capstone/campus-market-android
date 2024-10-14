@@ -13,10 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -30,8 +39,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.Confi
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.HomeConstant
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.plus
+import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -41,6 +49,9 @@ fun LoginScreen(
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
+    val context = LocalContext.current
+    val googleOAuthClientId = stringResource(id = R.string.id_google_oauth_client)
+
     val pagerState = rememberPagerState(
         pageCount = { 3 }
     )
@@ -49,6 +60,43 @@ fun LoginScreen(
         navController.navigate(HomeConstant.ROUTE) {
             popUpTo(LoginConstant.ROUTE) {
                 inclusive = true
+            }
+        }
+    }
+
+    fun requestLogin() {
+        val googleIdOption: GetSignInWithGoogleOption =
+            GetSignInWithGoogleOption.Builder(googleOAuthClientId)
+                .build()
+
+        val googleLoginRequest: GetCredentialRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+        scope.launch {
+            runCatching {
+                val credentialManager = CredentialManager.create(context)
+                val result = credentialManager.getCredential(
+                    request = googleLoginRequest,
+                    context = context,
+                )
+
+                if (
+                    result.credential is CustomCredential
+                    && result.credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+                ) {
+                    val googleIdTokenCredential = GoogleIdTokenCredential
+                        .createFrom(result.credential.data)
+                    intent(
+                        LoginIntent.Login(
+                            idToken = googleIdTokenCredential.idToken
+                        )
+                    )
+                } else {
+                    // TODO: 에러 처리
+                    Timber.d("asdfasdf error : ${result.credential}")
+                }
+            }.onFailure {
+                Timber.d(it)
             }
         }
     }
@@ -74,7 +122,7 @@ fun LoginScreen(
                 type = ConfirmButtonType.Primary
             ),
             onClick = {
-                intent(LoginIntent.OnConfirm)
+                requestLogin()
             }
         ) { style ->
             Text(
