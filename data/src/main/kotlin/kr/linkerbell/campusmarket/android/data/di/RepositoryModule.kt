@@ -1,17 +1,17 @@
 package kr.linkerbell.campusmarket.android.data.di
 
-import kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication.MockAuthenticationRepository
-import kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication.token.MockTokenRepository
-import kr.linkerbell.campusmarket.android.data.repository.nonfeature.tracking.MockTrackingRepository
-import kr.linkerbell.campusmarket.android.data.repository.nonfeature.user.MockUserRepository
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.AuthenticationRepository
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TrackingRepository
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication.RealAuthenticationRepository
+import kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication.token.RealTokenRepository
+import kr.linkerbell.campusmarket.android.data.repository.nonfeature.tracking.RealTrackingRepository
+import kr.linkerbell.campusmarket.android.data.repository.nonfeature.user.RealUserRepository
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.AuthenticationRepository
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TrackingRepository
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Singleton
 
 @Module
@@ -21,24 +21,24 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     internal abstract fun bindsAuthenticationRepository(
-        authenticationRepository: MockAuthenticationRepository
+        authenticationRepository: RealAuthenticationRepository
     ): AuthenticationRepository
 
     @Binds
     @Singleton
     internal abstract fun bindsTokenRepository(
-        tokenRepository: MockTokenRepository
+        tokenRepository: RealTokenRepository
     ): TokenRepository
 
     @Binds
     @Singleton
     internal abstract fun bindsUserRepository(
-        userRepository: MockUserRepository
+        userRepository: RealUserRepository
     ): UserRepository
 
     @Binds
     @Singleton
     internal abstract fun bindsTrackingRepository(
-        userRepository: MockTrackingRepository
+        userRepository: RealTrackingRepository
     ): TrackingRepository
 }
