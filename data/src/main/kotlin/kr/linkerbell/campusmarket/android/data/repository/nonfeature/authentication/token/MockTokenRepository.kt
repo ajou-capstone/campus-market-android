@@ -4,6 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
@@ -11,9 +14,6 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.authentication
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import javax.inject.Inject
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 class MockTokenRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
@@ -23,24 +23,11 @@ class MockTokenRepository @Inject constructor(
     override val refreshFailEvent: EventFlow<Unit> = _refreshFailEvent.asEventFlow()
 
     override suspend fun login(
-        username: String,
-        password: String
-    ): Result<Long> {
+        idToken: String,
+        firebaseToken: String
+    ): Result<Unit> {
         randomShortDelay()
-        return Result.success(0L).onSuccess { token ->
-            dataStore.edit { preferences ->
-                preferences[stringPreferencesKey(REFRESH_TOKEN)] = "mock_refresh_token"
-                preferences[stringPreferencesKey(ACCESS_TOKEN)] = "mock_access_token"
-            }
-        }
-    }
-
-    override suspend fun register(
-        username: String,
-        password: String
-    ): Result<Long> {
-        randomLongDelay()
-        return Result.success(0L).onSuccess {
+        return Result.success(Unit).onSuccess { token ->
             dataStore.edit { preferences ->
                 preferences[stringPreferencesKey(REFRESH_TOKEN)] = "mock_refresh_token"
                 preferences[stringPreferencesKey(ACCESS_TOKEN)] = "mock_access_token"

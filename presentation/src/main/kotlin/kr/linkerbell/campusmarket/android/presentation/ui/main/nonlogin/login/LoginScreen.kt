@@ -1,6 +1,7 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.login
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,12 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.credentials.CredentialManager
@@ -30,8 +34,11 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline0
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space12
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space32
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space80
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButton
@@ -50,11 +57,12 @@ fun LoginScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
-    val googleOAuthClientId = stringResource(id = R.string.id_google_oauth_client)
 
     val pagerState = rememberPagerState(
         pageCount = { 3 }
     )
+    val googleOAuthClientId = stringResource(id = R.string.id_google_oauth_client)
+    val isConfirmButtonEnabled = argument.state != LoginState.Loading
 
     fun navigateToHome() {
         navController.navigate(HomeConstant.ROUTE) {
@@ -104,29 +112,41 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(White)
+            .background(White),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(Space20))
+        Spacer(modifier = Modifier.height(Space80))
+        Image(
+            modifier = Modifier.size(Space80),
+            painter = painterResource(id = R.drawable.ic_launcher),
+            contentDescription = ""
+        )
+        Spacer(modifier = Modifier.height(Space32))
         Text(
-            modifier = Modifier.padding(horizontal = Space20),
-            text = stringResource(R.string.app_name),
+            text = "Campus Market",
             style = Headline0
+        )
+        Spacer(modifier = Modifier.height(Space12))
+        Text(
+            text = "대학생활의 모든 것을 한 곳에서",
+            style = Headline3
         )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
             modifier = Modifier
-                .padding(horizontal = Space20, vertical = Space12)
+                .padding(start = Space20, end = Space20, bottom = Space12)
                 .fillMaxWidth(),
             properties = ConfirmButtonProperties(
                 size = ConfirmButtonSize.Large,
                 type = ConfirmButtonType.Primary
             ),
+            isEnabled = isConfirmButtonEnabled,
             onClick = {
                 requestLogin()
             }
         ) { style ->
             Text(
-                text = "로그인",
+                text = "구글로 로그인",
                 style = style
             )
         }

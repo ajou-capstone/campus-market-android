@@ -7,16 +7,10 @@ interface TokenRepository {
 
     val refreshFailEvent: EventFlow<Unit>
 
-    // TODO : password encrypt
     suspend fun login(
-        username: String,
-        password: String
-    ): Result<Long>
-
-    suspend fun register(
-        username: String,
-        password: String
-    ): Result<Long>
+        idToken: String,
+        firebaseToken: String
+    ): Result<Unit>
 
     suspend fun getRefreshToken(): String
 

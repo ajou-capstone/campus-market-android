@@ -41,8 +41,7 @@ class LoginViewModel @Inject constructor(
             _state.value = LoginState.Loading
 
             loginUseCase(
-                username = "username",
-                password = "password"
+                idToken = idToken
             ).onSuccess {
                 _event.emit(LoginEvent.Login.Success)
             }.onFailure { exception ->
