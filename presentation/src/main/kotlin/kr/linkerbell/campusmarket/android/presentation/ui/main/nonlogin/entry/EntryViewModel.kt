@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.zip
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.term.GetTermListUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import javax.inject.Inject
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EntryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getProfileUseCase: GetProfileUseCase,
     private val getTermListUseCase: GetTermListUseCase
 ) : BaseViewModel() {
 
@@ -40,10 +43,13 @@ class EntryViewModel @Inject constructor(
     private suspend fun checkProgress() {
         _state.value = RegisterEntryState.Loading
 
-        getTermListUseCase().onSuccess { termList ->
+        zip(
+            { getProfileUseCase() },
+            { getTermListUseCase() }
+        ).onSuccess { (profile, termList) ->
             _state.value = RegisterEntryState.Init
 
-//            val isNicknameValid = profile.nickname.isNotEmpty()
+            val isNicknameValid = profile.nickname.isNotEmpty()
             val isTermAgreed = termList.all { term ->
                 !term.isRequired || term.isAgree
             }
@@ -53,9 +59,9 @@ class EntryViewModel @Inject constructor(
                     _event.emit(RegisterEntryEvent.NeedTermAgreement)
                 }
 
-//                !isNicknameValid -> {
-//                    _event.emit(RegisterEntryEvent.NeedNickname)
-//                }
+                !isNicknameValid -> {
+                    _event.emit(RegisterEntryEvent.NeedNickname)
+                }
 
                 else -> {
                     _event.emit(RegisterEntryEvent.NoProblem)

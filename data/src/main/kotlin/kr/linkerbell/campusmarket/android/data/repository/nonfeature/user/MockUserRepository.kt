@@ -17,10 +17,14 @@ class MockUserRepository @Inject constructor(
         return if (isLogined) {
             Result.success(
                 Profile(
-                    id = 1,
-                    name = "장성혁",
-                    nickname = "Ray Jang",
-                    email = "ajou4095@gmail.com"
+                    userId = 1L,
+                    campusId = 1L,
+                    loginEmail = "lorenzo.ballard@example.com",
+                    schoolEmail = "selena.weaver@example.com",
+                    nickname = "장성혁",
+                    profileImage = "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+                    rating = 4.5
+
                 )
             )
         } else {
@@ -28,6 +32,13 @@ class MockUserRepository @Inject constructor(
                 ServerException("MOCK_ERROR", "로그인이 필요합니다.")
             )
         }
+    }
+
+    override suspend fun setProfile(
+        nickname: String,
+        profileImage: String
+    ): Result<Unit> {
+        return Result.success(Unit)
     }
 
     private suspend fun randomShortDelay() {

@@ -12,4 +12,14 @@ class RealUserRepository @Inject constructor(
     override suspend fun getProfile(): Result<Profile> {
         return userApi.getProfile().toDomain()
     }
+
+    override suspend fun setProfile(
+        nickname: String,
+        profileImage: String
+    ): Result<Unit> {
+        return userApi.setProfile(
+            nickname = nickname,
+            profileImage = profileImage
+        ).map { }
+    }
 }
