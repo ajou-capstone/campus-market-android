@@ -6,6 +6,7 @@ import androidx.navigation.navigation
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.entry.entryDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.login.LoginConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.login.loginDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.profile.registerProfileDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.term.registerTermDestination
 
 fun NavGraphBuilder.nonLoginNavGraphNavGraph(
@@ -18,5 +19,6 @@ fun NavGraphBuilder.nonLoginNavGraphNavGraph(
         loginDestination(navController = navController)
         entryDestination(navController = navController)
         registerTermDestination(navController = navController)
+        registerProfileDestination(navController = navController)
     }
 }

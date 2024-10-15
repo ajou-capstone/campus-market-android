@@ -1,17 +1,23 @@
 package kr.linkerbell.campusmarket.android.domain.model.nonfeature.user
 
 data class Profile(
-    val id: Long,
-    val name: String,
+    val userId: Long,
+    val campusId: Long,
+    val loginEmail: String,
+    val schoolEmail: String,
     val nickname: String,
-    val email: String
+    val profileImage: String,
+    val rating: Double
 ) {
     companion object {
         val empty = Profile(
-            id = 0,
-            name = "",
+            userId = 0,
+            campusId = 0,
+            loginEmail = "",
+            schoolEmail = "",
             nickname = "",
-            email = ""
+            profileImage = "",
+            rating = 0.0
         )
     }
 }

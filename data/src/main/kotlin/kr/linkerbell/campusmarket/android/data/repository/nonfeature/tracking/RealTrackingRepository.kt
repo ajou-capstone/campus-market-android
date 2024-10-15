@@ -37,17 +37,17 @@ class RealTrackingRepository @Inject constructor(
     ): Result<Unit> {
         return runCatching {
             Firebase.analytics.run {
-                setUserId(profile.id.toString())
-                setUserProperty("name", profile.name)
+                setUserId(profile.userId.toString())
+                setUserProperty("name", profile.nickname)
                 setUserProperty("nickname", profile.nickname)
-                setUserProperty("email", profile.email)
+                setUserProperty("email", profile.loginEmail)
             }
             Firebase.crashlytics.run {
-                setUserId(profile.id.toString())
+                setUserId(profile.userId.toString())
                 setCustomKeys {
-                    key("name", profile.name)
+                    key("name", profile.nickname)
                     key("nickname", profile.nickname)
-                    key("email", profile.email)
+                    key("email", profile.loginEmail)
                 }
             }
         }
