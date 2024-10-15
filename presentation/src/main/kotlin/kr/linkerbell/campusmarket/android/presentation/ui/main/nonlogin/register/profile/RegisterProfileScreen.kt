@@ -59,6 +59,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.Confi
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.entry.EntryConstant
 
 @Composable
@@ -81,7 +82,13 @@ fun RegisterProfileScreen(
     var isGalleryShowing by remember { mutableStateOf(false) }
 
     if (isGalleryShowing) {
-        // TODO : Gallery
+        GalleryScreen(
+            navController = navController,
+            onDismissRequest = { isGalleryShowing = false },
+            onResult = {
+                image = it
+            }
+        )
     }
 
     fun navigateToEntry() {
