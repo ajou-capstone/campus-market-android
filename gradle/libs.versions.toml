@@ -105,6 +105,7 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 # Debug
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3-logging-interceptor" }
@@ -144,7 +145,7 @@ androidx-data = ["androidx-room-runtime", "androidx-room-coroutine", "androidx-p
 network = ["ktor-core", "ktor-okhttp", "ktor-resources", "ktor-content-negotiation",
     "ktor-kotlinx-serialization", "ktor-auth", "kotlinx-serialization"]
 kakao = ["kakao-user"]
-logging = ["timber", "firebase-analytics", "firebase-crashlytics"]
+logging = ["timber", "firebase-analytics", "firebase-crashlytics", "firebase-messaging"]
 test = ["junit4", "kotlinx-coroutines-test", "hilt-android-testing", "androidx-test-core",
     "androidx-test-runner", "androidx-test-rules", "androidx-test-ext-junit",
     "androidx-test-ext-truth", "robolectric-robolectric"]
