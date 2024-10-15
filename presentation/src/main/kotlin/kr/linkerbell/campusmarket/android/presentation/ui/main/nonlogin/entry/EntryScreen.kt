@@ -14,6 +14,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Launc
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.HomeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.profile.RegisterProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.term.RegisterTermConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.university.RegisterUniversityConstant
 
 @Composable
 fun RegisterEntryScreen(
@@ -33,11 +34,11 @@ fun RegisterEntryScreen(
     }
 
     fun navigateToRegisterUniversity() {
-//        navController.navigate(RegisterUniversityConstant.ROUTE) {
-//            popUpTo(EntryConstant.ROUTE) {
-//                inclusive = true
-//            }
-//        }
+        navController.navigate(RegisterUniversityConstant.ROUTE) {
+            popUpTo(EntryConstant.ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     fun navigateToRegisterCampus() {

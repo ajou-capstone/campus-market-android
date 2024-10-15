@@ -18,7 +18,6 @@ sealed interface LoginState {
     data object Loading : LoginState
 }
 
-
 sealed interface LoginEvent {
     sealed interface Login : LoginEvent {
         data object Success : Login

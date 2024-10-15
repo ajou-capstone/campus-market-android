@@ -18,7 +18,6 @@ sealed interface RegisterTermState {
     data object Loading : RegisterTermState
 }
 
-
 sealed interface RegisterTermEvent {
     sealed interface AgreeTerm : RegisterTermEvent {
         data object Success : AgreeTerm

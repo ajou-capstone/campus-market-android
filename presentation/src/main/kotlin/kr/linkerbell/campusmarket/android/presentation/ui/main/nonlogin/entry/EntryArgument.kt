@@ -18,7 +18,6 @@ sealed interface RegisterEntryState {
     data object Loading : RegisterEntryState
 }
 
-
 sealed interface RegisterEntryEvent {
     data object NeedTermAgreement : RegisterEntryEvent
     data object NeedUniversityRegistration : RegisterEntryEvent

@@ -19,7 +19,6 @@ sealed interface RegisterProfileState {
     data object Loading : RegisterProfileState
 }
 
-
 sealed interface RegisterProfileEvent {
     sealed interface CheckNickname : RegisterProfileEvent {
         data object Failure : CheckNickname

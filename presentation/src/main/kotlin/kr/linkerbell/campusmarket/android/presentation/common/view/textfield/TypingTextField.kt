@@ -122,7 +122,7 @@ fun TypingTextField(
                     placeholder = {
                         Text(
                             text = hintText,
-                            style = Body1.merge(Gray900)
+                            style = Body1.merge(Gray400)
                         )
                     },
                     contentPadding = PaddingValues(0.dp),
