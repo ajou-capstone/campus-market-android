@@ -50,6 +50,8 @@ class EntryViewModel @Inject constructor(
             _state.value = RegisterEntryState.Init
 
             val isNicknameValid = profile.nickname.isNotEmpty()
+            val isUniversityValid = profile.schoolEmail.isNotEmpty()
+            val isCampusValid = profile.campusId != -1L
             val isTermAgreed = termList.all { term ->
                 !term.isRequired || term.isAgree
             }
@@ -57,6 +59,14 @@ class EntryViewModel @Inject constructor(
             when {
                 !isTermAgreed -> {
                     _event.emit(RegisterEntryEvent.NeedTermAgreement)
+                }
+
+                !isUniversityValid -> {
+                    _event.emit(RegisterEntryEvent.NeedUniversityRegistration)
+                }
+
+                !isCampusValid -> {
+                    _event.emit(RegisterEntryEvent.NeedCampusRegistration)
                 }
 
                 !isNicknameValid -> {

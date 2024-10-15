@@ -1,14 +1,29 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication
 
+import kotlinx.coroutines.delay
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.AuthenticationRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 
 class MockAuthenticationRepository @Inject constructor(
     private val tokenRepository: TokenRepository
 ) : AuthenticationRepository {
+
+    override suspend fun sendEmailVerifyCode(
+        email: String
+    ): Result<String> {
+        randomShortDelay()
+        return Result.success("MOCK_VERIFY_CODE")
+    }
+
+    override suspend fun verifyEmailVerifyCode(
+        token: String,
+        verifyCode: String
+    ): Result<Unit> {
+        randomShortDelay()
+        return Result.success(Unit)
+    }
 
     override suspend fun logout(): Result<Unit> {
         randomShortDelay()
