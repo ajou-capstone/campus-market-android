@@ -10,17 +10,17 @@ data class GetProfileRes(
     @SerialName("userId")
     val userId: Long,
     @SerialName("campusId")
-    val campusId: Long,
+    val campusId: Long = -1L,
     @SerialName("loginEmail")
     val loginEmail: String,
     @SerialName("schoolEmail")
-    val schoolEmail: String,
+    val schoolEmail: String = "",
     @SerialName("nickname")
-    val nickname: String,
+    val nickname: String = "",
     @SerialName("profileImage")
-    val profileImage: String,
+    val profileImage: String = "",
     @SerialName("rating")
-    val rating: Double
+    val rating: Double = 0.0
 ) : DataMapper<Profile> {
     override fun toDomain(): Profile {
         return Profile(

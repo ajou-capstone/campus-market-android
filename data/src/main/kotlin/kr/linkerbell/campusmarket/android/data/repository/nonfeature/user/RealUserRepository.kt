@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.data.repository.nonfeature.user
 
 import kr.linkerbell.campusmarket.android.data.remote.network.api.nonfeature.UserApi
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Campus
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Inject
@@ -21,5 +22,17 @@ class RealUserRepository @Inject constructor(
             nickname = nickname,
             profileImage = profileImage
         ).map { }
+    }
+
+    override suspend fun getAvailableCampusList(): Result<List<Campus>> {
+        return userApi.getAvailableCampusList().toDomain()
+    }
+
+    override suspend fun setCampus(
+        id: Long
+    ): Result<Unit> {
+        return userApi.setCampus(
+            id = id
+        )
     }
 }

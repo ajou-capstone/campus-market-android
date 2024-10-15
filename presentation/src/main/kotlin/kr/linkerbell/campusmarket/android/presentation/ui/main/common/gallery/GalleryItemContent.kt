@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import kr.linkerbell.campusmarket.android.presentation.R
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue700
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
@@ -50,7 +50,6 @@ fun GalleryItemContent(
                         color = White,
                         modifier = Modifier.fillMaxSize(0.5f)
                     )
-
                 }
             },
             contentDescription = null,
@@ -73,9 +72,9 @@ fun GalleryItemContent(
             ) {
                 Icon(
                     modifier = Modifier.size(Space24),
-                    painter = painterResource(R.drawable.ic_check_box_checked),
+                    painter = painterResource(R.drawable.ic_check_line),
                     contentDescription = null,
-                    tint = Gray900
+                    tint = Blue700
                 )
             }
         }

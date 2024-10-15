@@ -213,7 +213,7 @@ fun RegisterTermScreenItem(
         ) {
             Icon(
                 modifier = Modifier.size(Space24),
-                painter = painterResource(id = R.drawable.ic_check_box_checked),
+                painter = painterResource(id = R.drawable.ic_check_line),
                 contentDescription = null,
                 tint = if (isChecked) Blue700 else Gray400
             )
