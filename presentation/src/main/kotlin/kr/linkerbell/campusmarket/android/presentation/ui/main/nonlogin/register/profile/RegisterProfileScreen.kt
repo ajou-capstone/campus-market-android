@@ -72,7 +72,7 @@ fun RegisterProfileScreen(
     var image: GalleryImage? by rememberSaveable { mutableStateOf(null) }
     var nickname: String by rememberSaveable { mutableStateOf("") }
 
-    val isNicknameSizeValid = nickname.length in 0..10
+    val isNicknameSizeValid = nickname.toByteArray(Charsets.UTF_8).size in 0..20
     val isNicknameFormValid = nickname.matches("[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9]*".toRegex())
     var isNicknameServerCheckSuccess: Boolean by remember { mutableStateOf(true) }
     val isConfirmButtonEnabled =
@@ -199,7 +199,7 @@ fun RegisterProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Space44),
-                text = "닉네임은 최대 10자까지 입력 가능합니다.",
+                text = "닉네임은 한글 최대 10자, 영어 최대 20자까지 입력 가능합니다.",
                 style = Body1.merge(Red400),
             )
         }
