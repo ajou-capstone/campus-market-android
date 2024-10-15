@@ -4,6 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
@@ -12,8 +14,6 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.authentication
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 class RealTokenRepository @Inject constructor(
     private val tokenApi: TokenApi,
@@ -24,37 +24,18 @@ class RealTokenRepository @Inject constructor(
     override val refreshFailEvent: EventFlow<Unit> = _refreshFailEvent.asEventFlow()
 
     override suspend fun login(
-        username: String,
-        password: String
-    ): Result<Long> {
+        idToken: String,
+        firebaseToken: String
+    ): Result<Unit> {
         return tokenApi.login(
-            username = username,
-            password = password,
+            idToken = idToken,
+            firebaseToken = firebaseToken,
         ).onSuccess { token ->
             dataStore.edit { preferences ->
                 preferences[stringPreferencesKey(REFRESH_TOKEN)] = token.refreshToken
                 preferences[stringPreferencesKey(ACCESS_TOKEN)] = token.accessToken
             }
-        }.map { login ->
-            login.id
-        }
-    }
-
-    override suspend fun register(
-        username: String,
-        password: String
-    ): Result<Long> {
-        return tokenApi.register(
-            username = username,
-            password = password
-        ).onSuccess { register ->
-            dataStore.edit { preferences ->
-                preferences[stringPreferencesKey(REFRESH_TOKEN)] = register.refreshToken
-                preferences[stringPreferencesKey(ACCESS_TOKEN)] = register.accessToken
-            }
-        }.map { register ->
-            register.id
-        }
+        }.map { }
     }
 
     override suspend fun getRefreshToken(): String {
