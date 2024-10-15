@@ -67,6 +67,7 @@ import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImag
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue700
 
 @Composable
 fun GalleryScreen(
@@ -213,7 +214,7 @@ private fun GalleryScreen(
                                                     Icon(
                                                         painter = painterResource(R.drawable.ic_check_box_checked),
                                                         contentDescription = null,
-                                                        tint = Gray900
+                                                        tint = Blue700
                                                     )
                                                 }
                                             }

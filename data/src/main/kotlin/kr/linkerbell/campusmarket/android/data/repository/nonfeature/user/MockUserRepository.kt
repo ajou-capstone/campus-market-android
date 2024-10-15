@@ -1,11 +1,12 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.user
 
+import kotlinx.coroutines.delay
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Campus
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 
 class MockUserRepository @Inject constructor(
     private val tokenRepository: TokenRepository
@@ -38,6 +39,30 @@ class MockUserRepository @Inject constructor(
         nickname: String,
         profileImage: String
     ): Result<Unit> {
+        randomShortDelay()
+        return Result.success(Unit)
+    }
+
+    override suspend fun getAvailableCampusList(): Result<List<Campus>> {
+        randomShortDelay()
+        return Result.success(
+            listOf(
+                Campus(
+                    id = 1L,
+                    region = "원주 캠퍼스"
+                ),
+                Campus(
+                    id = 2L,
+                    region = "춘천 캠퍼스"
+                )
+            )
+        )
+    }
+
+    override suspend fun setCampus(
+        id: Long
+    ): Result<Unit> {
+        randomShortDelay()
         return Result.success(Unit)
     }
 

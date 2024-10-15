@@ -12,6 +12,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.HomeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.campus.RegisterCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.profile.RegisterProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.term.RegisterTermConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.register.university.RegisterUniversityConstant
@@ -42,11 +43,11 @@ fun RegisterEntryScreen(
     }
 
     fun navigateToRegisterCampus() {
-//        navController.navigate(RegisterCampusConstant.ROUTE) {
-//            popUpTo(EntryConstant.ROUTE) {
-//                inclusive = true
-//            }
-//        }
+        navController.navigate(RegisterCampusConstant.ROUTE) {
+            popUpTo(EntryConstant.ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     fun navigateToRegisterProfile() {
