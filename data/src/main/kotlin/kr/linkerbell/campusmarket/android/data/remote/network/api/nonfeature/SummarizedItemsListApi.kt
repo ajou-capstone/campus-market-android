@@ -22,8 +22,6 @@ class SummarizedItemsListApi @Inject constructor(
 
     suspend fun getSummarizedItem(query: ItemQueryParameter)
             : Result<SummarizedItemListRes> {
-
-        val client = HttpClient()
         val queryParameters = Parameters.build {
             append("name", query.name)
             append("category", query.category)

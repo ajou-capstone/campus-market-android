@@ -73,6 +73,7 @@ class LandingPageViewModel @Inject constructor(
                     pageNum = currentPage,
                     pageSize = 7
                 )
+
             )
             newItems.onSuccess {
                 _state.value = LandingPageState.Init
