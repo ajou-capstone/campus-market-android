@@ -58,7 +58,6 @@ fun LandingPageScreen(
     navController: NavController,
     viewModel: LandingPageViewModel = hiltViewModel(),
 ) {
-    Log.d("siria22","landing page") // TODO: ("delete this")
     val argument: LandingPageArgument = Unit.let {
         val state by viewModel.state.collectAsStateWithLifecycle()
 
