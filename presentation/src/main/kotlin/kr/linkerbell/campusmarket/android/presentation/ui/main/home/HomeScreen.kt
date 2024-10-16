@@ -36,6 +36,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Launc
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.MyPageScreen
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage.LandingPageScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -66,6 +67,9 @@ fun HomeScreen(
             when (data.homeTypeList.getOrNull(page)) {
                 HomeType.MyPage -> {
                     MyPageScreen(navController = navController)
+                }
+                HomeType.LandingPage ->{
+                    LandingPageScreen(navController = navController)
                 }
 
                 null -> Unit

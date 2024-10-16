@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -57,6 +58,7 @@ fun LandingPageScreen(
     navController: NavController,
     viewModel: LandingPageViewModel = hiltViewModel(),
 ) {
+    Log.d("siria22","landing page") // TODO: ("delete this")
     val argument: LandingPageArgument = Unit.let {
         val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -123,6 +125,7 @@ fun LandingPageScreen(
 @Composable
 fun LandingPageItemCard(item: SummarizedItem) {
 
+
     Box(
         Modifier
             .shadow(4.dp)
@@ -152,7 +155,7 @@ fun LandingPageItemCard(item: SummarizedItem) {
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.padding(4.dp))
-                        LandingPageItemStatus(isSold = false)
+                        LandingPageItemStatus(isSold = checkItemStatus(item.itemStatus))
                     }
                     Text("${item.price} 원")
                 }
@@ -180,6 +183,10 @@ fun LandingPageItemCard(item: SummarizedItem) {
             }
         }
     }
+}
+
+private fun checkItemStatus(itemStatus: String): Boolean {
+    return (itemStatus === "Available")
 }
 
 @Composable
@@ -275,7 +282,7 @@ fun LandingPageItemStatus(isSold: Boolean = false) {
     if (isSold) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(5.dp)) // 16.dp 만큼 둥근 모서리 설정
+                .clip(RoundedCornerShape(5.dp))
                 .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
@@ -284,7 +291,7 @@ fun LandingPageItemStatus(isSold: Boolean = false) {
     } else {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(5.dp)) // 16.dp 만큼 둥근 모서리 설정
+                .clip(RoundedCornerShape(5.dp))
                 .background(Color.LightGray)
         ) {
             Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
