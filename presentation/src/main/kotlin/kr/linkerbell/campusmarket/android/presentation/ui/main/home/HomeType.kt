@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.MyPageConstant
 import kotlinx.parcelize.Parcelize
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage.LandingPageConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeConstant
 
 @Parcelize
 sealed class HomeType(
@@ -14,20 +14,20 @@ sealed class HomeType(
 ) : Parcelable {
 
     @Parcelize
+    data object Trade : HomeType(
+        route = TradeConstant.ROUTE,
+        iconRes = R.drawable.ic_menu
+    )
+
+    @Parcelize
     data object MyPage : HomeType(
         route = MyPageConstant.ROUTE,
         iconRes = R.drawable.ic_account
     )
 
-    @Parcelize
-    data object LandingPage : HomeType(
-        route = LandingPageConstant.ROUTE,
-        iconRes = R.drawable.ic_menu
-    )
-
     companion object {
         fun values(): List<HomeType> {
-            return listOf(MyPage, LandingPage)
+            return listOf(Trade, MyPage)
         }
     }
 }
