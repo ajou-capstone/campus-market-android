@@ -2,26 +2,27 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.catch
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.item.ItemQueryParameter
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.item.SummarizedItem
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.item.GetSummarizedLatestItemListUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class LandingPageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getSummarizedLatestItemsUseCase: GetSummarizedLatestItemListUseCase
+    private val searchTradeListUseCase: SearchTradeListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<LandingPageState> = MutableStateFlow(LandingPageState.Init)
@@ -30,21 +31,21 @@ class LandingPageViewModel @Inject constructor(
     private val _event: MutableEventFlow<LandingPageEvent> = MutableEventFlow()
     val event: EventFlow<LandingPageEvent> = _event.asEventFlow()
 
-    private val _latestItemsList: MutableStateFlow<MutableList<SummarizedItem>> =
-        MutableStateFlow(mutableListOf())
-    val latestItemsList: StateFlow<MutableList<SummarizedItem>> = _latestItemsList.asStateFlow()
-
-    private var currentPage = 0
+    private val _tradeList: MutableStateFlow<PagingData<Trade>> =
+        MutableStateFlow(PagingData.empty())
+    val tradeList: StateFlow<PagingData<Trade>> = _tradeList.asStateFlow()
 
     init {
         launch {
-            _state.value = LandingPageState.Loading
-            getSummarizedLatestItemsUseCase.getSummarizedLatestItemsUseCase(ItemQueryParameter.empty)
-                .onSuccess {
-                    _state.value = LandingPageState.Init
-                    _latestItemsList.value = it
-                }.onFailure { exception ->
-                    _state.value = LandingPageState.Init
+            searchTradeListUseCase(
+                name = "",
+                category = "",
+                minPrice = 0,
+                maxPrice = 0,
+                sorted = ""
+            )
+                .cachedIn(viewModelScope)
+                .catch { exception ->
                     when (exception) {
                         is ServerException -> {
                             _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
@@ -54,45 +55,13 @@ class LandingPageViewModel @Inject constructor(
                             _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                         }
                     }
+                }.collect {
+                    _tradeList.value = it
                 }
         }
     }
-
 
     fun onIntent(intent: LandingPageIntent) {
 
-    }
-
-    fun loadMoreItems() {
-        viewModelScope.launch {
-
-            _state.value = LandingPageState.Loading
-            val query = ItemQueryParameter.empty
-            val newItems = getSummarizedLatestItemsUseCase.getSummarizedLatestItemsUseCase(
-                query.copy(
-                    pageNum = currentPage,
-                    pageSize = 7
-                )
-
-            )
-            newItems.onSuccess {
-                _state.value = LandingPageState.Init
-                val updatedList = _latestItemsList.value + it
-                _latestItemsList.value = updatedList.toMutableList()
-                currentPage++
-            }.onFailure { exception ->
-                _state.value = LandingPageState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
-
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                    }
-                }
-            }
-
-        }
     }
 }
