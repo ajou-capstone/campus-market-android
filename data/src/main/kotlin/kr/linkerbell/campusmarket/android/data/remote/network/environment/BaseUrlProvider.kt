@@ -39,8 +39,8 @@ class BaseUrlProvider(
     }
 
     companion object {
-        private const val DEVELOPMENT_BASE_URL = "https://linkerbell.co.kr/"
-        private const val PRODUCTION_BASE_URL = "https://linkerbell.co.kr/"
+        private const val DEVELOPMENT_BASE_URL = "https://linkerbell.co.kr"
+        private const val PRODUCTION_BASE_URL = "https://linkerbell.co.kr"
 
         private const val KEY_SERVER_FLAG = "server_flag"
         const val SERVER_FLAG_DEVELOPMENT = "development"
