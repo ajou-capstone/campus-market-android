@@ -1,9 +1,10 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
 
 import androidx.compose.runtime.Immutable
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.item.SummarizedItem
+import androidx.paging.compose.LazyPagingItems
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 
 @Immutable
 data class LandingPageData(
-    val latestSummarizedItemList: MutableList<SummarizedItem>
+    val tradeList: LazyPagingItems<Trade>
 )

@@ -1,9 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -26,32 +22,33 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.SubcomposeAsyncImage
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.item.SummarizedItem
-import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
+import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 
 @Composable
 fun LandingPageScreen(
@@ -69,14 +66,22 @@ fun LandingPageScreen(
             coroutineContext = viewModel.coroutineContext
         )
     }
-    val latestItemList by viewModel.latestItemsList.collectAsStateWithLifecycle()
+
+    val data: LandingPageData = Unit.let {
+        val tradeList = viewModel.tradeList.collectAsLazyPagingItems()
+
+        LandingPageData(
+            tradeList = tradeList,
+        )
+    }
+
+    val latestItemList by viewModel.tradeList.collectAsStateWithLifecycle()
 
     ErrorObserver(viewModel)
     LandingPageScreen(
         navController = navController,
         argument = argument,
-        latestItemList = latestItemList,
-        loadMoreItems = { viewModel.loadMoreItems() }
+        data = data,
     )
 }
 
@@ -84,47 +89,34 @@ fun LandingPageScreen(
 fun LandingPageScreen(
     navController: NavController,
     argument: LandingPageArgument,
-    latestItemList: List<SummarizedItem>,
-    loadMoreItems: () -> Unit
+    data: LandingPageData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size }
-            .collect { visibleItemCount ->
-                if (visibleItemCount >= latestItemList.size) {
-                    loadMoreItems()
-                }
-            }
-    }
-
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE8EAF6))
+            .background(Indigo50)
     ) {
-        Column {
-            LandingPageSearchBar()
-            LazyColumn(
-                state = listState,
-                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
-            ) {
-                items(latestItemList.size) { index ->
-                    LandingPageItemCard(latestItemList[index])
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+        LandingPageSearchBar()
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
+        ) {
+            items(
+                count = data.tradeList.itemCount,
+                key = { index -> data.tradeList[index]?.itemId ?: -1 }
+            ) { index ->
+                val trade = data.tradeList[index] ?: return@items
+                LandingPageItemCard(trade)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
 }
 
 @Composable
-fun LandingPageItemCard(item: SummarizedItem) {
-
-
+fun LandingPageItemCard(item: Trade) {
     Box(
         Modifier
             .shadow(4.dp)
@@ -136,8 +128,13 @@ fun LandingPageItemCard(item: SummarizedItem) {
                 .background(Color.White)
                 .padding(8.dp),
         ) {
-            LandingPageLoadImageFromS3(item.thumbnail)
-            Column(modifier = Modifier.padding(start = 10.dp)) {
+            PostImage(
+                data = item.thumbnail,
+                modifier = Modifier.size(85.dp)
+            )
+            Column(
+                modifier = Modifier.padding(start = 10.dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -149,25 +146,23 @@ fun LandingPageItemCard(item: SummarizedItem) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            landingPageSummarizeTitle(item.title),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
+                            text = item.title,
+                            style = Headline3,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.padding(4.dp))
-                        LandingPageItemStatus(isSold = checkItemStatus(item.itemStatus))
+                        LandingPageItemStatus(isSold = item.itemStatus === "Available")
                     }
                     Text("${item.price} 원")
                 }
                 Text(
-                    item.nickname,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
+                    text = item.nickname,
+                    style = Caption2,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    "${item.chatCount} 명이 대화중",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
+                    text = "${item.chatCount} 명이 대화중",
+                    style = Caption2,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -184,13 +179,8 @@ fun LandingPageItemCard(item: SummarizedItem) {
     }
 }
 
-private fun checkItemStatus(itemStatus: String): Boolean {
-    return (itemStatus === "Available")
-}
-
 @Composable
 fun LandingPageSearchBar() {
-
     Box(
         modifier = Modifier
             .background(Color.White)
@@ -221,7 +211,7 @@ fun LandingPageSearchBar() {
                     .weight(8f)
                     .height(36.dp)
                     .clip(RoundedCornerShape(5.dp))
-                    .background(Color(0xffF7F7FB)),
+                    .background(Gray50),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -249,35 +239,12 @@ fun LandingPageSearchBar() {
             )
         }
     }
-
 }
 
 @Composable
-fun LandingPageLoadImageFromS3(s3Url: String) {
-    SubcomposeAsyncImage(
-        model = s3Url,
-        contentDescription = "Image from S3",
-        contentScale = ContentScale.Crop,
-        loading = {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher),
-                contentDescription = "loading image",
-                modifier = Modifier
-                    .border(1.dp, Color.Gray)
-                    .size(85.dp)
-            )
-            //CircularProgressIndicator()
-        },
-        error = {
-            Text("err image")
-            //load default image? 협의 필요
-        }
-    )
-}
-
-@Composable
-fun LandingPageItemStatus(isSold: Boolean = false) {
-
+fun LandingPageItemStatus(
+    isSold: Boolean
+) {
     if (isSold) {
         Box(
             modifier = Modifier
@@ -296,40 +263,11 @@ fun LandingPageItemStatus(isSold: Boolean = false) {
             Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
         }
     }
-
-}
-
-fun landingPageSummarizeTitle(title: String): String {
-    return if (title.length > 12) {
-        title.take(12) + "..."
-    } else {
-        title
-    }
-}
-
-@Preview
-@Composable
-fun LandingPageSearchBarPreview() {
-    LandingPageSearchBar()
-}
-
-@Preview
-@Composable
-private fun LandingPageItemCardPreview() {
-    LandingPageItemCard(
-        SummarizedItem(
-            1, 2, "Sirius22", "",
-            "제목이 좀 길어 지면 다 표시 하지 말고 줄여야 할 것 같아요", 2222, 5, 123,
-            "거래중"
-        )
-    )
 }
 
 @Preview
 @Composable
 private fun LandingPageScreenPreview() {
-    val loadMoreData: () -> Unit = {}
-
     LandingPageScreen(
         navController = rememberNavController(),
         argument = LandingPageArgument(
@@ -339,7 +277,24 @@ private fun LandingPageScreenPreview() {
             logEvent = { _, _ -> },
             coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
-        latestItemList = MutableList(5) { SummarizedItem.empty },
-        loadMoreItems = loadMoreData
+        data = LandingPageData(
+            tradeList = MutableStateFlow(
+                PagingData.from(
+                    listOf(
+                        Trade(
+                            itemId = 1L,
+                            userId = 1L,
+                            nickname = "장성혁",
+                            thumbnail = "https://picsum.photos/200",
+                            title = "콜라 팝니다",
+                            price = 1000,
+                            chatCount = 5,
+                            likeCount = 2,
+                            itemStatus = ""
+                        )
+                    )
+                )
+            ).collectAsLazyPagingItems()
+        )
     )
 }
