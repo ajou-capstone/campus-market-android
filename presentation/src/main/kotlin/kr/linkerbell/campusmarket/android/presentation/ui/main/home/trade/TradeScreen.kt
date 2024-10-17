@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,9 +51,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Error
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 
 @Composable
-fun LandingPageScreen(
+fun TradeScreen(
     navController: NavController,
-    viewModel: LandingPageViewModel = hiltViewModel(),
+    viewModel: TradeViewModel = hiltViewModel(),
 ) {
     val argument: LandingPageArgument = Unit.let {
         val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,18 +67,16 @@ fun LandingPageScreen(
         )
     }
 
-    val data: LandingPageData = Unit.let {
+    val data: TradeData = Unit.let {
         val tradeList = viewModel.tradeList.collectAsLazyPagingItems()
 
-        LandingPageData(
+        TradeData(
             tradeList = tradeList,
         )
     }
 
-    val latestItemList by viewModel.tradeList.collectAsStateWithLifecycle()
-
     ErrorObserver(viewModel)
-    LandingPageScreen(
+    TradeScreen(
         navController = navController,
         argument = argument,
         data = data,
@@ -86,10 +84,10 @@ fun LandingPageScreen(
 }
 
 @Composable
-fun LandingPageScreen(
+private fun TradeScreen(
     navController: NavController,
     argument: LandingPageArgument,
-    data: LandingPageData
+    data: TradeData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
@@ -99,7 +97,7 @@ fun LandingPageScreen(
             .fillMaxSize()
             .background(Indigo50)
     ) {
-        LandingPageSearchBar()
+        TradeSearchBar()
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
@@ -108,7 +106,7 @@ fun LandingPageScreen(
                 key = { index -> data.tradeList[index]?.itemId ?: -1 }
             ) { index ->
                 val trade = data.tradeList[index] ?: return@items
-                LandingPageItemCard(trade)
+                TradeItemCard(trade)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -116,7 +114,7 @@ fun LandingPageScreen(
 }
 
 @Composable
-fun LandingPageItemCard(item: Trade) {
+private fun TradeItemCard(item: Trade) {
     Box(
         Modifier
             .shadow(4.dp)
@@ -151,7 +149,7 @@ fun LandingPageItemCard(item: Trade) {
                             overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.padding(4.dp))
-                        LandingPageItemStatus(isSold = item.itemStatus === "Available")
+                        TradeItemStatus(isSold = item.itemStatus === "Available")
                     }
                     Text("${item.price} 원")
                 }
@@ -180,7 +178,7 @@ fun LandingPageItemCard(item: Trade) {
 }
 
 @Composable
-fun LandingPageSearchBar() {
+private fun TradeSearchBar() {
     Box(
         modifier = Modifier
             .background(Color.White)
@@ -242,7 +240,7 @@ fun LandingPageSearchBar() {
 }
 
 @Composable
-fun LandingPageItemStatus(
+private fun TradeItemStatus(
     isSold: Boolean
 ) {
     if (isSold) {
@@ -267,8 +265,8 @@ fun LandingPageItemStatus(
 
 @Preview
 @Composable
-private fun LandingPageScreenPreview() {
-    LandingPageScreen(
+private fun TradeScreenPreview() {
+    TradeScreen(
         navController = rememberNavController(),
         argument = LandingPageArgument(
             state = LandingPageState.Init,
@@ -277,7 +275,7 @@ private fun LandingPageScreenPreview() {
             logEvent = { _, _ -> },
             coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
-        data = LandingPageData(
+        data = TradeData(
             tradeList = MutableStateFlow(
                 PagingData.from(
                     listOf(

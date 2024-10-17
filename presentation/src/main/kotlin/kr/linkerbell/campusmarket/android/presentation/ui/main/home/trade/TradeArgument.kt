@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade
 
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext
@@ -15,9 +15,7 @@ data class LandingPageArgument(
 
 sealed interface LandingPageState {
     data object Init : LandingPageState
-    data object Loading : LandingPageState
 }
-
 
 sealed interface LandingPageEvent
 

@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.landingpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -20,7 +20,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
-class LandingPageViewModel @Inject constructor(
+class TradeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val searchTradeListUseCase: SearchTradeListUseCase
 ) : BaseViewModel() {
