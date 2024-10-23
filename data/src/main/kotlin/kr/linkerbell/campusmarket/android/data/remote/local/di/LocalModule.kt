@@ -14,7 +14,6 @@ import javax.inject.Singleton
 import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
 import kr.linkerbell.campusmarket.android.data.remote.local.database.message.MessageDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.room.RoomDao
-import kr.linkerbell.campusmarket.android.data.remote.local.database.user.UserProfileDao
 import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 
 @Module
@@ -58,13 +57,5 @@ object LocalModule {
         campusMarketDatabase: CampusMarketDatabase
     ): RoomDao {
         return campusMarketDatabase.roomDao()
-    }
-
-    @Provides
-    @Singleton
-    internal fun provideUserProfileDao(
-        campusMarketDatabase: CampusMarketDatabase
-    ): UserProfileDao {
-        return campusMarketDatabase.userProfileDao()
     }
 }

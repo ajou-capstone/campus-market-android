@@ -4,10 +4,10 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Inject
 
-class GetProfileUseCase @Inject constructor(
+class GetMyProfileUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
     suspend operator fun invoke(): Result<MyProfile> {
-        return userRepository.getProfile()
+        return userRepository.getMyProfile()
     }
 }

@@ -11,7 +11,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.GetPreSignedUrlUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadImageUseCase
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.SetProfileUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.SetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
@@ -22,7 +22,7 @@ class RegisterProfileViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getPreSignedUrlUseCase: GetPreSignedUrlUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
-    private val setProfileUseCase: SetProfileUseCase
+    private val setMyProfileUseCase: SetMyProfileUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<RegisterProfileState> =
@@ -51,7 +51,7 @@ class RegisterProfileViewModel @Inject constructor(
             _state.value = RegisterProfileState.Loading
 
             if (image == null) {
-                setProfileUseCase(
+                setMyProfileUseCase(
                     nickname = nickname,
                     profileImage = ""
                 ).onSuccess {
@@ -77,7 +77,7 @@ class RegisterProfileViewModel @Inject constructor(
                         preSignedUrl = preSignedUrl.presignedUrl,
                         imageUri = image.filePath
                     ).map {
-                        setProfileUseCase(
+                        setMyProfileUseCase(
                             nickname = nickname,
                             profileImage = preSignedUrl.s3url
                         )
