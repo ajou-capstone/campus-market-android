@@ -3,7 +3,7 @@ package kr.linkerbell.campusmarket.android.data.repository.nonfeature.user
 import kotlinx.coroutines.delay
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Campus
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Inject
@@ -12,13 +12,13 @@ class MockUserRepository @Inject constructor(
     private val tokenRepository: TokenRepository
 ) : UserRepository {
 
-    override suspend fun getProfile(): Result<Profile> {
+    override suspend fun getProfile(): Result<MyProfile> {
         randomShortDelay()
         val isLogined = tokenRepository.getAccessToken().isNotEmpty()
         return if (isLogined) {
             Result.success(
-                Profile(
-                    userId = 1L,
+                MyProfile(
+                    id = 1L,
                     campusId = 1L,
                     loginEmail = "lorenzo.ballard@example.com",
                     schoolEmail = "selena.weaver@example.com",

@@ -1,11 +1,11 @@
 package kr.linkerbell.campusmarket.android.domain.repository.nonfeature
 
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Campus
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 
 interface UserRepository {
 
-    suspend fun getProfile(): Result<Profile>
+    suspend fun getProfile(): Result<MyProfile>
 
     suspend fun setProfile(
         nickname: String,

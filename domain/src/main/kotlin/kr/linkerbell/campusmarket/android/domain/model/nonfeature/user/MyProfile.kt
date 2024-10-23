@@ -1,7 +1,7 @@
 package kr.linkerbell.campusmarket.android.domain.model.nonfeature.user
 
-data class Profile(
-    val userId: Long,
+data class MyProfile(
+    val id: Long,
     val campusId: Long,
     val loginEmail: String,
     val schoolEmail: String,
@@ -10,8 +10,8 @@ data class Profile(
     val rating: Double
 ) {
     companion object {
-        val empty = Profile(
-            userId = 0,
+        val empty = MyProfile(
+            id = 0,
             campusId = 0,
             loginEmail = "",
             schoolEmail = "",

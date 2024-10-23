@@ -8,7 +8,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetAvailableCampusListRes
-import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetProfileRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetMyProfileRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.SetCampusReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.SetProfileReq
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
@@ -36,7 +36,7 @@ class UserApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getProfile(): Result<GetProfileRes> {
+    suspend fun getMyProfile(): Result<GetMyProfileRes> {
         return client.get("$baseUrl/api/v1/profile/me")
             .convert(errorMessageMapper::map)
     }

@@ -5,15 +5,17 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleDao
-import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
+import kr.linkerbell.campusmarket.android.data.remote.local.database.message.MessageDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.room.RoomDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.user.UserProfileDao
+import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -44,9 +46,25 @@ object LocalModule {
 
     @Provides
     @Singleton
-    internal fun provideSampleDao(
-        campusmarketDatabase: CampusMarketDatabase
-    ): SampleDao {
-        return campusmarketDatabase.sampleDao()
+    internal fun provideMessageDao(
+        campusMarketDatabase: CampusMarketDatabase
+    ): MessageDao {
+        return campusMarketDatabase.messageDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideRoomDao(
+        campusMarketDatabase: CampusMarketDatabase
+    ): RoomDao {
+        return campusMarketDatabase.roomDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideUserProfileDao(
+        campusMarketDatabase: CampusMarketDatabase
+    ): UserProfileDao {
+        return campusMarketDatabase.userProfileDao()
     }
 }

@@ -21,7 +21,7 @@ class LoginUseCase @Inject constructor(
         ).onSuccess {
             getProfileUseCase().onSuccess { profile ->
                 setTrackingProfileUseCase(
-                    profile = profile
+                    myProfile = profile
                 )
             }.getOrThrow()
         }

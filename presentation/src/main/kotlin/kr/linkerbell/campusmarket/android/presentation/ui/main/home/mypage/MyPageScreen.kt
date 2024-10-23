@@ -14,7 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -39,10 +39,10 @@ fun MyPageScreen(
     }
 
     val data: MyPageData = Unit.let {
-        val profile by viewModel.profile.collectAsStateWithLifecycle()
+        val profile by viewModel.myProfile.collectAsStateWithLifecycle()
 
         MyPageData(
-            profile = profile
+            myProfile = profile
         )
     }
 
@@ -92,7 +92,7 @@ private fun MyPageScreenPreview() {
             coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = MyPageData(
-            profile = Profile.empty
+            myProfile = MyProfile.empty
         )
     )
 }

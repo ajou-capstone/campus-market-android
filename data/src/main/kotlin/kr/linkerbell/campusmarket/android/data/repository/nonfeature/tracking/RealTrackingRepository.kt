@@ -12,7 +12,7 @@ import com.google.firebase.crashlytics.setCustomKeys
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TrackingRepository
 import javax.inject.Inject
 
@@ -33,21 +33,21 @@ class RealTrackingRepository @Inject constructor(
     }
 
     override suspend fun setProfile(
-        profile: Profile
+        myProfile: MyProfile
     ): Result<Unit> {
         return runCatching {
             Firebase.analytics.run {
-                setUserId(profile.userId.toString())
-                setUserProperty("name", profile.nickname)
-                setUserProperty("nickname", profile.nickname)
-                setUserProperty("email", profile.loginEmail)
+                setUserId(myProfile.id.toString())
+                setUserProperty("name", myProfile.nickname)
+                setUserProperty("nickname", myProfile.nickname)
+                setUserProperty("email", myProfile.loginEmail)
             }
             Firebase.crashlytics.run {
-                setUserId(profile.userId.toString())
+                setUserId(myProfile.id.toString())
                 setCustomKeys {
-                    key("name", profile.nickname)
-                    key("nickname", profile.nickname)
-                    key("email", profile.loginEmail)
+                    key("name", myProfile.nickname)
+                    key("nickname", myProfile.nickname)
+                    key("email", myProfile.loginEmail)
                 }
             }
         }

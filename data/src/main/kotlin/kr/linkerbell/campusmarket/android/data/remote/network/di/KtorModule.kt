@@ -1,7 +1,6 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.di
 
 import android.content.Context
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,21 +13,29 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import java.util.Optional
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlinx.serialization.json.Json
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import okhttp3.Interceptor
+import org.hildan.krossbow.stomp.StompClient
+import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
 
 @Module
 @InstallIn(SingletonComponent::class)
 object KtorModule {
 
-    private val jsonConfiguration = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
+    @Provides
+    @Singleton
+    internal fun provideJson(): Json {
+        return Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
     }
 
     @Provides
@@ -36,7 +43,8 @@ object KtorModule {
     @NoAuthHttpClient
     internal fun provideNoAuthHttpClient(
         @ApplicationContext context: Context,
-        @DebugInterceptor debugInterceptor: Optional<Interceptor>
+        @DebugInterceptor debugInterceptor: Optional<Interceptor>,
+        json: Json
     ): HttpClient {
         return HttpClient(OkHttp) {
             expectSuccess = false
@@ -48,7 +56,7 @@ object KtorModule {
             }
 
             install(ContentNegotiation) {
-                json(jsonConfiguration)
+                json(json)
             }
 
             // TODO : 이거 왜 안 들어가고 있는지 확인
@@ -64,7 +72,8 @@ object KtorModule {
     internal fun provideAuthHttpClient(
         @ApplicationContext context: Context,
         @DebugInterceptor debugInterceptor: Optional<Interceptor>,
-        tokenRepository: TokenRepository
+        tokenRepository: TokenRepository,
+        json: Json
     ): HttpClient {
         return HttpClient(OkHttp) {
             expectSuccess = false
@@ -76,7 +85,7 @@ object KtorModule {
             }
 
             install(ContentNegotiation) {
-                json(jsonConfiguration)
+                json(json)
             }
 
             install(Auth) {
@@ -112,11 +121,24 @@ object KtorModule {
                 }
             }
 
+            install(WebSockets)
+
             // TODO : 이거 왜 안 들어가고 있는지 확인
             defaultRequest {
                 header("Content-Type", "application/json")
             }
         }
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideStompClient(
+        @AuthHttpClient authClient: HttpClient
+    ): StompClient {
+        val webSocketClient = KtorWebSocketClient(authClient)
+        val stompClient = StompClient(webSocketClient)
+
+        return stompClient
     }
 }
 
