@@ -7,13 +7,29 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 
 @Serializable
 data class SearchTradeListRes(
-    @SerialName("data")
-    val data: MutableList<SearchTradeListItemRes>
-) : DataMapper<List<Trade>> {
-    override fun toDomain(): List<Trade> {
-        return data.map { it.toDomain() }
-    }
-}
+    @SerialName("content")
+    val content: List<SearchTradeListItemRes>,
+    @SerialName("sort")
+    val sort: SearchTradeListSortRes,
+    @SerialName("currentPage")
+    val currentPage: Int,
+    @SerialName("size")
+    val size: Int,
+    @SerialName("hasPrevious")
+    val hasPrevious: Boolean,
+    @SerialName("hasNext")
+    val hasNext: Boolean,
+)
+
+@Serializable
+data class SearchTradeListSortRes(
+    @SerialName("sorted")
+    val sorted: Boolean,
+    @SerialName("direction")
+    val direction: String,
+    @SerialName("orderProperty")
+    val orderProperty: String,
+)
 
 @Serializable
 data class SearchTradeListItemRes(

@@ -35,12 +35,11 @@ class SearchTradePagingSource(
             pageNum = pageNum,
             pageSize = pageSize
         ).map { data ->
-            // TODO
             val nextPage = if (data.hasNext) pageNum + 1 else null
             val previousPage = if (data.hasPrevious) pageNum - 1 else null
 
             LoadResult.Page(
-                data = data.result.map { it.toDomain() },
+                data = data.content.map { it.toDomain() },
                 prevKey = previousPage,
                 nextKey = nextPage
             )
