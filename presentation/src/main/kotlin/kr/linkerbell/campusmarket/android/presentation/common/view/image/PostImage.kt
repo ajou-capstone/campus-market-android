@@ -81,7 +81,7 @@ fun PostImage(
 @Composable
 private fun PostImagePreview1() {
     PostImage(
-        data = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+        data = "https://picsum.photos/200",
         modifier = Modifier.size(60.dp)
     )
 }
@@ -90,7 +90,7 @@ private fun PostImagePreview1() {
 @Composable
 private fun PostImagePreview2() {
     PostImage(
-        data = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+        data = "https://picsum.photos/200",
         modifier = Modifier.size(200.dp)
     )
 }
