@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,13 +50,16 @@ fun TradeSearchScreen(
     navController: NavController,
     viewModel: TradeSearchViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchSearchHistory()
+    }
     val argument: TradeSearchArgument = Unit.let {
         val state by viewModel.state.collectAsStateWithLifecycle()
 
         TradeSearchArgument(
             state = state,
             event = viewModel.event,
-            intent = viewModel::onIntent,
+            intent = { intent -> viewModel.onIntent(intent) },
             logEvent = viewModel::logEvent,
             coroutineContext = viewModel.coroutineContext
         )
@@ -105,18 +109,19 @@ fun TradeSearchScreen(
                 Text("최근 검색 내역")
                 Text(text = "전체 삭제",
                     modifier = Modifier.clickable {
-                        TODO("모든 검색 히스토리 삭제")
+                        argument.intent(TradeSearchIntent.DeleteAll)
                     }
                 )
             }
 
             data.searchHistory.forEach { searchHistory ->
-                TradeSearchScreenSearchHistoryCard(searchHistory)
+                TradeSearchScreenSearchHistoryCard(
+                    searchHistory,
+                    onClick = { argument.intent(TradeSearchIntent.DeleteByText(searchHistory)) }
+                )
             }
         }
-
     }
-
 }
 
 @Composable
@@ -186,11 +191,10 @@ private fun TradeSearchScreenSearchBar() {
             )
         }
     }
-
 }
 
 @Composable
-private fun TradeSearchScreenSearchHistoryCard(history: String) {
+private fun TradeSearchScreenSearchHistoryCard(history: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,7 +224,7 @@ private fun TradeSearchScreenSearchHistoryCard(history: String) {
                 .padding(end = 8.dp)
                 .size(20.dp)
                 .clickable {
-                    TODO("해당 검색 히스토리를 로컬에서 삭제")
+                    onClick()
                 }
         )
     }

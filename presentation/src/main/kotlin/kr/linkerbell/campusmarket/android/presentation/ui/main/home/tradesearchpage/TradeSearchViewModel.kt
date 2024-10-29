@@ -9,13 +9,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.GetSearchHistory
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.DeleteAllSearchHistoryByTextUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.DeleteSearchHistoryByTextUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.GetSearchHistoryUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
 class TradeSearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getSearchHistory: GetSearchHistory
+    private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    private val deleteSearchHistoryByTextUseCase: DeleteSearchHistoryByTextUseCase,
+    private val deleteAllSearchHistoryUseCase: DeleteAllSearchHistoryByTextUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<TradeSearchState> = MutableStateFlow(TradeSearchState.Init)
@@ -27,18 +31,38 @@ class TradeSearchViewModel @Inject constructor(
     private val _searchHistory: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    fun onIntent(intent: TradeSearchIntent) {
-
-    }
-
-    private suspend fun fetchSearchHistory() {
+    suspend fun fetchSearchHistory() {
         _state.value = TradeSearchState.Loading
-        getSearchHistory().onSuccess { searchHistory ->
+        getSearchHistoryUseCase().onSuccess { searchHistory ->
             _state.value = TradeSearchState.Init
             _searchHistory.value = searchHistory.searchHistory
         }.onFailure {
             _state.value = TradeSearchState.Init
             _searchHistory.value = emptyList()
+        }
+    }
+
+    fun onIntent(intent: TradeSearchIntent) {
+        when (intent) {
+            is TradeSearchIntent.DeleteAll -> {
+                deleteAllSearchHistory()
+            }
+
+            is TradeSearchIntent.DeleteByText -> {
+                deleteSearchHistory(text = intent.text)
+            }
+        }
+    }
+
+    private fun deleteSearchHistory(text: String) {
+        launch {
+            deleteSearchHistoryByTextUseCase(text)
+        }
+    }
+
+    private fun deleteAllSearchHistory() {
+        launch {
+            deleteAllSearchHistoryUseCase()
         }
     }
 }

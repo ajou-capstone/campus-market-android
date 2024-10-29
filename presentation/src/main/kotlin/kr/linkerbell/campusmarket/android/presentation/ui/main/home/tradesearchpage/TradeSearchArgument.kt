@@ -18,7 +18,9 @@ sealed interface TradeSearchState {
     data object Loading : TradeSearchState
 }
 
-
 sealed interface TradeSearchEvent
 
-sealed interface TradeSearchIntent
+sealed interface TradeSearchIntent {
+    data class DeleteByText(val text: String) : TradeSearchIntent
+    data object DeleteAll : TradeSearchIntent
+}
