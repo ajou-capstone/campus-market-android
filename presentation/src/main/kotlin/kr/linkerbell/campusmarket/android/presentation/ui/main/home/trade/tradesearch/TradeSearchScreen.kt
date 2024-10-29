@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearch
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -93,7 +96,11 @@ fun TradeSearchScreen(
             .fillMaxSize()
             .background(Indigo50)
     ) {
-        TradeSearchScreenSearchBar()
+        TradeSearchScreenSearchBar(
+            onClick = { text ->
+                argument.intent(TradeSearchIntent.Insert(text))
+            }
+        )
 
         Column(
             modifier = Modifier.padding(8.dp)
@@ -110,6 +117,7 @@ fun TradeSearchScreen(
                 Text(text = "전체 삭제",
                     modifier = Modifier.clickable {
                         argument.intent(TradeSearchIntent.DeleteAll)
+                        argument.intent(TradeSearchIntent.RefreshSearchHistory)
                     }
                 )
             }
@@ -117,7 +125,10 @@ fun TradeSearchScreen(
             data.searchHistory.forEach { searchHistory ->
                 TradeSearchScreenSearchHistoryCard(
                     searchHistory,
-                    onClick = { argument.intent(TradeSearchIntent.DeleteByText(searchHistory)) }
+                    onClick = {
+                        argument.intent(TradeSearchIntent.DeleteByText(searchHistory))
+                        argument.intent(TradeSearchIntent.RefreshSearchHistory)
+                    }
                 )
             }
         }
@@ -125,7 +136,7 @@ fun TradeSearchScreen(
 }
 
 @Composable
-private fun TradeSearchScreenSearchBar() {
+private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
 
     Box(
         modifier = Modifier
@@ -140,6 +151,8 @@ private fun TradeSearchScreenSearchBar() {
         )
         {
             var text by remember { mutableStateOf("") }
+            var isFocused by remember { mutableStateOf(true) }
+            val focusRequester = remember { FocusRequester() }
 
             Row(
                 modifier = Modifier
@@ -153,7 +166,12 @@ private fun TradeSearchScreenSearchBar() {
                 BasicTextField(
                     value = text,
                     onValueChange = { text = it },
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { focusState ->
+                            isFocused = !isFocused
+                        },
                     textStyle = TextStyle(fontSize = 12.sp),
                     decorationBox = { innerTextField ->
                         Row(
@@ -162,10 +180,10 @@ private fun TradeSearchScreenSearchBar() {
                                 .padding(horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            if (text.isEmpty()) {
+                            if (!isFocused && text.isEmpty()) {
                                 Text(
                                     text = "검색어를 입력하세요",
-                                    style = TextStyle(color = Color.Black)
+                                    style = TextStyle(color = Color.Gray)
                                 )
                             }
                             innerTextField()
@@ -176,6 +194,9 @@ private fun TradeSearchScreenSearchBar() {
                                 modifier = Modifier
                                     .padding(end = 8.dp)
                                     .size(20.dp)
+                                    .clickable{
+                                        text = ""
+                                    }
                             )
                         }
                     }
@@ -188,6 +209,10 @@ private fun TradeSearchScreenSearchBar() {
                 modifier = Modifier
                     .size(24.dp)
                     .weight(1f)
+                    .clickable {
+                        onClick(text)
+                    }
+
             )
         }
     }

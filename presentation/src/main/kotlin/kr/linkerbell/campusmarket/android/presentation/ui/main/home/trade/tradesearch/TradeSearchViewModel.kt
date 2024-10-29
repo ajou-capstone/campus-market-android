@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearch
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +55,13 @@ class TradeSearchViewModel @Inject constructor(
             }
 
             is TradeSearchIntent.Insert -> {
-                insertSearchHistory(text = intent.text)
+                val queryString = intent.text
+                if(queryString.isNotBlank())
+                    insertSearchHistory(text = queryString)
+            }
+
+            is TradeSearchIntent.RefreshSearchHistory -> {
+                launch { fetchSearchHistory() }
             }
         }
     }
@@ -72,8 +78,8 @@ class TradeSearchViewModel @Inject constructor(
         }
     }
 
-    private fun insertSearchHistory(text: String){
-        launch{
+    private fun insertSearchHistory(text: String) {
+        launch {
             insertSearchHistoryUseCase(text)
         }
     }
