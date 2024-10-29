@@ -4,5 +4,5 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class TradeSearchData(
-    val searchHistory: List<String> // TODO("List 쓰기로 했었는지 확인")
+    val searchHistory: List<String>
 )
