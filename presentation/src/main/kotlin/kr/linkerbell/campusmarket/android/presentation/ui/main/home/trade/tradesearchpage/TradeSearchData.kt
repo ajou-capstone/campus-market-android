@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.tradesearchpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage
 
 import androidx.compose.runtime.Immutable
 

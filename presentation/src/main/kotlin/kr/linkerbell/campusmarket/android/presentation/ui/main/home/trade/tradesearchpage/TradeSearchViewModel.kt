@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.tradesearchpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +12,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.DeleteAllSearchHistoryByTextUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.DeleteSearchHistoryByTextUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.GetSearchHistoryUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tradesearch.InsertSearchHistoryUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
@@ -19,7 +20,8 @@ class TradeSearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
     private val deleteSearchHistoryByTextUseCase: DeleteSearchHistoryByTextUseCase,
-    private val deleteAllSearchHistoryUseCase: DeleteAllSearchHistoryByTextUseCase
+    private val deleteAllSearchHistoryUseCase: DeleteAllSearchHistoryByTextUseCase,
+    private val insertSearchHistoryUseCase: InsertSearchHistoryUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<TradeSearchState> = MutableStateFlow(TradeSearchState.Init)
@@ -51,6 +53,10 @@ class TradeSearchViewModel @Inject constructor(
             is TradeSearchIntent.DeleteByText -> {
                 deleteSearchHistory(text = intent.text)
             }
+
+            is TradeSearchIntent.Insert -> {
+                insertSearchHistory(text = intent.text)
+            }
         }
     }
 
@@ -63,6 +69,12 @@ class TradeSearchViewModel @Inject constructor(
     private fun deleteAllSearchHistory() {
         launch {
             deleteAllSearchHistoryUseCase()
+        }
+    }
+
+    private fun insertSearchHistory(text: String){
+        launch{
+            insertSearchHistoryUseCase(text)
         }
     }
 }

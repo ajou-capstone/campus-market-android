@@ -50,6 +50,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage.TradeSearchConstant
 
 @Composable
 fun TradeScreen(
@@ -98,7 +99,7 @@ private fun TradeScreen(
             .fillMaxSize()
             .background(Indigo50)
     ) {
-        TradeSearchBar()
+        TradeSearchBar { navController.navigate(TradeSearchConstant.ROUTE) }
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
@@ -179,7 +180,9 @@ private fun TradeItemCard(item: Trade) {
 }
 
 @Composable
-private fun TradeSearchBar() {
+private fun TradeSearchBar(
+    navigateToTradeSearchScreen: () -> Unit
+) {
     Box(
         modifier = Modifier
             .background(Color.White)
@@ -204,13 +207,15 @@ private fun TradeSearchBar() {
             }
 
             Spacer(Modifier.padding(8.dp))
-            //SearchBar
             Row(
                 modifier = Modifier
                     .weight(8f)
                     .height(36.dp)
                     .clip(RoundedCornerShape(5.dp))
-                    .background(Gray50),
+                    .background(Gray50)
+                    .clickable {
+                        navigateToTradeSearchScreen()
+                    },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

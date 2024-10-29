@@ -8,4 +8,6 @@ interface SearchHistoryRepository {
     suspend fun deleteByText(text: String)
 
     suspend fun deleteAll()
+
+    suspend fun insert(text: String)
 }

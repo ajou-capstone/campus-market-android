@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.tradesearchpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -233,6 +233,7 @@ private fun TradeSearchScreenSearchHistoryCard(history: String, onClick: () -> U
 @Preview
 @Composable
 private fun TradeSearchScreenPreview() {
+
     TradeSearchScreen(
         navController = rememberNavController(),
         argument = TradeSearchArgument(

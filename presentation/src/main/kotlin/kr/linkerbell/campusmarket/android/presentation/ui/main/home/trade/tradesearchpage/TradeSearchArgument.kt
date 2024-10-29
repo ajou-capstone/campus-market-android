@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.tradesearchpage
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearchpage
 
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext
@@ -23,4 +23,5 @@ sealed interface TradeSearchEvent
 sealed interface TradeSearchIntent {
     data class DeleteByText(val text: String) : TradeSearchIntent
     data object DeleteAll : TradeSearchIntent
+    data class Insert(val text: String) : TradeSearchIntent
 }
