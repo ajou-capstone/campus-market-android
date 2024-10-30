@@ -9,7 +9,7 @@ import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.Sear
 
 @Database(
     entities = [SampleEntity::class, SearchHistoryEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class CampusMarketDatabase : RoomDatabase() {

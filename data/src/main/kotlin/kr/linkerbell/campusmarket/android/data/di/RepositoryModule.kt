@@ -71,6 +71,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     internal abstract fun bindsSearchHistoryRepository(
-        realSearchHistoryRepository: RealSearchHistoryRepository
+        searchHistoryRepository: RealSearchHistoryRepository
     ): SearchHistoryRepository
 }

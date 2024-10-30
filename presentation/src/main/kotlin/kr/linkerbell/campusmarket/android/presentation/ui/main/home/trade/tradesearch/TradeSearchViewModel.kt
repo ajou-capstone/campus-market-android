@@ -44,43 +44,48 @@ class TradeSearchViewModel @Inject constructor(
         }
     }
 
+    private suspend fun deleteSearchHistory(text: String) {
+        deleteSearchHistoryByTextUseCase(text)
+    }
+
+    private suspend fun deleteAllSearchHistory() {
+        deleteAllSearchHistoryUseCase()
+
+    }
+
+    private suspend fun insertSearchHistory(text: String) {
+        insertSearchHistoryUseCase(text)
+
+    }
+
     fun onIntent(intent: TradeSearchIntent) {
         when (intent) {
             is TradeSearchIntent.DeleteAll -> {
-                deleteAllSearchHistory()
+                launch {
+                    deleteAllSearchHistory()
+                    fetchSearchHistory()
+                }
             }
 
             is TradeSearchIntent.DeleteByText -> {
-                deleteSearchHistory(text = intent.text)
+                launch {
+                    deleteSearchHistory(text = intent.text)
+                    fetchSearchHistory()
+                }
             }
 
             is TradeSearchIntent.Insert -> {
-                val queryString = intent.text
-                if(queryString.isNotBlank())
-                    insertSearchHistory(text = queryString)
+                launch {
+                    val queryString = intent.text
+                    if (queryString.isNotBlank()) {
+                        insertSearchHistory(text = queryString)
+                    }
+                }
             }
 
             is TradeSearchIntent.RefreshSearchHistory -> {
                 launch { fetchSearchHistory() }
             }
-        }
-    }
-
-    private fun deleteSearchHistory(text: String) {
-        launch {
-            deleteSearchHistoryByTextUseCase(text)
-        }
-    }
-
-    private fun deleteAllSearchHistory() {
-        launch {
-            deleteAllSearchHistoryUseCase()
-        }
-    }
-
-    private fun insertSearchHistory(text: String) {
-        launch {
-            insertSearchHistoryUseCase(text)
         }
     }
 }

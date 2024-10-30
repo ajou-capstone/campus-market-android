@@ -14,12 +14,10 @@ class RealSearchHistoryRepository @Inject constructor(
 ) : SearchHistoryRepository {
 
     override suspend fun getSearchHistory(): Result<SearchHistory> {
-        return try {
+        return runCatching {
             val searchHistoryEntities = searchHistoryDao.getAll()
             val queries = searchHistoryEntities.map { it.queryString }
-            Result.success(SearchHistory(queries))
-        } catch (e: Exception) {
-            Result.failure(e)
+            SearchHistory(queries)
         }
     }
 

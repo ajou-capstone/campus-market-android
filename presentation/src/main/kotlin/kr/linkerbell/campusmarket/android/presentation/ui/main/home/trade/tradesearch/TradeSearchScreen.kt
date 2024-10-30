@@ -14,14 +14,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,60 +27,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
-import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
-
-@Composable
-fun TradeSearchScreen(
-    navController: NavController,
-    viewModel: TradeSearchViewModel = hiltViewModel()
-) {
-    LaunchedEffect(Unit) {
-        viewModel.fetchSearchHistory()
-    }
-    val argument: TradeSearchArgument = Unit.let {
-        val state by viewModel.state.collectAsStateWithLifecycle()
-
-        TradeSearchArgument(
-            state = state,
-            event = viewModel.event,
-            intent = { intent -> viewModel.onIntent(intent) },
-            logEvent = viewModel::logEvent,
-            coroutineContext = viewModel.coroutineContext
-        )
-    }
-
-    val data: TradeSearchData = Unit.let {
-        val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
-
-        TradeSearchData(
-            searchHistory = searchHistory
-        )
-    }
-
-    ErrorObserver(viewModel)
-    TradeSearchScreen(
-        navController = navController,
-        argument = argument,
-        data = data
-    )
-}
+import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 
 @Composable
 fun TradeSearchScreen(
@@ -117,7 +73,6 @@ fun TradeSearchScreen(
                 Text(text = "전체 삭제",
                     modifier = Modifier.clickable {
                         argument.intent(TradeSearchIntent.DeleteAll)
-                        argument.intent(TradeSearchIntent.RefreshSearchHistory)
                     }
                 )
             }
@@ -127,7 +82,6 @@ fun TradeSearchScreen(
                     searchHistory,
                     onClick = {
                         argument.intent(TradeSearchIntent.DeleteByText(searchHistory))
-                        argument.intent(TradeSearchIntent.RefreshSearchHistory)
                     }
                 )
             }
@@ -137,6 +91,8 @@ fun TradeSearchScreen(
 
 @Composable
 private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
+
+    var text by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -150,10 +106,6 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         )
         {
-            var text by remember { mutableStateOf("") }
-            var isFocused by remember { mutableStateOf(true) }
-            val focusRequester = remember { FocusRequester() }
-
             Row(
                 modifier = Modifier
                     .weight(8f)
@@ -163,43 +115,26 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                BasicTextField(
-                    value = text,
+                TypingTextField(
+                    text = text,
                     onValueChange = { text = it },
+                    hintText = "검색어를 입력하세요",
+                    maxLines = 1,
+                    maxTextLength = 100,
+                    trailingIconContent = {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear button",
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .size(20.dp)
+                                .clickable {
+                                    text = ""
+                                }
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                        .onFocusChanged { focusState ->
-                            isFocused = !isFocused
-                        },
-                    textStyle = TextStyle(fontSize = 12.sp),
-                    decorationBox = { innerTextField ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            if (!isFocused && text.isEmpty()) {
-                                Text(
-                                    text = "검색어를 입력하세요",
-                                    style = TextStyle(color = Color.Gray)
-                                )
-                            }
-                            innerTextField()
-                            Spacer(modifier = Modifier.weight(1f))
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Clear button",
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .size(20.dp)
-                                    .clickable{
-                                        text = ""
-                                    }
-                            )
-                        }
-                    }
                 )
             }
             Spacer(Modifier.padding(4.dp))
@@ -212,7 +147,6 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                     .clickable {
                         onClick(text)
                     }
-
             )
         }
     }

@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "searchHistory")
+@Entity(tableName = "search_history")
 data class SearchHistoryEntity(
     @PrimaryKey
-    @ColumnInfo(name = "queryString") val queryString: String
+    @ColumnInfo(name = "query_string") val queryString: String
 )

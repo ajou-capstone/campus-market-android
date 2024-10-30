@@ -1,11 +1,11 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.tradesearch
 
-import android.util.Log
 import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.tradesearch.SearchHistory
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.SearchHistoryRepository
+import timber.log.Timber
 
 class MockSearchHistoryRepository @Inject constructor(
     private val searchHistoryDao: SearchHistoryDao
@@ -19,11 +19,11 @@ class MockSearchHistoryRepository @Inject constructor(
     }
 
     override suspend fun deleteByText(text: String) {
-        Log.i("MockSearchHistoryRepository", "call deleteByText(${text})")
+        Timber.tag("MockSearchHistoryRepository").d("call deleteByText(${text})")
     }
 
     override suspend fun deleteAll() {
-        Log.i("MockSearchHistoryRepository", "call deleteAll()")
+        Timber.tag("MockSearchHistoryRepository").d("call deleteAll()")
     }
 
     override suspend fun insert(text: String) {
