@@ -62,7 +62,6 @@ class UserApi @Inject constructor(
     suspend fun getUserProfile(
         id: Long
     ): Result<GetUserProfileRes> {
-        // TODO
         return client.get("$baseUrl/api/v1/profile/$id")
             .convert(errorMessageMapper::map)
     }
