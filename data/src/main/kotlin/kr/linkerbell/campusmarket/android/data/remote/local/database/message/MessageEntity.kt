@@ -16,7 +16,7 @@ data class MessageEntity(
     @ColumnInfo(name = "user_id") val userId: Long,
     @ColumnInfo(name = "content_type") val contentType: String,
     @ColumnInfo(name = "content") val content: String,
-    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis()
+    @ColumnInfo(name = "created_at") val createdAt: Long
 ) : DataMapper<Message> {
     override fun toDomain(): Message {
         return when (contentType) {
@@ -48,7 +48,8 @@ fun Message.toEntity(): MessageEntity {
             roomId = chatRoomId,
             userId = userId,
             contentType = CONTENT_TYPE_TEXT,
-            content = content
+            content = content,
+            createdAt = createdAt
         )
 
         is Message.Image -> MessageEntity(
@@ -56,7 +57,8 @@ fun Message.toEntity(): MessageEntity {
             roomId = chatRoomId,
             userId = userId,
             contentType = CONTENT_TYPE_IMAGE,
-            content = content
+            content = content,
+            createdAt = createdAt
         )
     }
 }

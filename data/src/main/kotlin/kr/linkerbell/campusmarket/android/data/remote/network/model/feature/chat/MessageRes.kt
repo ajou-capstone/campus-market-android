@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,7 +25,7 @@ sealed interface MessageRes : DataMapper<Message> {
         @SerialName("content")
         val content: String,
         @SerialName("createdAt")
-        val createdAt: Long
+        val createdAt: Instant
     ) : MessageRes {
         override fun toDomain(): Message.Text {
             return Message.Text(
@@ -32,7 +33,7 @@ sealed interface MessageRes : DataMapper<Message> {
                 chatRoomId = chatRoomId,
                 userId = userId,
                 content = content,
-                createdAt = createdAt
+                createdAt = createdAt.toEpochMilliseconds()
             )
         }
     }
@@ -49,7 +50,7 @@ sealed interface MessageRes : DataMapper<Message> {
         @SerialName("content")
         val content: String,
         @SerialName("createdAt")
-        val createdAt: Long
+        val createdAt: Instant
     ) : MessageRes {
         override fun toDomain(): Message.Image {
             return Message.Image(
@@ -57,7 +58,7 @@ sealed interface MessageRes : DataMapper<Message> {
                 chatRoomId = chatRoomId,
                 userId = userId,
                 content = content,
-                createdAt = createdAt
+                createdAt = createdAt.toEpochMilliseconds()
             )
         }
     }
