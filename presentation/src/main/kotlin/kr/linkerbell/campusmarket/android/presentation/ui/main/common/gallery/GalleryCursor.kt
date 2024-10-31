@@ -6,11 +6,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.os.bundleOf
-import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryFolder
-import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
+import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryFolder
+import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 
 class GalleryCursor @Inject constructor(
     @ApplicationContext private val context: Context

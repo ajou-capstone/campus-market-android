@@ -4,16 +4,16 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetAvailableCampusListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetMyProfileRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetUserProfileRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.SetCampusReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.SetProfileReq
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
-import javax.inject.Inject
-import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetUserProfileRes
 
 class UserApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,

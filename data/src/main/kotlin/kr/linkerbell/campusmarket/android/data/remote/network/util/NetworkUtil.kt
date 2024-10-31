@@ -2,15 +2,15 @@ package kr.linkerbell.campusmarket.android.data.remote.network.util
 
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
+import io.ktor.client.call.body
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.statement.HttpResponse
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.error.ErrorRes
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.BadRequestServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.InternalServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.InvalidStandardResponseException
-import io.ktor.client.call.body
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.statement.HttpResponse
 import timber.log.Timber
 
 val HttpResponse.isSuccessful: Boolean
@@ -18,7 +18,6 @@ val HttpResponse.isSuccessful: Boolean
 
 val HttpResponse.isBadRequest: Boolean
     get() = status.value in 400..499
-
 
 val HttpResponse.isInternalServerError: Boolean
     get() = status.value in 500..599
@@ -32,7 +31,8 @@ suspend inline fun <reified T : Any> HttpResponse.convert(
 ): Result<T> {
     return runCatching {
         if (isSuccessful) {
-            return@runCatching body<T?>() ?: throw InvalidStandardResponseException("Response Empty Body")
+            return@runCatching body<T?>()
+                ?: throw InvalidStandardResponseException("Response Empty Body")
         } else {
             throw this.toThrowable(errorMessageMapper)
         }

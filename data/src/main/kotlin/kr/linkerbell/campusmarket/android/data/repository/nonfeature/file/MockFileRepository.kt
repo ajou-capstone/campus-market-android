@@ -1,9 +1,9 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.file
 
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.file.PreSignedUrl
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.FileRepository
-import javax.inject.Inject
 
 class MockFileRepository @Inject constructor() : FileRepository {
     override suspend fun getPreSignedUrl(

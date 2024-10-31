@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.registe
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,6 @@ import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.SetMyPr
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
-import javax.inject.Inject
 
 @HiltViewModel
 class RegisterProfileViewModel @Inject constructor(

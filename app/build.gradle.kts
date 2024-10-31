@@ -29,15 +29,21 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            resValue ("string", "key_kakao_app", getLocalProperty("KAKAO_APP_KEY"))
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            resValue("string", "key_kakao_app", getLocalProperty("KAKAO_APP_KEY"))
         }
         debug {
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            resValue ("string", "key_kakao_app", getLocalProperty("KAKAO_APP_KEY"))
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            resValue("string", "key_kakao_app", getLocalProperty("KAKAO_APP_KEY"))
         }
     }
 
@@ -102,5 +108,7 @@ dependencies {
 }
 
 fun getLocalProperty(propertyKey: String): String {
-    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey) ?: System.getenv(propertyKey)
+    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey) ?: System.getenv(
+        propertyKey
+    )
 }

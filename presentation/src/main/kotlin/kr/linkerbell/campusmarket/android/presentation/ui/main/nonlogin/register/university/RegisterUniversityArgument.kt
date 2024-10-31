@@ -3,7 +3,6 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.registe
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
-import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 
 @Immutable
 data class RegisterUniversityArgument(

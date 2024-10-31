@@ -18,16 +18,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import kotlin.math.roundToInt
 import kr.linkerbell.campusmarket.android.presentation.R
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Space40
 import kr.linkerbell.campusmarket.android.presentation.common.theme.CampusMarketTheme
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space40
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.ui.main.debug.DebugConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.debug.debugDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.splash.SplashConstant
-import kotlin.math.roundToInt
 
 @Composable
 fun DebugMainScreen(

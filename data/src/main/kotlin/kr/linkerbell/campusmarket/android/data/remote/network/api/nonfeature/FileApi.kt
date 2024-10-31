@@ -6,14 +6,14 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import java.io.File
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.di.NoAuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.file.GetPreSignedUrlRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
-import java.io.File
-import javax.inject.Inject
 
 class FileApi @Inject constructor(
     @NoAuthHttpClient private val noAuthClient: HttpClient,

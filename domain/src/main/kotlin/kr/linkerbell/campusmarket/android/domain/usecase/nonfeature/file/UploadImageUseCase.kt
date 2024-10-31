@@ -1,7 +1,7 @@
 package kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file
 
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.FileRepository
 import javax.inject.Inject
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.FileRepository
 
 class UploadImageUseCase @Inject constructor(
     private val fileRepository: FileRepository

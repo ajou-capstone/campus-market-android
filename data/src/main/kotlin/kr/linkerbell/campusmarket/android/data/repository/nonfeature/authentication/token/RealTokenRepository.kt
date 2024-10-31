@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
@@ -13,7 +14,6 @@ import kr.linkerbell.campusmarket.android.data.remote.network.api.nonfeature.Tok
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.authentication.JwtToken
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
-import javax.inject.Inject
 
 class RealTokenRepository @Inject constructor(
     private val tokenApi: TokenApi,

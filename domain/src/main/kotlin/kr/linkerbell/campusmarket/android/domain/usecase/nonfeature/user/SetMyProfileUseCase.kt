@@ -1,7 +1,7 @@
 package kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user
 
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Inject
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 
 class SetMyProfileUseCase @Inject constructor(
     private val userRepository: UserRepository

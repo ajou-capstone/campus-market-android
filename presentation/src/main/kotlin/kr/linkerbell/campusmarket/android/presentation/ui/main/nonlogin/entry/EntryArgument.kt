@@ -1,8 +1,8 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.entry
 
 import androidx.compose.runtime.Immutable
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kotlin.coroutines.CoroutineContext
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 
 @Immutable
 data class RegisterEntryArgument(
