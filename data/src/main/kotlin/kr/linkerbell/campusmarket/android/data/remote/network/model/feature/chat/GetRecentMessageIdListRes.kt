@@ -13,4 +13,3 @@ data class GetRecentMessageIdListRes(
         return messages
     }
 }
-
