@@ -33,29 +33,10 @@ class TradeSearchViewModel @Inject constructor(
     private val _searchHistory: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    suspend fun fetchSearchHistory() {
-        _state.value = TradeSearchState.Loading
-        getSearchHistoryUseCase().onSuccess { searchHistory ->
-            _state.value = TradeSearchState.Init
-            _searchHistory.value = searchHistory.searchHistory
-        }.onFailure {
-            _state.value = TradeSearchState.Init
-            _searchHistory.value = emptyList()
+    init {
+        launch{
+            fetchSearchHistory()
         }
-    }
-
-    private suspend fun deleteSearchHistory(text: String) {
-        deleteSearchHistoryByTextUseCase(text)
-    }
-
-    private suspend fun deleteAllSearchHistory() {
-        deleteAllSearchHistoryUseCase()
-
-    }
-
-    private suspend fun insertSearchHistory(text: String) {
-        insertSearchHistoryUseCase(text)
-
     }
 
     fun onIntent(intent: TradeSearchIntent) {
@@ -87,5 +68,28 @@ class TradeSearchViewModel @Inject constructor(
                 launch { fetchSearchHistory() }
             }
         }
+    }
+
+    suspend fun fetchSearchHistory() {
+        _state.value = TradeSearchState.Loading
+        getSearchHistoryUseCase().onSuccess { searchHistory ->
+            _state.value = TradeSearchState.Init
+            _searchHistory.value = searchHistory.searchHistory
+        }.onFailure {
+            _state.value = TradeSearchState.Init
+            _searchHistory.value = emptyList()
+        }
+    }
+
+    private suspend fun deleteSearchHistory(text: String) {
+        deleteSearchHistoryByTextUseCase(text)
+    }
+
+    private suspend fun deleteAllSearchHistory() {
+        deleteAllSearchHistoryUseCase()
+    }
+
+    private suspend fun insertSearchHistory(text: String) {
+        insertSearchHistoryUseCase(text)
     }
 }

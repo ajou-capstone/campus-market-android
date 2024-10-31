@@ -4,8 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleEntity
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryDao
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryEntity
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 
 @Database(
     entities = [SampleEntity::class, SearchHistoryEntity::class],

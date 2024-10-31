@@ -3,8 +3,8 @@ package kr.linkerbell.campusmarket.android.data.repository.nonfeature.tradesearc
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import javax.inject.Inject
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryDao
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryEntity
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.tradesearch.SearchHistory
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.SearchHistoryRepository
 

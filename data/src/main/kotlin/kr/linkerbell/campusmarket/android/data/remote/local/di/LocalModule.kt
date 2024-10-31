@@ -13,7 +13,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
 import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleDao
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 
 @Module

@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.data.remote.local.database.sample
+package kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory
 
 import androidx.room.Dao
 import androidx.room.Insert

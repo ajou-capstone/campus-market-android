@@ -16,10 +16,10 @@ fun NavGraphBuilder.tradeSearchDestination(
         route = TradeSearchConstant.ROUTE,
     ) {
         val viewModel: TradeSearchViewModel = hiltViewModel()
-
-        LaunchedEffect(Unit) {
-            viewModel.fetchSearchHistory()
-        }
+//
+//        LaunchedEffect(Unit) {
+//            viewModel.fetchSearchHistory()
+//        }
 
         val argument: TradeSearchArgument = Unit.let {
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -27,7 +27,7 @@ fun NavGraphBuilder.tradeSearchDestination(
             TradeSearchArgument(
                 state = state,
                 event = viewModel.event,
-                intent = { intent -> viewModel.onIntent(intent) },
+                intent = viewModel::onIntent,
                 logEvent = viewModel::logEvent,
                 coroutineContext = viewModel.coroutineContext
             )

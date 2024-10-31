@@ -1,8 +1,8 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.tradesearch
 
 import javax.inject.Inject
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryDao
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SearchHistoryEntity
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.tradesearch.SearchHistory
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.SearchHistoryRepository
 import timber.log.Timber
