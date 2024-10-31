@@ -22,7 +22,7 @@ class RealUserRepository @Inject constructor(
         return userApi.setMyProfile(
             nickname = nickname,
             profileImage = profileImage
-        ).map { }
+        )
     }
 
     override suspend fun getAvailableCampusList(): Result<List<Campus>> {

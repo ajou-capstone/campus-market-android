@@ -7,8 +7,8 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfi
 
 @Serializable
 data class GetUserProfileRes(
-    @SerialName("userId")
-    val userId: Long,
+    @SerialName("id")
+    val id: Long,
     @SerialName("nickname")
     val nickname: String,
     @SerialName("profileImage")
@@ -18,7 +18,7 @@ data class GetUserProfileRes(
 ) : DataMapper<UserProfile> {
     override fun toDomain(): UserProfile {
         return UserProfile(
-            id = userId,
+            id = id,
             nickname = nickname,
             profileImage = profileImage,
             rating = rating
