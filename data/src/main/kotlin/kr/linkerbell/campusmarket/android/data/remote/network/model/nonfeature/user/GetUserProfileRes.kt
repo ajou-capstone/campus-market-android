@@ -21,8 +21,7 @@ data class GetUserProfileRes(
             id = userId,
             nickname = nickname,
             profileImage = profileImage,
-            rating = rating,
-            createdAt = System.currentTimeMillis()
+            rating = rating
         )
     }
 }

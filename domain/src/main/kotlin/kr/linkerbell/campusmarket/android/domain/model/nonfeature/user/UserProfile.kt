@@ -4,6 +4,5 @@ data class UserProfile(
     val id: Long,
     val nickname: String,
     val profileImage: String,
-    val rating: Double,
-    val createdAt: Long
+    val rating: Double
 )
