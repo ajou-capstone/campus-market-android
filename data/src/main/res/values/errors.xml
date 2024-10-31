@@ -2,4 +2,21 @@
 <resources>
     <string name="error_unknown">알 수 없는 오류가 발생했습니다.</string>
     <string name="error_internal_server_error">서버가 응답하지 않습니다.\n잠시 후 다시 시도해주세요.</string>
+
+    <string name="error_invalid_google_token">로그인 중 오류가 발생했습니다.</string>
+    <string name="error_invalid_jwt">로그인 중 오류가 발생했습니다.</string>
+    <string name="error_expired_jwt">로그인 중 오류가 발생했습니다.</string>
+    <string name="error_logout_jwt">로그인 중 오류가 발생했습니다.</string>
+    <string name="error_unverified_google_token">로그인 중 오류가 발생했습니다.</string>
+    <string name="error_not_verified_email">로그인 중 오류가 발생했습니다.</string>
+    <string name="error_jwt_is_null">권한이 없습니다.</string>
+    <string name="error_user_not_found">존재하지 않는 사용자입니다.</string>
+    <string name="error_item_not_found">존재하지 않는 상품입니다.</string>
+    <string name="error_school_email_not_found">학교 이메일이 등록되지 않았습니다.</string>
+    <string name="error_campus_not_found">존재하지 않는 캠퍼스입니다.</string>
+    <string name="error_invalid_school_email">존재하지 않는 캠퍼스입니다.</string>
+    <string name="error_invalid_category">잘못된 카테고리 값입니다.</string>
+    <string name="error_invalid_price">잘못된 가격입니다.</string>
+    <string name="error_invalid_sort">잘못된 정렬방식입니다.</string>
+    <string name="error_invalid_verification_code">인증 코드가 일치하지 않습니다.</string>
 </resources>
