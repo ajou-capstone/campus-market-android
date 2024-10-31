@@ -4,10 +4,10 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.SetFcmTokenUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.util.showNotification
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CampusMarketFcmService : FirebaseMessagingService() {

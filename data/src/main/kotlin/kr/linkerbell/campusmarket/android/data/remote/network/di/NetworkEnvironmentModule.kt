@@ -3,14 +3,14 @@ package kr.linkerbell.campusmarket.android.data.remote.network.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
-import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
+import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 
 @Module
 @InstallIn(SingletonComponent::class)

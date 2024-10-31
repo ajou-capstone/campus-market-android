@@ -35,6 +35,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.ChatRoomScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.MyPageScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeScreen
 
@@ -65,12 +66,16 @@ fun HomeScreen(
             state = pagerState,
         ) { page ->
             when (data.homeTypeList.getOrNull(page)) {
-                HomeType.MyPage -> {
-                    MyPageScreen(navController = navController)
-                }
-
                 HomeType.Trade -> {
                     TradeScreen(navController = navController)
+                }
+
+                HomeType.ChatRoom -> {
+                    ChatRoomScreen(navController = navController)
+                }
+
+                HomeType.MyPage -> {
+                    MyPageScreen(navController = navController)
                 }
 
                 null -> Unit

@@ -87,7 +87,7 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                         createdAt = System.currentTimeMillis()
                     ),
                     Message.Image(
-                        id = 1L,
+                        id = 2L,
                         chatRoomId = 1L,
                         userId = 1L,
                         content = "https://placehold.co/600x400",

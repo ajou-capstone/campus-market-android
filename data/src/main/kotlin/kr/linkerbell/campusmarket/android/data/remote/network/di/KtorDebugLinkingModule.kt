@@ -4,8 +4,8 @@ import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import javax.inject.Qualifier
+import okhttp3.Interceptor
 
 @Module
 @InstallIn(SingletonComponent::class)

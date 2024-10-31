@@ -1,9 +1,9 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery
 
 import androidx.compose.runtime.Immutable
+import kotlin.coroutines.CoroutineContext
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryFolder
-import kotlin.coroutines.CoroutineContext
 
 @Immutable
 data class GalleryArgument(

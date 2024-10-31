@@ -24,14 +24,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            resValue ("string", "id_google_oauth_client", getLocalProperty("GOOGLE_OAUTH_CLIENT_ID"))
+            resValue("string", "id_google_oauth_client", getLocalProperty("GOOGLE_OAUTH_CLIENT_ID"))
         }
         release {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            resValue ("string", "id_google_oauth_client", getLocalProperty("GOOGLE_OAUTH_CLIENT_ID"))
+            resValue("string", "id_google_oauth_client", getLocalProperty("GOOGLE_OAUTH_CLIENT_ID"))
         }
     }
 
@@ -91,5 +91,7 @@ dependencies {
 }
 
 fun getLocalProperty(propertyKey: String): String {
-    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey) ?: System.getenv(propertyKey)
+    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey) ?: System.getenv(
+        propertyKey
+    )
 }

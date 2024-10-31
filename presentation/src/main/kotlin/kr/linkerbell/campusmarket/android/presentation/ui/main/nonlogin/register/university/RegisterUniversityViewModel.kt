@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.registe
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +12,6 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authentication.SendEmailVerifyCodeUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authentication.VerifyEmailVerifyCodeUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
-import javax.inject.Inject
 
 @HiltViewModel
 class RegisterUniversityViewModel @Inject constructor(

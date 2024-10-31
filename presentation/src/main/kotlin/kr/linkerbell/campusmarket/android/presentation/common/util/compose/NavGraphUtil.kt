@@ -41,7 +41,7 @@ fun parseRoute(
 fun NavController.safeNavigate(
     route: String,
     builder: (NavOptionsBuilder.() -> Unit)? = null
-) : Boolean {
+): Boolean {
     if (currentBackStackEntry?.lifecycleIsResumed() == true) {
         builder?.let {
             navigate(route, navOptions(it))
@@ -52,7 +52,7 @@ fun NavController.safeNavigate(
 }
 
 @MainThread
-fun NavController.safeNavigateUp() : Boolean {
+fun NavController.safeNavigateUp(): Boolean {
     if (currentBackStackEntry?.lifecycleIsResumed() == true) {
         navigateUp()
         return true

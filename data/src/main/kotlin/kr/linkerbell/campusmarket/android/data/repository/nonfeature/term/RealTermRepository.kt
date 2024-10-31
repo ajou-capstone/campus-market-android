@@ -1,10 +1,10 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.term
 
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.api.nonfeature.TermApi
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.term.Term
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TermRepository
-import javax.inject.Inject
 
 class RealTermRepository @Inject constructor(
     private val termApi: TermApi

@@ -1,8 +1,8 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.splash
 
 import androidx.compose.runtime.Immutable
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kotlin.coroutines.CoroutineContext
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 
 @Immutable
 data class SplashArgument(
@@ -16,7 +16,6 @@ data class SplashArgument(
 sealed interface SplashState {
     data object Init : SplashState
 }
-
 
 sealed interface SplashEvent {
     sealed interface Login : SplashEvent {

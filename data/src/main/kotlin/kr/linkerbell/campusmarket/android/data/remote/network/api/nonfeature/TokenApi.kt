@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.NoAuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
@@ -11,7 +12,6 @@ import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.a
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.authentication.LoginReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.authentication.LoginRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
-import javax.inject.Inject
 
 class TokenApi @Inject constructor(
     @NoAuthHttpClient private val noAuthClient: HttpClient,

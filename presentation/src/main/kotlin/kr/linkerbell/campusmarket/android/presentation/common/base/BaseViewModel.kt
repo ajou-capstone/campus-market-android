@@ -2,10 +2,6 @@ package kr.linkerbell.campusmarket.android.presentation.common.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tracking.LogEventUseCase
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -15,6 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tracking.LogEventUseCase
 
 abstract class BaseViewModel : ViewModel() {
 

@@ -3,7 +3,7 @@ package kr.linkerbell.campusmarket.android.domain.model.feature.trade
 data class Trade(
     val itemId: Long,
     val userId: Long,
-    val nickname : String,
+    val nickname: String,
     val thumbnail: String,
     val title: String,
     val price: Int,

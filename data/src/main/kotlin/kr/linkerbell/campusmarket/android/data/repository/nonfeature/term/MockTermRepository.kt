@@ -1,9 +1,9 @@
 package kr.linkerbell.campusmarket.android.data.repository.nonfeature.term
 
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.term.Term
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TermRepository
-import javax.inject.Inject
 
 class MockTermRepository @Inject constructor() : TermRepository {
 
