@@ -1,6 +1,5 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearch
 
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,10 +15,6 @@ fun NavGraphBuilder.tradeSearchDestination(
         route = TradeSearchConstant.ROUTE,
     ) {
         val viewModel: TradeSearchViewModel = hiltViewModel()
-//
-//        LaunchedEffect(Unit) {
-//            viewModel.fetchSearchHistory()
-//        }
 
         val argument: TradeSearchArgument = Unit.let {
             val state by viewModel.state.collectAsStateWithLifecycle()
