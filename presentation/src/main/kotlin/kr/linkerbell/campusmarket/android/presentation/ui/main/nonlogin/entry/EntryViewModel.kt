@@ -11,7 +11,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.common.util.coroutine.zip
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.term.GetTermListUseCase
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetProfileUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import javax.inject.Inject
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EntryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getProfileUseCase: GetProfileUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
     private val getTermListUseCase: GetTermListUseCase
 ) : BaseViewModel() {
 
@@ -44,7 +44,7 @@ class EntryViewModel @Inject constructor(
         _state.value = RegisterEntryState.Loading
 
         zip(
-            { getProfileUseCase() },
+            { getMyProfileUseCase() },
             { getTermListUseCase() }
         ).onSuccess { (profile, termList) ->
             _state.value = RegisterEntryState.Init

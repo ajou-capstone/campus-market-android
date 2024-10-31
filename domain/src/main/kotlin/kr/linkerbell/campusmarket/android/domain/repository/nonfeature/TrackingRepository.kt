@@ -1,7 +1,7 @@
 package kr.linkerbell.campusmarket.android.domain.repository.nonfeature
 
 import androidx.annotation.Size
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 
 interface TrackingRepository {
 
@@ -10,7 +10,7 @@ interface TrackingRepository {
     suspend fun getFcmToken(): String
 
     suspend fun setProfile(
-        profile: Profile
+        myProfile: MyProfile
     ): Result<Unit>
 
     suspend fun logEvent(

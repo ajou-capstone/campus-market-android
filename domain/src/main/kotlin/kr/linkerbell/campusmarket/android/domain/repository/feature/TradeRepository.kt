@@ -13,4 +13,12 @@ interface TradeRepository {
         maxPrice: Int,
         sorted: String
     ): Flow<PagingData<Trade>>
+
+    suspend fun getSearchHistoryList(): Flow<List<String>>
+
+    suspend fun deleteSearchHistoryByText(text: String)
+
+    suspend fun deleteAllSearchHistory()
+
+    suspend fun addSearchHistory(text: String)
 }

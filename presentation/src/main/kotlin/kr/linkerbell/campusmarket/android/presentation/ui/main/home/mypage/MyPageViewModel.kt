@@ -5,8 +5,8 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetProfileUseCase
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getProfileUseCase: GetProfileUseCase
+    private val getMyProfileUseCase: GetMyProfileUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<MyPageState> = MutableStateFlow(MyPageState.Init)
@@ -27,15 +27,15 @@ class MyPageViewModel @Inject constructor(
     private val _event: MutableEventFlow<MyPageEvent> = MutableEventFlow()
     val event: EventFlow<MyPageEvent> = _event.asEventFlow()
 
-    private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
-    val profile: StateFlow<Profile> = _profile.asStateFlow()
+    private val _myProfile: MutableStateFlow<MyProfile> = MutableStateFlow(MyProfile.empty)
+    val myProfile: StateFlow<MyProfile> = _myProfile.asStateFlow()
 
     init {
         launch {
             _state.value = MyPageState.Loading
-            getProfileUseCase().onSuccess {
+            getMyProfileUseCase().onSuccess {
                 _state.value = MyPageState.Init
-                _profile.value = it
+                _myProfile.value = it
             }.onFailure { exception ->
                 _state.value = MyPageState.Init
                 when (exception) {

@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TrackingRepository
 import javax.inject.Inject
 
@@ -28,7 +28,7 @@ class MockTrackingRepository @Inject constructor(
     }
 
     override suspend fun setProfile(
-        profile: Profile
+        myProfile: MyProfile
     ): Result<Unit> {
         return Result.success(Unit)
     }

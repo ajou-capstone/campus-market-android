@@ -3,12 +3,12 @@ package kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authenticat
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.tracking.SetTrackingProfileUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetFcmTokenUseCase
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetProfileUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
     private val tokenRepository: TokenRepository,
-    private val getProfileUseCase: GetProfileUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
     private val getFcmTokenUseCase: GetFcmTokenUseCase,
     private val setTrackingProfileUseCase: SetTrackingProfileUseCase
 ) {
@@ -19,9 +19,9 @@ class LoginUseCase @Inject constructor(
             idToken = idToken,
             firebaseToken = getFcmTokenUseCase()
         ).onSuccess {
-            getProfileUseCase().onSuccess { profile ->
+            getMyProfileUseCase().onSuccess { profile ->
                 setTrackingProfileUseCase(
-                    profile = profile
+                    myProfile = profile
                 )
             }.getOrThrow()
         }

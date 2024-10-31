@@ -3,22 +3,23 @@ package kr.linkerbell.campusmarket.android.data.repository.nonfeature.user
 import kr.linkerbell.campusmarket.android.data.remote.network.api.nonfeature.UserApi
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Campus
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.Profile
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
 import javax.inject.Inject
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 
 class RealUserRepository @Inject constructor(
     private val userApi: UserApi
 ) : UserRepository {
-    override suspend fun getProfile(): Result<Profile> {
-        return userApi.getProfile().toDomain()
+    override suspend fun getMyProfile(): Result<MyProfile> {
+        return userApi.getMyProfile().toDomain()
     }
 
-    override suspend fun setProfile(
+    override suspend fun setMyProfile(
         nickname: String,
         profileImage: String
     ): Result<Unit> {
-        return userApi.setProfile(
+        return userApi.setMyProfile(
             nickname = nickname,
             profileImage = profileImage
         ).map { }
@@ -34,5 +35,13 @@ class RealUserRepository @Inject constructor(
         return userApi.setCampus(
             id = id
         )
+    }
+
+    override suspend fun getUserProfile(
+        id: Long
+    ): Result<UserProfile> {
+        return userApi.getUserProfile(
+            id = id
+        ).toDomain()
     }
 }

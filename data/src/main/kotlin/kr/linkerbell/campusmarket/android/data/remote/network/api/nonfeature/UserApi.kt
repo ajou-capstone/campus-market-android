@@ -8,11 +8,12 @@ import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetAvailableCampusListRes
-import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetProfileRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetMyProfileRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.SetCampusReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.SetProfileReq
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 import javax.inject.Inject
+import kr.linkerbell.campusmarket.android.data.remote.network.model.nonfeature.user.GetUserProfileRes
 
 class UserApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,
@@ -22,7 +23,7 @@ class UserApi @Inject constructor(
     private val baseUrl: String
         get() = baseUrlProvider.get()
 
-    suspend fun setProfile(
+    suspend fun setMyProfile(
         nickname: String,
         profileImage: String
     ): Result<Unit> {
@@ -36,7 +37,7 @@ class UserApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getProfile(): Result<GetProfileRes> {
+    suspend fun getMyProfile(): Result<GetMyProfileRes> {
         return client.get("$baseUrl/api/v1/profile/me")
             .convert(errorMessageMapper::map)
     }
@@ -56,5 +57,12 @@ class UserApi @Inject constructor(
                 )
             )
         }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun getUserProfile(
+        id: Long
+    ): Result<GetUserProfileRes> {
+        return client.get("$baseUrl/api/v1/profile/$id")
+            .convert(errorMessageMapper::map)
     }
 }
