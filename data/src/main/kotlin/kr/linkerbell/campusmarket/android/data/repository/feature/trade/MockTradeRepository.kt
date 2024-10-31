@@ -5,11 +5,15 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
-import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.SearchHistoryRepository
+import timber.log.Timber
 
-class MockTradeRepository @Inject constructor() : TradeRepository {
+class MockTradeRepository @Inject constructor(
+    private val searchHistoryDao: SearchHistoryDao
+) : TradeRepository {
 
     override suspend fun searchTradeList(
         name: String,
@@ -37,6 +41,32 @@ class MockTradeRepository @Inject constructor() : TradeRepository {
                 )
             )
         )
+    }
+
+    override suspend fun getSearchHistoryList(): Flow<List<String>> {
+        randomShortDelay()
+
+        return flowOf(
+            listOf("history1", "history22", "history333")
+        )
+    }
+
+    override suspend fun deleteSearchHistoryByText(text: String) {
+        randomShortDelay()
+
+        Timber.tag("MockSearchHistoryRepository").d("call deleteByText(${text})")
+    }
+
+    override suspend fun deleteAllSearchHistory() {
+        randomShortDelay()
+
+        Timber.tag("MockSearchHistoryRepository").d("call deleteAll()")
+    }
+
+    override suspend fun addSearchHistory(text: String) {
+        randomShortDelay()
+
+        searchHistoryDao.insert(SearchHistoryEntity(queryString = text))
     }
 
     private suspend fun randomShortDelay() {

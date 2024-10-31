@@ -50,7 +50,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.tradesearch.TradeSearchConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
 
 @Composable
 fun TradeScreen(

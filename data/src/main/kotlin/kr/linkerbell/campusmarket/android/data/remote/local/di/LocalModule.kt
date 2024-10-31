@@ -12,7 +12,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.message.MessageDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.room.RoomDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 
@@ -45,17 +46,25 @@ object LocalModule {
 
     @Provides
     @Singleton
-    internal fun provideSampleDao(
-        campusmarketDatabase: CampusMarketDatabase
-    ): SampleDao {
-        return campusmarketDatabase.sampleDao()
+    internal fun provideMessageDao(
+        campusMarketDatabase: CampusMarketDatabase
+    ): MessageDao {
+        return campusMarketDatabase.messageDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideRoomDao(
+        campusMarketDatabase: CampusMarketDatabase
+    ): RoomDao {
+        return campusMarketDatabase.roomDao()
     }
 
     @Provides
     @Singleton
     internal fun provideSearchHistoryDao(
-        campusmarketDatabase: CampusMarketDatabase
+        campusMarketDatabase: CampusMarketDatabase
     ): SearchHistoryDao {
-        return campusmarketDatabase.searchHistoryDao()
+        return campusMarketDatabase.searchHistoryDao()
     }
 }
