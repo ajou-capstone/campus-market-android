@@ -18,7 +18,6 @@ sealed interface MyPageState {
     data object Loading : MyPageState
 }
 
-
 sealed interface MyPageEvent
 
 sealed interface MyPageIntent

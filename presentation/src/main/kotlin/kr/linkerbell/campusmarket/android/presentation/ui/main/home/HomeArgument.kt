@@ -17,7 +17,6 @@ sealed interface HomeState {
     data object Init : HomeState
 }
 
-
 sealed interface HomeEvent
 
 sealed interface HomeIntent
