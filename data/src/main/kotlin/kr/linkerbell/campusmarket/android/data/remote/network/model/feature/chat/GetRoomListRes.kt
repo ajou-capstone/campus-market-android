@@ -17,25 +17,6 @@ data class GetRoomListRes(
 
 @Serializable
 data class GetRoomListItemRes(
-    @SerialName("chatRoom")
-    val chatRoom: GetRoomListItemRoomRes,
-    @SerialName("messageId")
-    val readLatestMessageId: Long
-) : DataMapper<Room> {
-    override fun toDomain(): Room {
-        return Room(
-            id = chatRoom.id,
-            userId = chatRoom.userId,
-            tradeId = chatRoom.itemId,
-            readLatestMessageId = readLatestMessageId,
-            title = chatRoom.title,
-            isAlarm = chatRoom.isAlarm
-        )
-    }
-}
-
-@Serializable
-data class GetRoomListItemRoomRes(
     @SerialName("chatRoomId")
     val id: Long,
     @SerialName("userId")
@@ -45,5 +26,18 @@ data class GetRoomListItemRoomRes(
     @SerialName("title")
     val title: String,
     @SerialName("isAlarm")
-    val isAlarm: Boolean
-)
+    val isAlarm: Boolean,
+    @SerialName("messageId")
+    val readLatestMessageId: Long
+) : DataMapper<Room> {
+    override fun toDomain(): Room {
+        return Room(
+            id = id,
+            userId = userId,
+            tradeId = itemId,
+            readLatestMessageId = readLatestMessageId,
+            title = title,
+            isAlarm = isAlarm
+        )
+    }
+}

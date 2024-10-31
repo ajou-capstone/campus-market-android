@@ -11,6 +11,7 @@ import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetMessageListByIdReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetMessageListByIdRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetRecentMessageIdListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetRoomListRes
@@ -48,7 +49,6 @@ class ChatApi @Inject constructor(
         userId: Long,
         tradeId: Long
     ): Result<MakeRoomRes> {
-        // TODO
         return client.post("$baseUrl/api/v1/chat") {
             setBody(
                 MakeRoomReq(
@@ -94,16 +94,19 @@ class ChatApi @Inject constructor(
         idList: List<Long>
     ): Result<GetMessageListByIdRes> {
         // TODO
-        return client.get("$baseUrl/api/v1/chat/message/{messageId}")
-            .convert(errorMessageMapper::map)
+        return client.get("$baseUrl/api/v1/chat/message") {
+            setBody(
+                GetMessageListByIdReq(
+                    messageIdList = idList
+                )
+            )
+        }.convert(errorMessageMapper::map)
     }
 
-    suspend fun connectRoom(
-        id: Long
-    ): Result<StompSession> {
+    suspend fun connectRoom(): Result<StompSession> {
         return runCatching {
             stompClient.connect(
-                url = "$baseUrl/api/v1/pub/chat/$id/message"
+                url = "$baseUrl/ws/chat"
             )
         }.onFailure { exception ->
             Timber.d(exception)

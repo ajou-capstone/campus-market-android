@@ -12,6 +12,8 @@ import kr.linkerbell.campusmarket.android.data.remote.local.database.message.toE
 import kr.linkerbell.campusmarket.android.data.remote.local.database.room.RoomDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.room.toEntity
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.ChatApi
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.MessageRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.toRequest
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
@@ -112,21 +114,17 @@ class RealChatRepository @Inject constructor(
     override suspend fun connectRoom(
         id: Long
     ): Result<Session> {
-        return chatApi.connectRoom(
-            id = id
-        ).map { stompSession ->
+        return chatApi.connectRoom().map { stompSession ->
             Session(
                 subscribe = {
-                    // TODO
-                    stompSession.subscribe("/$id").map {
-                        json.decodeFromString<Message>(it.bodyAsText)
+                    stompSession.subscribe("/sub/chat/$id").map {
+                        json.decodeFromString<MessageRes>(it.bodyAsText).toDomain()
                     }
                 },
                 send = { message ->
-                    // TODO
                     stompSession.sendText(
-                        destination = "/$id",
-                        body = json.encodeToString(message)
+                        destination = "/send/chat/$id",
+                        body = json.encodeToString(message.toRequest())
                     )
                 },
                 disconnect = {

@@ -7,25 +7,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
 
 @Serializable
 data class MakeRoomRes(
-    @SerialName("chatRoom")
-    val chatRoom: MakeRoomRoomRes,
-    @SerialName("messageId")
-    val readLatestMessageId: Long
-) : DataMapper<Room> {
-    override fun toDomain(): Room {
-        return Room(
-            id = chatRoom.id,
-            userId = chatRoom.userId,
-            tradeId = chatRoom.itemId,
-            readLatestMessageId = readLatestMessageId,
-            title = chatRoom.title,
-            isAlarm = chatRoom.isAlarm
-        )
-    }
-}
-
-@Serializable
-data class MakeRoomRoomRes(
     @SerialName("chatRoomId")
     val id: Long,
     @SerialName("userId")
@@ -36,4 +17,15 @@ data class MakeRoomRoomRes(
     val title: String,
     @SerialName("isAlarm")
     val isAlarm: Boolean
-)
+) : DataMapper<Room> {
+    override fun toDomain(): Room {
+        return Room(
+            id = id,
+            userId = userId,
+            tradeId = itemId,
+            readLatestMessageId = -1,
+            title = title,
+            isAlarm = isAlarm
+        )
+    }
+}
