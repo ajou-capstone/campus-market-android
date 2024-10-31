@@ -5,15 +5,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
-import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleDao
-import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kr.linkerbell.campusmarket.android.data.remote.local.database.CampusMarketDatabase
+import kr.linkerbell.campusmarket.android.data.remote.local.database.sample.SampleDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
+import kr.linkerbell.campusmarket.android.data.remote.local.preferences.PreferencesConstant
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -48,5 +49,13 @@ object LocalModule {
         campusmarketDatabase: CampusMarketDatabase
     ): SampleDao {
         return campusmarketDatabase.sampleDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideSearchHistoryDao(
+        campusmarketDatabase: CampusMarketDatabase
+    ): SearchHistoryDao {
+        return campusmarketDatabase.searchHistoryDao()
     }
 }

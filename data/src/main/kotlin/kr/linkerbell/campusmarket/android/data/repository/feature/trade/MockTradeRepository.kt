@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
+import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.SearchHistoryRepository
 
 class MockTradeRepository @Inject constructor() : TradeRepository {
 
