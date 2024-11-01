@@ -55,7 +55,10 @@ fun TradeSearchScreen(
             .background(Indigo50)
     ) {
         TradeSearchScreenSearchBar(
-            onClick = { queryString ->
+            queryString,
+            onValueChange = {updatedQuery ->
+                queryString = updatedQuery},
+            onSearchIconClick = { queryString ->
                 argument.intent(TradeSearchIntent.Insert(queryString))
                 navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
             }
@@ -88,6 +91,7 @@ fun TradeSearchScreen(
                     },
                     onTextClick = { selectedHistory ->
                         queryString = selectedHistory
+                        navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
                     }
                 )
             }
@@ -96,9 +100,11 @@ fun TradeSearchScreen(
 }
 
 @Composable
-private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
-
-    var text by remember { mutableStateOf("") }
+private fun TradeSearchScreenSearchBar(
+    currentQuery: String,
+    onValueChange: (String) -> Unit,
+    onSearchIconClick: (String) -> Unit
+) {
 
     Box(
         modifier = Modifier
@@ -122,8 +128,8 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TypingTextField(
-                    text = text,
-                    onValueChange = { text = it },
+                    text = currentQuery,
+                    onValueChange = {onValueChange(it)},
                     hintText = "검색어를 입력하세요",
                     maxLines = 1,
                     maxTextLength = 100,
@@ -135,8 +141,7 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                                 .padding(end = 8.dp)
                                 .size(20.dp)
                                 .clickable {
-                                    text = ""
-                                }
+                                    onValueChange("")                                }
                         )
                     },
                     modifier = Modifier
@@ -151,7 +156,7 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                     .size(24.dp)
                     .weight(1f)
                     .clickable {
-                        onClick(text)
+                        onSearchIconClick(currentQuery)
                     }
             )
         }

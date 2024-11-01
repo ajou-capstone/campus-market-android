@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -68,42 +70,40 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search
 fun TradeSearchResultScreen(
     navController: NavController,
     argument: TradeSearchResultArgument,
+    viewModel: TradeSearchResultViewModel = hiltViewModel(),
     data: TradeSearchResultData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
-
-    var tradeSearchQuery by remember { mutableStateOf(TradeSearchQuery()) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Indigo50)
     ) {
-        TradeSearchResultSearchBar {
+        TradeSearchResultSearchBar(
+            currentSearchText = data.currentTradeSearchQuery.name
+        ) {
+            navController.popBackStack()
             navController.navigate(TradeSearchConstant.ROUTE)
-            //TODO("SCREEN_이전 스택 제거 후, SearchScreen으로 이동")
         }
-        TradeSearchResultFilter(
+        TradeSearchResultFilterGroup(
+            data.currentTradeSearchQuery,
             applyCategoryOption = { newQueryOption ->
-                tradeSearchQuery.category = newQueryOption
-                navController.navigate(getNewTradeSearchQuery(tradeSearchQuery))
-                navController.popBackStack()
+                val updatedQuery = viewModel.tradeSearchQuery.value.copy(category = newQueryOption)
+                viewModel.updateTradeSearchQuery(updatedQuery)
             },
             applyMinPriceOption = { newQueryOption ->
-                tradeSearchQuery.minPrice = newQueryOption
-                navController.navigate(getNewTradeSearchQuery(tradeSearchQuery))
-                navController.popBackStack()
+                val updatedQuery = viewModel.tradeSearchQuery.value.copy(minPrice = newQueryOption)
+                viewModel.updateTradeSearchQuery(updatedQuery)
             },
             applyMaxPriceOption = { newQueryOption ->
-                tradeSearchQuery.maxPrice = newQueryOption
-                navController.navigate(getNewTradeSearchQuery(tradeSearchQuery))
-                navController.popBackStack()
+                val updatedQuery = viewModel.tradeSearchQuery.value.copy(maxPrice = newQueryOption)
+                viewModel.updateTradeSearchQuery(updatedQuery)
             },
             applySortOption = { newQueryOption ->
-                tradeSearchQuery.sorted = newQueryOption
-                navController.navigate(getNewTradeSearchQuery(tradeSearchQuery))
-                navController.popBackStack()
+                val updatedQuery = viewModel.tradeSearchQuery.value.copy(sorted = newQueryOption)
+                viewModel.updateTradeSearchQuery(updatedQuery)
             }
         )
         LazyColumn(
@@ -133,7 +133,8 @@ private fun getNewTradeSearchQuery(newQueryOption: TradeSearchQuery): String {
 }
 
 @Composable
-private fun TradeSearchResultFilter(
+private fun TradeSearchResultFilterGroup(
+    currentQuery: TradeSearchQuery,
     applyCategoryOption: (String) -> Unit,
     applyMinPriceOption: (Int) -> Unit,
     applyMaxPriceOption: (Int) -> Unit,
@@ -146,20 +147,24 @@ private fun TradeSearchResultFilter(
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 20.dp)
     ) {
-        CategoryDropDownMenu(listOf("ct1", "ct2", "ct3"), applyCategoryOption)
+        CategoryDropDownMenu(
+            currentQuery.category,
+            listOf("ct1", "ct2", "ct3"),
+            applyCategoryOption
+        )
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
         //TODO("SCREEN_가격대 별 정렬 UI")
-        SortOptionMenu(applySortOption)
+        Log.d("siri22", "SortOptionMenu -> ${currentQuery.sorted}")
+        SortOptionMenu(currentQuery.sorted, applySortOption)
     }
 }
 
 @Composable
-fun SortOptionMenu(applySortOption: (String) -> Unit) {
-
-    val sortByLatest = "최신순"
-    val sortByLowPrice = "낮은 가격 순"
-    val sortByHighPrice = "높은 가격 순"
-    var selectedOption by remember { mutableStateOf(sortByLatest) }
+fun SortOptionMenu(currentOption: String, applySortOption: (String) -> Unit) {
+    val sortByLatest = "createdDate,desc"   // 최신순
+    val sortByLowPrice = "price,asc"        // 낮은 가격순
+    val sortByHighPrice = "price,desc"      // 높은 가격순
+    var selectedOption by remember { mutableStateOf(currentOption) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -167,27 +172,27 @@ fun SortOptionMenu(applySortOption: (String) -> Unit) {
     ) {
         Text("정렬", modifier = Modifier.padding(end = 12.dp))
         SortOptionButton(
-            optionName = sortByLatest,
+            optionName = "최신순",
             isSelected = selectedOption == sortByLatest,
             onSelect = {
                 selectedOption = sortByLatest
-                applySortOption(selectedOption)
+                applySortOption(sortByLatest)
             }
         )
         SortOptionButton(
-            optionName = sortByLowPrice,
+            optionName = "낮은 가격순",
             isSelected = selectedOption == sortByLowPrice,
             onSelect = {
                 selectedOption = sortByLowPrice
-                applySortOption(selectedOption)
+                applySortOption(sortByLowPrice)
             }
         )
         SortOptionButton(
-            optionName = sortByHighPrice,
+            optionName = "높은 가격순",
             isSelected = selectedOption == sortByHighPrice,
             onSelect = {
                 selectedOption = sortByHighPrice
-                applySortOption(selectedOption)
+                applySortOption(sortByHighPrice)
             }
         )
     }
@@ -217,12 +222,13 @@ private fun SortOptionButton(
 
 @Composable
 private fun CategoryDropDownMenu(
+    currentOption: String,
     categoryList: List<String>,
     applyCategoryOption: (String) -> Unit
 ) {
     var isDropDownMenuExpanded by remember { mutableStateOf(false) }
-    //TODO("Screen_ 카테고리 - 전체가 뭐였지")
-    var categoryIndex: Int by remember { mutableIntStateOf(-1) }
+    var selectedCategory by remember { mutableStateOf(currentOption) }
+    var categoryIndex: Int by remember { mutableIntStateOf(0) }
 
     Box(
         modifier = Modifier
@@ -232,7 +238,7 @@ private fun CategoryDropDownMenu(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = categoryList.getOrNull(categoryIndex) ?: "카테고리",
+                text = selectedCategory.ifBlank { "전체" },
                 style = Body1,
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp)
             )
@@ -278,8 +284,9 @@ private fun CategoryDropDownMenu(
                     },
                     onClick = {
                         categoryIndex = index
+                        selectedCategory = categoryList[categoryIndex]
                         isDropDownMenuExpanded = false
-                        applyCategoryOption(categoryList[categoryIndex])
+                        applyCategoryOption(selectedCategory)
                     },
                     contentPadding = PaddingValues(0.dp)
                 )
@@ -354,6 +361,7 @@ private fun TradeSearchResultItemCard(item: Trade) {
 
 @Composable
 private fun TradeSearchResultSearchBar(
+    currentSearchText: String,
     navigateToTradeSearchScreen: () -> Unit
 ) {
     Box(
@@ -393,7 +401,7 @@ private fun TradeSearchResultSearchBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "검색어를 입력하세요",
+                    text = currentSearchText,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Icon(
@@ -469,7 +477,10 @@ private fun TradeSearchResultScreenPreview() {
                         )
                     )
                 )
-            ).collectAsLazyPagingItems()
+            ).collectAsLazyPagingItems(),
+            currentTradeSearchQuery = TradeSearchQuery(
+                name = "콜라"
+            )
         )
     )
 }

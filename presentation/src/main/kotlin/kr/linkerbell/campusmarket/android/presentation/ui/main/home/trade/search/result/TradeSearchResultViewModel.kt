@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -38,12 +39,14 @@ class TradeSearchResultViewModel @Inject constructor(
 
     private val _tradeSearchQuery: MutableStateFlow<TradeSearchQuery> =
         MutableStateFlow(TradeSearchQuery())
+    val tradeSearchQuery: StateFlow<TradeSearchQuery> = _tradeSearchQuery.asStateFlow()
 
     fun onIntent(intent: TradeSearchResultIntent) {
 
     }
 
     suspend fun onReceivedQuery(receivedQuery: TradeSearchQuery) {
+        Log.d("siri22","QueryUpdated")
         _state.value = TradeSearchResultState.Loading
         _tradeSearchQuery.value = receivedQuery
 
@@ -70,6 +73,10 @@ class TradeSearchResultViewModel @Inject constructor(
                 _state.value = TradeSearchResultState.Init
                 _tradeList.value = it
             }
+    }
+
+    fun updateTradeSearchQuery(newQuery: TradeSearchQuery) {
+        _tradeSearchQuery.value = newQuery
     }
 
 }

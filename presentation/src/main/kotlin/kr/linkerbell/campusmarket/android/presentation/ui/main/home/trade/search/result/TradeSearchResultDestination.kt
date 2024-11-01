@@ -57,7 +57,8 @@ fun NavGraphBuilder.tradeSearchResultDestination(
             val tradeList = viewModel.tradeList.collectAsLazyPagingItems()
 
             TradeSearchResultData(
-                tradeList = tradeList
+                tradeList = tradeList,
+                currentTradeSearchQuery = tradeSearchQuery
             )
         }
 

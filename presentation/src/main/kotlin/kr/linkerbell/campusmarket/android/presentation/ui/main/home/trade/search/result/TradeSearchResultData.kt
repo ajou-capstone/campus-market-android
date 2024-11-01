@@ -6,7 +6,8 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 
 @Immutable
 data class TradeSearchResultData(
-    val tradeList: LazyPagingItems<Trade>
+    val tradeList: LazyPagingItems<Trade>,
+    val currentTradeSearchQuery: TradeSearchQuery
 )
 
 @Immutable
