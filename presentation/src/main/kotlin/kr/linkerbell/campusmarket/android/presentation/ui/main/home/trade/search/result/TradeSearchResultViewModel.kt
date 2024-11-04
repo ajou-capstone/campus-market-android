@@ -1,12 +1,10 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +17,7 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerEx
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import javax.inject.Inject
 
 @HiltViewModel
 class TradeSearchResultViewModel @Inject constructor(
@@ -42,11 +41,27 @@ class TradeSearchResultViewModel @Inject constructor(
     val tradeSearchQuery: StateFlow<TradeSearchQuery> = _tradeSearchQuery.asStateFlow()
 
     fun onIntent(intent: TradeSearchResultIntent) {
+        when (intent) {
+            is TradeSearchResultIntent.ApplyCategoryFilter -> {
+                updateQuery(tradeSearchQuery.value.copy(category = intent.newCategoryOption))
+            }
 
+            is TradeSearchResultIntent.ApplyMinPriceFilter -> {
+                updateQuery(tradeSearchQuery.value.copy(minPrice = intent.newMinPriceFilter))
+            }
+
+            is TradeSearchResultIntent.ApplyMaxPriceFilter -> {
+                updateQuery(tradeSearchQuery.value.copy(maxPrice = intent.newMaxPriceFilter))
+            }
+
+            is TradeSearchResultIntent.ApplySortingFilter -> {
+                updateQuery(tradeSearchQuery.value.copy(sorted = intent.newSortingFilter))
+            }
+
+        }
     }
 
     suspend fun onReceivedQuery(receivedQuery: TradeSearchQuery) {
-        Log.d("siri22","QueryUpdated")
         _state.value = TradeSearchResultState.Loading
         _tradeSearchQuery.value = receivedQuery
 
@@ -64,6 +79,7 @@ class TradeSearchResultViewModel @Inject constructor(
                         _state.value = TradeSearchResultState.Init
                         _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
                     }
+
                     else -> {
                         _state.value = TradeSearchResultState.Init
                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
@@ -75,7 +91,7 @@ class TradeSearchResultViewModel @Inject constructor(
             }
     }
 
-    fun updateTradeSearchQuery(newQuery: TradeSearchQuery) {
+    private fun updateQuery(newQuery: TradeSearchQuery) {
         _tradeSearchQuery.value = newQuery
     }
 

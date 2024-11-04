@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +17,7 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerEx
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import javax.inject.Inject
 
 @HiltViewModel
 class TradeViewModel @Inject constructor(
@@ -41,7 +41,7 @@ class TradeViewModel @Inject constructor(
                 name = "",
                 category = "",
                 minPrice = 0,
-                maxPrice = 0,
+                maxPrice = Int.MAX_VALUE,
                 sorted = ""
             )
                 .cachedIn(viewModelScope)

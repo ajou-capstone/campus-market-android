@@ -1,6 +1,5 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +42,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -64,13 +62,13 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
 
 @Composable
 fun TradeSearchResultScreen(
     navController: NavController,
     argument: TradeSearchResultArgument,
-    viewModel: TradeSearchResultViewModel = hiltViewModel(),
     data: TradeSearchResultData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
@@ -90,20 +88,16 @@ fun TradeSearchResultScreen(
         TradeSearchResultFilterGroup(
             data.currentTradeSearchQuery,
             applyCategoryOption = { newQueryOption ->
-                val updatedQuery = viewModel.tradeSearchQuery.value.copy(category = newQueryOption)
-                viewModel.updateTradeSearchQuery(updatedQuery)
+                argument.intent(TradeSearchResultIntent.ApplyCategoryFilter(newQueryOption))
             },
             applyMinPriceOption = { newQueryOption ->
-                val updatedQuery = viewModel.tradeSearchQuery.value.copy(minPrice = newQueryOption)
-                viewModel.updateTradeSearchQuery(updatedQuery)
+                argument.intent(TradeSearchResultIntent.ApplyMinPriceFilter(newQueryOption))
             },
             applyMaxPriceOption = { newQueryOption ->
-                val updatedQuery = viewModel.tradeSearchQuery.value.copy(maxPrice = newQueryOption)
-                viewModel.updateTradeSearchQuery(updatedQuery)
+                argument.intent(TradeSearchResultIntent.ApplyMaxPriceFilter(newQueryOption))
             },
             applySortOption = { newQueryOption ->
-                val updatedQuery = viewModel.tradeSearchQuery.value.copy(sorted = newQueryOption)
-                viewModel.updateTradeSearchQuery(updatedQuery)
+                argument.intent(TradeSearchResultIntent.ApplySortingFilter(newQueryOption))
             }
         )
         LazyColumn(
@@ -122,16 +116,6 @@ fun TradeSearchResultScreen(
 
 }
 
-private fun getNewTradeSearchQuery(newQueryOption: TradeSearchQuery): String {
-    val (name, category, minPrice, maxPrice, sorted) = newQueryOption
-    return TradeSearchResultConstant.ROUTE +
-            "?name=$name" +
-            "&category=$category" +
-            "&minPrice=$minPrice" +
-            "&maxPrice=$maxPrice" +
-            "&sorted=$sorted"
-}
-
 @Composable
 private fun TradeSearchResultFilterGroup(
     currentQuery: TradeSearchQuery,
@@ -140,27 +124,100 @@ private fun TradeSearchResultFilterGroup(
     applyMaxPriceOption: (Int) -> Unit,
     applySortOption: (String) -> Unit
 ) {
-
-    // Category filter, min~max, sort
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 20.dp)
     ) {
-        CategoryDropDownMenu(
-            currentQuery.category,
-            listOf("ct1", "ct2", "ct3"),
-            applyCategoryOption
-        )
-        Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        //TODO("SCREEN_가격대 별 정렬 UI")
-        Log.d("siri22", "SortOptionMenu -> ${currentQuery.sorted}")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.weight(3f)) {
+                PriceFilterMenu(
+                    currentQuery.minPrice,
+                    currentQuery.maxPrice,
+                    applyMinPriceOption,
+                    applyMaxPriceOption,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(start = 8.dp)
+            ) {
+                CategoryDropDownMenu(
+                    currentQuery.category,
+                    //TODO("TradeSearchResultScreen : Category List 가져오기")
+                    listOf("ct1", "ct2", "ct3"),
+                    applyCategoryOption
+                )
+            }
+        }
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
         SortOptionMenu(currentQuery.sorted, applySortOption)
     }
 }
 
 @Composable
-fun SortOptionMenu(currentOption: String, applySortOption: (String) -> Unit) {
+private fun PriceFilterMenu(
+    currentMinPrice: Int,
+    currentMaxPrice: Int,
+    applyMinPriceOption: (Int) -> Unit,
+    applyMaxPriceOption: (Int) -> Unit
+) {
+    var minPrice by remember { mutableStateOf(currentMinPrice.toString()) }
+    var maxPrice by remember { mutableStateOf(currentMaxPrice.toString()) }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("가격대")
+        Spacer(modifier = Modifier.padding(2.dp))
+        TypingTextField(
+            text = minPrice,
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    minPrice = newValue
+                }
+            },
+            hintText = "0",
+            maxLines = 1,
+            maxTextLength = 9,
+            modifier = Modifier.weight(3f)
+        )
+        Text(
+            "~", modifier = Modifier.padding(horizontal = 4.dp)
+        )
+        TypingTextField(
+            text = maxPrice,
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    maxPrice = newValue
+                }
+            },
+            hintText = "999,999,999",
+            maxLines = 1,
+            maxTextLength = 9,
+            modifier = Modifier.weight(3f)
+        )
+        Icon(imageVector = Icons.Default.Search,
+            contentDescription = "Search Button",
+            modifier = Modifier
+                .size(24.dp)
+                .weight(1f)
+                .clickable {
+                    applyMinPriceOption(minPrice.toInt())
+                    applyMaxPriceOption(maxPrice.toInt())
+                }
+        )
+
+
+    }
+}
+
+@Composable
+private fun SortOptionMenu(currentOption: String, applySortOption: (String) -> Unit) {
     val sortByLatest = "createdDate,desc"   // 최신순
     val sortByLowPrice = "price,asc"        // 낮은 가격순
     val sortByHighPrice = "price,desc"      // 높은 가격순
@@ -171,30 +228,34 @@ fun SortOptionMenu(currentOption: String, applySortOption: (String) -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text("정렬", modifier = Modifier.padding(end = 12.dp))
-        SortOptionButton(
-            optionName = "최신순",
-            isSelected = selectedOption == sortByLatest,
-            onSelect = {
-                selectedOption = sortByLatest
-                applySortOption(sortByLatest)
-            }
-        )
-        SortOptionButton(
-            optionName = "낮은 가격순",
-            isSelected = selectedOption == sortByLowPrice,
-            onSelect = {
-                selectedOption = sortByLowPrice
-                applySortOption(sortByLowPrice)
-            }
-        )
-        SortOptionButton(
-            optionName = "높은 가격순",
-            isSelected = selectedOption == sortByHighPrice,
-            onSelect = {
-                selectedOption = sortByHighPrice
-                applySortOption(sortByHighPrice)
-            }
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            SortOptionButton(
+                optionName = "최신순",
+                isSelected = selectedOption == sortByLatest,
+                onSelect = {
+                    selectedOption = sortByLatest
+                    applySortOption(sortByLatest)
+                }
+            )
+            SortOptionButton(
+                optionName = "낮은 가격순",
+                isSelected = selectedOption == sortByLowPrice,
+                onSelect = {
+                    selectedOption = sortByLowPrice
+                    applySortOption(sortByLowPrice)
+                }
+            )
+            SortOptionButton(
+                optionName = "높은 가격순",
+                isSelected = selectedOption == sortByHighPrice,
+                onSelect = {
+                    selectedOption = sortByHighPrice
+                    applySortOption(sortByHighPrice)
+                }
+            )
+        }
     }
 }
 
@@ -215,7 +276,7 @@ private fun SortOptionButton(
     ) {
         Text(
             text = optionName,
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
         )
     }
 }
@@ -235,8 +296,13 @@ private fun CategoryDropDownMenu(
             .clip(RoundedCornerShape(4.dp))
             .background(Gray50)
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+            .fillMaxWidth()
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = selectedCategory.ifBlank { "전체" },
                 style = Body1,

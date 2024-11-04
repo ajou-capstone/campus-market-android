@@ -30,8 +30,7 @@ fun NavGraphBuilder.tradeSearchResultDestination(
             name = backStackEntry.arguments?.getString("name") ?: "",
             category = backStackEntry.arguments?.getString("category") ?: "",
             minPrice = backStackEntry.arguments?.getInt("minPrice") ?: 0,
-            //TODO("maxPrice의 디폴트 값은 얼마로 줄 지? + 가격 상한 걸어둘거?")
-            maxPrice = backStackEntry.arguments?.getInt("maxPrice") ?: 0,
+            maxPrice = backStackEntry.arguments?.getInt("maxPrice") ?: Int.MAX_VALUE,
             sorted = backStackEntry.arguments?.getString("sorted") ?: "createdDate,desc"
         )
 

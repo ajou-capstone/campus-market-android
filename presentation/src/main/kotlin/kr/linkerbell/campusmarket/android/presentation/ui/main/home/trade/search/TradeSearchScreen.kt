@@ -56,8 +56,9 @@ fun TradeSearchScreen(
     ) {
         TradeSearchScreenSearchBar(
             queryString,
-            onValueChange = {updatedQuery ->
-                queryString = updatedQuery},
+            onValueChange = { updatedQuery ->
+                queryString = updatedQuery
+            },
             onSearchIconClick = { queryString ->
                 argument.intent(TradeSearchIntent.Insert(queryString))
                 navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
@@ -129,7 +130,7 @@ private fun TradeSearchScreenSearchBar(
             ) {
                 TypingTextField(
                     text = currentQuery,
-                    onValueChange = {onValueChange(it)},
+                    onValueChange = { onValueChange(it) },
                     hintText = "검색어를 입력하세요",
                     maxLines = 1,
                     maxTextLength = 100,
@@ -141,7 +142,8 @@ private fun TradeSearchScreenSearchBar(
                                 .padding(end = 8.dp)
                                 .size(20.dp)
                                 .clickable {
-                                    onValueChange("")                                }
+                                    onValueChange("")
+                                }
                         )
                     },
                     modifier = Modifier
@@ -156,7 +158,8 @@ private fun TradeSearchScreenSearchBar(
                     .size(24.dp)
                     .weight(1f)
                     .clickable {
-                        onSearchIconClick(currentQuery)
+                        if (currentQuery.isNotBlank())
+                            onSearchIconClick(currentQuery)
                     }
             )
         }
