@@ -46,6 +46,7 @@ class TradeSearchResultViewModel @Inject constructor(
 
     private val _tradeSearchQuery: MutableStateFlow<TradeSearchQuery> =
         MutableStateFlow(TradeSearchQuery())
+    val tradeSearchQuery: StateFlow<TradeSearchQuery> = _tradeSearchQuery
 
     init {
         _tradeSearchQuery.value = TradeSearchQuery(
@@ -65,7 +66,6 @@ class TradeSearchResultViewModel @Inject constructor(
         when (intent) {
             is TradeSearchResultIntent.ApplyNewQuery -> {
                 _tradeSearchQuery.value = intent.newQuery
-
                 Timber.tag("siri22").d("${intent.newQuery}")
                 launch {
                     getCategoryList()

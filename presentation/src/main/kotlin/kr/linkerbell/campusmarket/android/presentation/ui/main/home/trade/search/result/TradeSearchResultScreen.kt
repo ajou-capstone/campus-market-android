@@ -1,6 +1,5 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,6 +51,8 @@ import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
@@ -72,10 +73,9 @@ fun TradeSearchResultScreen(
 
     var currentQuery by remember { mutableStateOf(data.currentQuery) }
 
-    val categoryList = data.categoryList ?: CategoryList.empty.categoryList
+    val categoryList = data.categoryList
 
     val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
-        currentQuery = updatedQuery
         argument.intent(TradeSearchResultIntent.ApplyNewQuery(updatedQuery))
     }
 
@@ -259,8 +259,11 @@ private fun TradeSearchResultCategoryFilter(
 ) {
 
     val isDropDownExpanded = remember { mutableStateOf(false) }
-    val itemIndex = remember { mutableIntStateOf(categoryList.size - 1) }
-    //TODO("초기 Category찾기")
+    val itemIndex = remember {
+        mutableIntStateOf(
+            categoryList.indexOf(currentQuery.category).takeIf { it >= 0 } ?: 0
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -275,7 +278,7 @@ private fun TradeSearchResultCategoryFilter(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = categoryList[itemIndex.value].ifBlank { "전체" },
+                text = categoryList[itemIndex.value], // TODO("서버에서 KOR로 받은 후 한국어로 표시")
                 maxLines = 1,
                 style = Body2,
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp)
@@ -300,9 +303,8 @@ private fun TradeSearchResultCategoryFilter(
                     onClick = {
                         isDropDownExpanded.value = false
                         itemIndex.value = index
-                        Log.d("siri22", "index = ${itemIndex.value}, name = ${category}")
                         updateQuery(
-                            currentQuery.copy(category = categoryList[itemIndex.value])
+                            currentQuery.copy(category = categoryList[index])
                         )
                     }
                 )
@@ -311,12 +313,29 @@ private fun TradeSearchResultCategoryFilter(
     }
 }
 
+private fun translateToKor(engCategory: String): String {
+    return when (engCategory) {
+        "ELECTRONICS_IT" -> "전자기기/IT"
+        "HOME_APPLIANCES" -> "가전제품"
+        "FASHION_ACCESSORIES" -> "패션/액세서리"
+        "ACCESSORIES" -> "액세서리"
+        "BOOKS_EDUCATIONAL_MATERIALS" -> "서적/교육 자료"
+        "STATIONERY_OFFICE_SUPPLIES" -> "문구/사무용품"
+        "HOUSEHOLD_ITEMS" -> "생활용품"
+        "KITCHEN_SUPPLIES" -> "주방용품"
+        "FURNITURE_INTERIOR" -> "가구/인테리어"
+        "SPORTS_LEISURE" -> "스포츠/레저"
+        "ENTERTAINMENT_HOBBIES" -> "엔터테인먼트/취미"
+        "OTHER" -> "기타"
+        else -> "기타"
+    }
+}
+
 @Composable
 private fun TradeSearchResultSortOption(
     currentQuery: TradeSearchQuery,
     updateQuery: (TradeSearchQuery) -> Unit
 ) {
-
     val sortByLatest = "createdDate,desc"   // 최신순
     val sortByLowPrice = "price,asc"        // 낮은 가격순
     val sortByHighPrice = "price,desc"      // 높은 가격순
@@ -336,9 +355,7 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByLatest,
                 onSelect = {
                     selectedSortedOption = sortByLatest
-                    updateQuery(
-                        currentQuery.copy(sorted = selectedSortedOption)
-                    )
+                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
                 }
             )
             SortOptionButton(
@@ -346,9 +363,7 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByLowPrice,
                 onSelect = {
                     selectedSortedOption = sortByLowPrice
-                    updateQuery(
-                        currentQuery.copy(sorted = selectedSortedOption)
-                    )
+                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
                 }
             )
             SortOptionButton(
@@ -356,15 +371,12 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByHighPrice,
                 onSelect = {
                     selectedSortedOption = sortByHighPrice
-                    updateQuery(
-                        currentQuery.copy(sorted = selectedSortedOption)
-                    )
+                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
                 }
             )
         }
     }
 }
-
 
 @Composable
 private fun TradeSearchResultItemCard(item: Trade) {
@@ -431,9 +443,7 @@ private fun TradeSearchResultItemCard(item: Trade) {
 }
 
 @Composable
-private fun TradeSearchResultItemStatus(
-    isSold: Boolean
-) {
+private fun TradeSearchResultItemStatus(isSold: Boolean) {
     if (isSold) {
         Box(
             modifier = Modifier
@@ -460,7 +470,7 @@ private fun SortOptionButton(
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
-    val buttonColor = if (isSelected) Color.White else Color.Gray
+    val buttonColor = if (isSelected) Blue400 else Blue100
 
     Box(
         modifier = Modifier

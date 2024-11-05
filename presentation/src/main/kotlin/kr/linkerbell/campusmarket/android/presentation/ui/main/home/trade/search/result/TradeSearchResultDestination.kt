@@ -18,21 +18,12 @@ fun NavGraphBuilder.tradeSearchResultDestination(
         route = TradeSearchResultConstant.ROUTE_STRUCTURE,
         arguments = listOf(
             navArgument("name") { type = NavType.StringType; defaultValue = "" },
-            navArgument("category") { type = NavType.StringType; defaultValue = "" }, //TODO("Default value for category")
+            navArgument("category") { type = NavType.StringType; defaultValue = "OTHER" },
             navArgument("minPrice") { type = NavType.IntType; defaultValue = 0 },
             navArgument("maxPrice") { type = NavType.IntType; defaultValue = Int.MAX_VALUE },
             navArgument("sorted") { type = NavType.StringType; defaultValue = "" }
         )
-    ) { backStackEntry ->
-
-        val tradeSearchQuery = TradeSearchQuery(
-            name = backStackEntry.arguments?.getString("name") ?: "",
-            category = backStackEntry.arguments?.getString("category") ?: "", //TODO("Default value for category")
-            minPrice = backStackEntry.arguments?.getInt("minPrice") ?: 0,
-            maxPrice = backStackEntry.arguments?.getInt("maxPrice") ?: Int.MAX_VALUE,
-            sorted = backStackEntry.arguments?.getString("sorted") ?: ""
-        )
-
+    ) {
         val viewModel: TradeSearchResultViewModel = hiltViewModel()
 
         val argument: TradeSearchResultArgument = let {
@@ -50,10 +41,11 @@ fun NavGraphBuilder.tradeSearchResultDestination(
         val data: TradeSearchResultData = let {
             val tradeList = viewModel.tradeList.collectAsLazyPagingItems()
             val categoryList = viewModel.categoryList.value
+            val currentQuery = viewModel.tradeSearchQuery.value
 
             TradeSearchResultData(
                 tradeList = tradeList,
-                currentQuery = tradeSearchQuery,
+                currentQuery = currentQuery,
                 categoryList = categoryList
             )
         }
