@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -53,6 +52,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.category.Category
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
@@ -89,7 +89,7 @@ fun TradeSearchResultScreen(
             navController.navigate(TradeSearchConstant.ROUTE)
         }
         Box(modifier = Modifier.padding(16.dp)) {
-            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            Column {
                 Row(
                     modifier = Modifier.padding(bottom = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -204,7 +204,10 @@ private fun TradeSearchResultPriceFilter(
 
     Box {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("가격대")
+            Text(
+                text = "가격대",
+                style = Headline3
+            )
             Spacer(modifier = Modifier.padding(2.dp))
             TypingTextField(
                 text = minPrice.toString(),
@@ -268,7 +271,7 @@ private fun TradeSearchResultCategoryFilter(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(Gray50)
+            .background(Blue400)
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
             .fillMaxWidth()
     ) {
@@ -281,6 +284,7 @@ private fun TradeSearchResultCategoryFilter(
                 text = translateToKor(categoryList[itemIndex.intValue]),
                 maxLines = 1,
                 style = Body2,
+                color = Color.White,
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp)
             )
             Icon(
@@ -328,9 +332,10 @@ private fun TradeSearchResultSortOption(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("정렬", modifier = Modifier.padding(end = 12.dp))
+        Text("정렬", style = Headline3, modifier = Modifier.padding(end = 12.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             SortOptionButton(
                 optionName = "최신순",
@@ -390,10 +395,14 @@ private fun TradeSearchResultItemCard(item: Trade) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        val displayedText = if (item.title.length > 10) {
+                            item.title.take(9) + "..."
+                        } else {
+                            item.title
+                        }
                         Text(
-                            text = item.title,
-                            style = Headline3,
-                            overflow = TextOverflow.Ellipsis
+                            text = displayedText,
+                            style = Headline3
                         )
                         Spacer(modifier = Modifier.padding(4.dp))
                         TradeSearchResultItemStatus(isSold = item.itemStatus === "Available")
@@ -463,7 +472,8 @@ private fun SortOptionButton(
     ) {
         Text(
             text = optionName,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+            style = Body1,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
         )
     }
 }
@@ -505,9 +515,9 @@ private fun TradeSearchResultScreenPreview() {
                         Trade(
                             itemId = 1L,
                             userId = 1L,
-                            nickname = "장성혁",
+                            nickname = "유저22",
                             thumbnail = "https://picsum.photos/200",
-                            title = "콜라 팝니다",
+                            title = "콜라 팝니다 근데_제목이_좀_길어서_이렇게_넘어가면_어케됨",
                             price = 1000,
                             chatCount = 5,
                             likeCount = 2,
