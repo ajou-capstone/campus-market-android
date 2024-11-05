@@ -71,7 +71,7 @@ fun TradeSearchResultScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    var currentQuery by remember { mutableStateOf(data.currentQuery) }
+    val currentQuery by remember { mutableStateOf(data.currentQuery) }
 
     val categoryList = data.categoryList
 
@@ -278,7 +278,7 @@ private fun TradeSearchResultCategoryFilter(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = categoryList[itemIndex.value], // TODO("서버에서 KOR로 받은 후 한국어로 표시")
+                text = translateToKor(categoryList[itemIndex.intValue]),
                 maxLines = 1,
                 style = Body2,
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp)
@@ -299,10 +299,10 @@ private fun TradeSearchResultCategoryFilter(
         ) {
             categoryList.forEachIndexed { index, category ->
                 DropdownMenuItem(
-                    text = { Text(text = category) },
+                    text = { Text(text = translateToKor(category)) },
                     onClick = {
                         isDropDownExpanded.value = false
-                        itemIndex.value = index
+                        itemIndex.intValue = index
                         updateQuery(
                             currentQuery.copy(category = categoryList[index])
                         )
@@ -310,24 +310,6 @@ private fun TradeSearchResultCategoryFilter(
                 )
             }
         }
-    }
-}
-
-private fun translateToKor(engCategory: String): String {
-    return when (engCategory) {
-        "ELECTRONICS_IT" -> "전자기기/IT"
-        "HOME_APPLIANCES" -> "가전제품"
-        "FASHION_ACCESSORIES" -> "패션/액세서리"
-        "ACCESSORIES" -> "액세서리"
-        "BOOKS_EDUCATIONAL_MATERIALS" -> "서적/교육 자료"
-        "STATIONERY_OFFICE_SUPPLIES" -> "문구/사무용품"
-        "HOUSEHOLD_ITEMS" -> "생활용품"
-        "KITCHEN_SUPPLIES" -> "주방용품"
-        "FURNITURE_INTERIOR" -> "가구/인테리어"
-        "SPORTS_LEISURE" -> "스포츠/레저"
-        "ENTERTAINMENT_HOBBIES" -> "엔터테인먼트/취미"
-        "OTHER" -> "기타"
-        else -> "기타"
     }
 }
 
@@ -483,6 +465,24 @@ private fun SortOptionButton(
             text = optionName,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
         )
+    }
+}
+
+private fun translateToKor(engCategory: String): String {
+    return when (engCategory) {
+        "ELECTRONICS_IT" -> "전자기기/IT"
+        "HOME_APPLIANCES" -> "가전제품"
+        "FASHION_ACCESSORIES" -> "패션/액세서리"
+        "ACCESSORIES" -> "액세서리"
+        "BOOKS_EDUCATIONAL_MATERIALS" -> "서적/교육 자료"
+        "STATIONERY_OFFICE_SUPPLIES" -> "문구/사무용품"
+        "HOUSEHOLD_ITEMS" -> "생활용품"
+        "KITCHEN_SUPPLIES" -> "주방용품"
+        "FURNITURE_INTERIOR" -> "가구/인테리어"
+        "SPORTS_LEISURE" -> "스포츠/레저"
+        "ENTERTAINMENT_HOBBIES" -> "엔터테인먼트/취미"
+        "OTHER" -> "기타"
+        else -> "기타"
     }
 }
 
