@@ -1,8 +1,8 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
 import androidx.compose.runtime.Immutable
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kotlin.coroutines.CoroutineContext
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 
 @Immutable
 data class TradeSearchResultArgument(
@@ -21,10 +21,6 @@ sealed interface TradeSearchResultState {
 sealed interface TradeSearchResultEvent
 
 sealed interface TradeSearchResultIntent {
-    data class ApplyCategoryFilter(val newCategoryOption: String) : TradeSearchResultIntent
-    data class ApplyMinPriceFilter(val newMinPriceFilter: Int) : TradeSearchResultIntent
-    data class ApplyMaxPriceFilter(val newMaxPriceFilter: Int) : TradeSearchResultIntent
-    data class ApplySortingFilter(val newSortingFilter: String) : TradeSearchResultIntent
-
+    data class ApplyNewQuery(val newQuery: TradeSearchQuery) : TradeSearchResultIntent
 }
 

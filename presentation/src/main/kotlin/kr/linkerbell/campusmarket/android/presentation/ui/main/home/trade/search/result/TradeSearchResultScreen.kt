@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,17 +50,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
-import kr.linkerbell.campusmarket.android.presentation.R
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue700
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
-import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
@@ -74,32 +70,51 @@ fun TradeSearchResultScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
+    var currentQuery by remember { mutableStateOf(data.currentQuery) }
+
+    val categoryList = data.categoryList ?: CategoryList.empty.categoryList
+
+    val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
+        currentQuery = updatedQuery
+        argument.intent(TradeSearchResultIntent.ApplyNewQuery(updatedQuery))
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Indigo50)
     ) {
-        TradeSearchResultSearchBar(
-            currentSearchText = data.currentTradeSearchQuery.name
-        ) {
+        TradeSearchResultSearchBar(currentQuery.name) {
             navController.popBackStack()
             navController.navigate(TradeSearchConstant.ROUTE)
         }
-        TradeSearchResultFilterGroup(
-            data.currentTradeSearchQuery,
-            applyCategoryOption = { newQueryOption ->
-                argument.intent(TradeSearchResultIntent.ApplyCategoryFilter(newQueryOption))
-            },
-            applyMinPriceOption = { newQueryOption ->
-                argument.intent(TradeSearchResultIntent.ApplyMinPriceFilter(newQueryOption))
-            },
-            applyMaxPriceOption = { newQueryOption ->
-                argument.intent(TradeSearchResultIntent.ApplyMaxPriceFilter(newQueryOption))
-            },
-            applySortOption = { newQueryOption ->
-                argument.intent(TradeSearchResultIntent.ApplySortingFilter(newQueryOption))
+        Box(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                Row(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.weight(3f)) {
+                        TradeSearchResultPriceFilter(
+                            currentQuery = currentQuery,
+                            updateQuery = updateCurrentQuery
+                        )
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        TradeSearchResultCategoryFilter(
+                            currentQuery = currentQuery,
+                            categoryList = categoryList,
+                            updateQuery = updateCurrentQuery
+                        )
+                    }
+                }
+                TradeSearchResultSortOption(
+                    currentQuery = currentQuery,
+                    updateQuery = updateCurrentQuery
+                )
             }
-        )
+        }
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
@@ -113,183 +128,139 @@ fun TradeSearchResultScreen(
             }
         }
     }
-
 }
 
 @Composable
-private fun TradeSearchResultFilterGroup(
-    currentQuery: TradeSearchQuery,
-    applyCategoryOption: (String) -> Unit,
-    applyMinPriceOption: (Int) -> Unit,
-    applyMaxPriceOption: (Int) -> Unit,
-    applySortOption: (String) -> Unit
+private fun TradeSearchResultSearchBar(
+    currentQuery: String, navigateToTradeSearchScreen: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 20.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(modifier = Modifier.weight(3f)) {
-                PriceFilterMenu(
-                    currentQuery.minPrice,
-                    currentQuery.maxPrice,
-                    applyMinPriceOption,
-                    applyMaxPriceOption,
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(start = 8.dp)
-            ) {
-                CategoryDropDownMenu(
-                    currentQuery.category,
-                    //TODO("TradeSearchResultScreen : Category List 가져오기")
-                    listOf("ct1", "ct2", "ct3"),
-                    applyCategoryOption
-                )
-            }
-        }
-        Spacer(modifier = Modifier.padding(vertical = 4.dp))
-        SortOptionMenu(currentQuery.sorted, applySortOption)
-    }
-}
-
-@Composable
-private fun PriceFilterMenu(
-    currentMinPrice: Int,
-    currentMaxPrice: Int,
-    applyMinPriceOption: (Int) -> Unit,
-    applyMaxPriceOption: (Int) -> Unit
-) {
-    var minPrice by remember { mutableStateOf(currentMinPrice.toString()) }
-    var maxPrice by remember { mutableStateOf(currentMaxPrice.toString()) }
-
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("가격대")
-        Spacer(modifier = Modifier.padding(2.dp))
-        TypingTextField(
-            text = minPrice,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() }) {
-                    minPrice = newValue
-                }
-            },
-            hintText = "0",
-            maxLines = 1,
-            maxTextLength = 9,
-            modifier = Modifier.weight(3f)
-        )
-        Text(
-            "~", modifier = Modifier.padding(horizontal = 4.dp)
-        )
-        TypingTextField(
-            text = maxPrice,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() }) {
-                    maxPrice = newValue
-                }
-            },
-            hintText = "999,999,999",
-            maxLines = 1,
-            maxTextLength = 9,
-            modifier = Modifier.weight(3f)
-        )
-        Icon(imageVector = Icons.Default.Search,
-            contentDescription = "Search Button",
-            modifier = Modifier
-                .size(24.dp)
-                .weight(1f)
-                .clickable {
-                    applyMinPriceOption(minPrice.toInt())
-                    applyMaxPriceOption(maxPrice.toInt())
-                }
-        )
-
-
-    }
-}
-
-@Composable
-private fun SortOptionMenu(currentOption: String, applySortOption: (String) -> Unit) {
-    val sortByLatest = "createdDate,desc"   // 최신순
-    val sortByLowPrice = "price,asc"        // 낮은 가격순
-    val sortByHighPrice = "price,desc"      // 높은 가격순
-    var selectedOption by remember { mutableStateOf(currentOption) }
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text("정렬", modifier = Modifier.padding(end = 12.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            SortOptionButton(
-                optionName = "최신순",
-                isSelected = selectedOption == sortByLatest,
-                onSelect = {
-                    selectedOption = sortByLatest
-                    applySortOption(sortByLatest)
-                }
-            )
-            SortOptionButton(
-                optionName = "낮은 가격순",
-                isSelected = selectedOption == sortByLowPrice,
-                onSelect = {
-                    selectedOption = sortByLowPrice
-                    applySortOption(sortByLowPrice)
-                }
-            )
-            SortOptionButton(
-                optionName = "높은 가격순",
-                isSelected = selectedOption == sortByHighPrice,
-                onSelect = {
-                    selectedOption = sortByHighPrice
-                    applySortOption(sortByHighPrice)
-                }
-            )
-        }
-    }
-}
-
-@Composable
-private fun SortOptionButton(
-    optionName: String,
-    isSelected: Boolean,
-    onSelect: () -> Unit
-) {
-    val buttonColor = if (isSelected) Color.White else Color.Gray
-
     Box(
         modifier = Modifier
-            .padding(4.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(buttonColor)
-            .clickable { onSelect() }
+            .background(Color.White)
+            .fillMaxWidth(),
     ) {
-        Text(
-            text = optionName,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+        Row(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         )
+        {
+            Box(
+                modifier = Modifier
+                    .width(76.dp)
+                    .height(36.dp)
+                    .background(Color.Gray)
+                    .weight(3f)
+            ) {
+                Text("Logo Here")
+            }
+
+            Spacer(Modifier.padding(8.dp))
+            Row(
+                modifier = Modifier
+                    .weight(8f)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(Gray50)
+                    .clickable {
+                        navigateToTradeSearchScreen()
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = currentQuery,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search button",
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(20.dp)
+                )
+            }
+            Spacer(Modifier.padding(4.dp))
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Notification Button",
+                modifier = Modifier
+                    .size(24.dp)
+                    .weight(1f)
+            )
+        }
     }
 }
 
 @Composable
-private fun CategoryDropDownMenu(
-    currentOption: String,
-    categoryList: List<String>,
-    applyCategoryOption: (String) -> Unit
+private fun TradeSearchResultPriceFilter(
+    currentQuery: TradeSearchQuery,
+    updateQuery: (TradeSearchQuery) -> Unit
 ) {
-    var isDropDownMenuExpanded by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf(currentOption) }
-    var categoryIndex: Int by remember { mutableIntStateOf(0) }
+
+    var minPrice by remember { mutableIntStateOf(currentQuery.minPrice) }
+    var maxPrice by remember { mutableIntStateOf(currentQuery.maxPrice) }
+
+    Box {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("가격대")
+            Spacer(modifier = Modifier.padding(2.dp))
+            TypingTextField(
+                text = minPrice.toString(),
+                onValueChange = { newValue ->
+                    if (newValue.all { it.isDigit() }) {
+                        minPrice = newValue.toInt()
+                    }
+                },
+                hintText = "0",
+                maxLines = 1,
+                maxTextLength = 9,
+                modifier = Modifier.weight(3f)
+            )
+            Text(
+                "~", modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            TypingTextField(
+                text = maxPrice.toString(),
+                onValueChange = { newValue ->
+                    if (newValue.all { it.isDigit() }) {
+                        maxPrice = newValue.toInt()
+                    }
+                },
+                hintText = "999,999,999",
+                maxLines = 1,
+                maxTextLength = 9,
+                modifier = Modifier.weight(3f)
+            )
+            Icon(imageVector = Icons.Default.Search,
+                contentDescription = "Search Button",
+                modifier = Modifier
+                    .size(24.dp)
+                    .weight(1f)
+                    .clickable {
+                        updateQuery(
+                            currentQuery.copy(
+                                minPrice = minPrice,
+                                maxPrice = maxPrice
+                            )
+                        )
+                    }
+            )
+        }
+    }
+}
+
+@Composable
+private fun TradeSearchResultCategoryFilter(
+    currentQuery: TradeSearchQuery,
+    categoryList: List<String>,
+    updateQuery: (TradeSearchQuery) -> Unit
+) {
+
+    val isDropDownExpanded = remember { mutableStateOf(false) }
+    val itemIndex = remember { mutableIntStateOf(categoryList.size - 1) }
+    //TODO("초기 Category찾기")
 
     Box(
         modifier = Modifier
@@ -304,8 +275,9 @@ private fun CategoryDropDownMenu(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = selectedCategory.ifBlank { "전체" },
-                style = Body1,
+                text = categoryList[itemIndex.value].ifBlank { "전체" },
+                maxLines = 1,
+                style = Body2,
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp)
             )
             Icon(
@@ -313,53 +285,86 @@ private fun CategoryDropDownMenu(
                 contentDescription = "Search Button",
                 modifier = Modifier
                     .size(24.dp)
+                    .clickable {
+                        isDropDownExpanded.value = !isDropDownExpanded.value
+                    }
             )
         }
         DropdownMenu(
-            modifier = Modifier.background(White),
-            expanded = isDropDownMenuExpanded,
-            onDismissRequest = { isDropDownMenuExpanded = false },
+            expanded = isDropDownExpanded.value,
+            onDismissRequest = { isDropDownExpanded.value = false }
         ) {
-            categoryList.mapIndexed { index, category ->
-                val categoryName = category.ifBlank { "전체" }
+            categoryList.forEachIndexed { index, category ->
                 DropdownMenuItem(
-                    text = {
-                        Column(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = Space8),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = categoryName,
-                                    style = Body1.merge(Gray900)
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                if (index == categoryIndex) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_check_line),
-                                        contentDescription = null,
-                                        tint = Blue700
-                                    )
-                                }
-                            }
-                        }
-                    },
+                    text = { Text(text = category) },
                     onClick = {
-                        categoryIndex = index
-                        selectedCategory = categoryList[categoryIndex]
-                        isDropDownMenuExpanded = false
-                        applyCategoryOption(selectedCategory)
-                    },
-                    contentPadding = PaddingValues(0.dp)
+                        isDropDownExpanded.value = false
+                        itemIndex.value = index
+                        Log.d("siri22", "index = ${itemIndex.value}, name = ${category}")
+                        updateQuery(
+                            currentQuery.copy(category = categoryList[itemIndex.value])
+                        )
+                    }
                 )
             }
         }
     }
 }
+
+@Composable
+private fun TradeSearchResultSortOption(
+    currentQuery: TradeSearchQuery,
+    updateQuery: (TradeSearchQuery) -> Unit
+) {
+
+    val sortByLatest = "createdDate,desc"   // 최신순
+    val sortByLowPrice = "price,asc"        // 낮은 가격순
+    val sortByHighPrice = "price,desc"      // 높은 가격순
+
+    var selectedSortedOption by remember { mutableStateOf(currentQuery.sorted) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("정렬", modifier = Modifier.padding(end = 12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            SortOptionButton(
+                optionName = "최신순",
+                isSelected = selectedSortedOption == sortByLatest,
+                onSelect = {
+                    selectedSortedOption = sortByLatest
+                    updateQuery(
+                        currentQuery.copy(sorted = selectedSortedOption)
+                    )
+                }
+            )
+            SortOptionButton(
+                optionName = "낮은 가격순",
+                isSelected = selectedSortedOption == sortByLowPrice,
+                onSelect = {
+                    selectedSortedOption = sortByLowPrice
+                    updateQuery(
+                        currentQuery.copy(sorted = selectedSortedOption)
+                    )
+                }
+            )
+            SortOptionButton(
+                optionName = "높은 가격순",
+                isSelected = selectedSortedOption == sortByHighPrice,
+                onSelect = {
+                    selectedSortedOption = sortByHighPrice
+                    updateQuery(
+                        currentQuery.copy(sorted = selectedSortedOption)
+                    )
+                }
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun TradeSearchResultItemCard(item: Trade) {
@@ -426,71 +431,6 @@ private fun TradeSearchResultItemCard(item: Trade) {
 }
 
 @Composable
-private fun TradeSearchResultSearchBar(
-    currentSearchText: String,
-    navigateToTradeSearchScreen: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .background(Color.White)
-            .fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        )
-        {
-            //Banner
-            Box(
-                modifier = Modifier
-                    .width(76.dp)
-                    .height(36.dp)
-                    .background(Color.Gray)
-                    .weight(3f)
-            ) {
-                Text("Logo Here")
-            }
-
-            Spacer(Modifier.padding(8.dp))
-            Row(
-                modifier = Modifier
-                    .weight(8f)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(Gray50)
-                    .clickable {
-                        navigateToTradeSearchScreen()
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = currentSearchText,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search button",
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(20.dp)
-                )
-            }
-            Spacer(Modifier.padding(4.dp))
-            Icon(
-                imageVector = Icons.Default.Notifications,
-                contentDescription = "Notification Button",
-                modifier = Modifier
-                    .size(24.dp)
-                    .weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
 private fun TradeSearchResultItemStatus(
     isSold: Boolean
 ) {
@@ -511,6 +451,28 @@ private fun TradeSearchResultItemStatus(
         ) {
             Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
         }
+    }
+}
+
+@Composable
+private fun SortOptionButton(
+    optionName: String,
+    isSelected: Boolean,
+    onSelect: () -> Unit
+) {
+    val buttonColor = if (isSelected) Color.White else Color.Gray
+
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(buttonColor)
+            .clickable { onSelect() }
+    ) {
+        Text(
+            text = optionName,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+        )
     }
 }
 
@@ -544,9 +506,10 @@ private fun TradeSearchResultScreenPreview() {
                     )
                 )
             ).collectAsLazyPagingItems(),
-            currentTradeSearchQuery = TradeSearchQuery(
+            currentQuery = TradeSearchQuery(
                 name = "콜라"
-            )
+            ),
+            categoryList = CategoryList.empty.categoryList
         )
     )
 }
