@@ -7,6 +7,7 @@ import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.category.CategoryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.SearchTradeListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 
@@ -36,5 +37,9 @@ class TradeApi @Inject constructor(
             parameter("pageNum", pageNum.toString())
             parameter("pageSize", pageSize.toString())
         }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun getCategoryList(): Result<CategoryListRes> {
+        return client.get("$baseUrl/api/v1/items/categories").convert(errorMessageMapper::map)
     }
 }

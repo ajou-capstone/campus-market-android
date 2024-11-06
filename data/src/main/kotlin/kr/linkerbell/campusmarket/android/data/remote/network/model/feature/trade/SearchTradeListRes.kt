@@ -25,10 +25,10 @@ data class SearchTradeListRes(
 data class SearchTradeListSortRes(
     @SerialName("sorted")
     val sorted: Boolean,
-    @SerialName("direction")
-    val direction: String,
-    @SerialName("orderProperty")
-    val orderProperty: String,
+    @SerialName("empty")
+    val direction: Boolean,
+    @SerialName("unsorted")
+    val orderProperty: Boolean,
 )
 
 @Serializable

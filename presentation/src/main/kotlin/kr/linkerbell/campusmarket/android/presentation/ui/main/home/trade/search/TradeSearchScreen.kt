@@ -39,6 +39,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultConstant
 
 @Composable
 fun TradeSearchScreen(
@@ -46,6 +47,7 @@ fun TradeSearchScreen(
     argument: TradeSearchArgument,
     data: TradeSearchData
 ) {
+    var queryString by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -53,8 +55,13 @@ fun TradeSearchScreen(
             .background(Indigo50)
     ) {
         TradeSearchScreenSearchBar(
-            onClick = { text ->
-                argument.intent(TradeSearchIntent.Insert(text))
+            queryString,
+            onValueChange = { updatedQuery ->
+                queryString = updatedQuery
+            },
+            onSearchIconClick = { queryString ->
+                argument.intent(TradeSearchIntent.Insert(queryString))
+                navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
             }
         )
 
@@ -80,8 +87,12 @@ fun TradeSearchScreen(
             data.searchHistory.forEach { searchHistory ->
                 TradeSearchScreenSearchHistoryCard(
                     searchHistory,
-                    onClick = {
+                    onClearIconClick = {
                         argument.intent(TradeSearchIntent.DeleteByText(searchHistory))
+                    },
+                    onTextClick = { selectedHistory ->
+                        queryString = selectedHistory
+                        navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
                     }
                 )
             }
@@ -90,9 +101,11 @@ fun TradeSearchScreen(
 }
 
 @Composable
-private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
-
-    var text by remember { mutableStateOf("") }
+private fun TradeSearchScreenSearchBar(
+    currentQuery: String,
+    onValueChange: (String) -> Unit,
+    onSearchIconClick: (String) -> Unit
+) {
 
     Box(
         modifier = Modifier
@@ -116,8 +129,8 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TypingTextField(
-                    text = text,
-                    onValueChange = { text = it },
+                    text = currentQuery,
+                    onValueChange = { onValueChange(it) },
                     hintText = "검색어를 입력하세요",
                     maxLines = 1,
                     maxTextLength = 100,
@@ -129,7 +142,7 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                                 .padding(end = 8.dp)
                                 .size(20.dp)
                                 .clickable {
-                                    text = ""
+                                    onValueChange("")
                                 }
                         )
                     },
@@ -145,7 +158,8 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
                     .size(24.dp)
                     .weight(1f)
                     .clickable {
-                        onClick(text)
+                        if (currentQuery.isNotBlank())
+                            onSearchIconClick(currentQuery)
                     }
             )
         }
@@ -153,7 +167,11 @@ private fun TradeSearchScreenSearchBar(onClick: (String) -> Unit) {
 }
 
 @Composable
-private fun TradeSearchScreenSearchHistoryCard(history: String, onClick: () -> Unit) {
+private fun TradeSearchScreenSearchHistoryCard(
+    history: String,
+    onClearIconClick: () -> Unit,
+    onTextClick: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,7 +191,10 @@ private fun TradeSearchScreenSearchHistoryCard(history: String, onClick: () -> U
             )
             Text(
                 text = history,
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                modifier = Modifier.clickable {
+                    onTextClick(history)
+                }
             )
         }
         Icon(
@@ -183,7 +204,7 @@ private fun TradeSearchScreenSearchHistoryCard(history: String, onClick: () -> U
                 .padding(end = 8.dp)
                 .size(20.dp)
                 .clickable {
-                    onClick()
+                    onClearIconClick()
                 }
         )
     }

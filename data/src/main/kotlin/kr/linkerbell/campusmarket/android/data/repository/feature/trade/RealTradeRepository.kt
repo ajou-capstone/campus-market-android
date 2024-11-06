@@ -10,7 +10,9 @@ import kr.linkerbell.campusmarket.android.data.common.DEFAULT_PAGING_SIZE
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.TradeApi
+import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.data.repository.feature.trade.paging.SearchTradePagingSource
+import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 
@@ -62,5 +64,9 @@ class RealTradeRepository @Inject constructor(
 
     override suspend fun addSearchHistory(text: String) {
         searchHistoryDao.insert(SearchHistoryEntity(queryString = text))
+    }
+
+    override suspend fun getCategoryList(): Result<CategoryList> {
+        return tradeApi.getCategoryList().toDomain()
     }
 }
