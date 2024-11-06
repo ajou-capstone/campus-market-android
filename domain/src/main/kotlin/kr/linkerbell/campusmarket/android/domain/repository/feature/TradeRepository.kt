@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.domain.repository.feature
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 
 interface TradeRepository {
@@ -21,4 +22,6 @@ interface TradeRepository {
     suspend fun deleteAllSearchHistory()
 
     suspend fun addSearchHistory(text: String)
+
+    suspend fun getCategoryList(): Result<CategoryList>
 }

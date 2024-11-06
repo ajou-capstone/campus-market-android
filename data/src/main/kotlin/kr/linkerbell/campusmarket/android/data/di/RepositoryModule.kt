@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kr.linkerbell.campusmarket.android.data.repository.feature.category.RealCategoryRepository
 import kr.linkerbell.campusmarket.android.data.repository.feature.chat.RealChatRepository
 import kr.linkerbell.campusmarket.android.data.repository.feature.trade.RealTradeRepository
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication.RealAuthenticationRepository
@@ -14,7 +13,6 @@ import kr.linkerbell.campusmarket.android.data.repository.nonfeature.file.RealFi
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.term.RealTermRepository
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.tracking.RealTrackingRepository
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.user.RealUserRepository
-import kr.linkerbell.campusmarket.android.domain.repository.feature.CategoryRepository
 import kr.linkerbell.campusmarket.android.domain.repository.feature.ChatRepository
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.AuthenticationRepository
@@ -69,12 +67,6 @@ abstract class RepositoryModule {
     internal abstract fun bindsTradeRepository(
         tradeRepository: RealTradeRepository
     ): TradeRepository
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsCategoryRepository(
-        categoryRepository: RealCategoryRepository
-    ): CategoryRepository
 
     @Binds
     @Singleton

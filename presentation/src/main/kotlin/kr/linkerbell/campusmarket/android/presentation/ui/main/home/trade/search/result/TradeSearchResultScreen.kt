@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -38,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -219,7 +222,10 @@ private fun TradeSearchResultPriceFilter(
                 hintText = "0",
                 maxLines = 1,
                 maxTextLength = 9,
-                modifier = Modifier.weight(3f)
+                modifier = Modifier.weight(3f),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                )
             )
             Text(
                 "~", modifier = Modifier.padding(horizontal = 4.dp)
@@ -234,7 +240,10 @@ private fun TradeSearchResultPriceFilter(
                 hintText = "999,999,999",
                 maxLines = 1,
                 maxTextLength = 9,
-                modifier = Modifier.weight(3f)
+                modifier = Modifier.weight(3f),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                )
             )
             Icon(imageVector = Icons.Default.Search,
                 contentDescription = "Search Button",
@@ -393,21 +402,22 @@ private fun TradeSearchResultItemCard(item: Trade) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        val displayedText = if (item.title.length > 10) {
-                            item.title.take(9) + "..."
-                        } else {
-                            item.title
-                        }
                         Text(
-                            text = displayedText,
-                            style = Headline3
+                            text = item.title,
+                            style = Headline3,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f),
                         )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        TradeSearchResultItemStatus(isSold = item.itemStatus === "Available")
+                        TradeSearchResultItemStatus(
+                            isSold = item.itemStatus === "Available"
+                        )
                     }
-                    Text("${item.price} 원")
+                    Text("${item.price} 원", modifier = Modifier.padding(start = 8.dp))
                 }
                 Text(
                     text = item.nickname,

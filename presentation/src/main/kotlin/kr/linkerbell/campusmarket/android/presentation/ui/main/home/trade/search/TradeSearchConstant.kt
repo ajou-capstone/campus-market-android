@@ -4,5 +4,8 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeC
 
 object TradeSearchConstant {
     const val ROUTE = "${TradeConstant.ROUTE}/search"
-    const val ROUTE_STRUCTURE = "$ROUTE?name={name}"
+
+    const val ROUTE_ARGUMENT_NAME = "name"
+
+    const val ROUTE_STRUCTURE = "$ROUTE?$ROUTE_ARGUMENT_NAME={$ROUTE_ARGUMENT_NAME}"
 }

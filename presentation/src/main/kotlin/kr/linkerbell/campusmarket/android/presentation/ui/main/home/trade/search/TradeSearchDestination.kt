@@ -17,7 +17,8 @@ fun NavGraphBuilder.tradeSearchDestination(
         route = TradeSearchConstant.ROUTE_STRUCTURE,
         arguments = listOf(
             navArgument("name") {
-                type = NavType.StringType; defaultValue = ""
+                type = NavType.StringType
+                defaultValue = ""
             }
         )
     ) {

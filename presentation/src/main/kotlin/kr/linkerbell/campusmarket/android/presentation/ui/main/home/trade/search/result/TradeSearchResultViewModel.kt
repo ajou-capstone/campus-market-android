@@ -16,11 +16,10 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.campusmarket.android.domain.usecase.feature.category.GetCategoryListUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetCategoryListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
-import timber.log.Timber
 
 @HiltViewModel
 class TradeSearchResultViewModel @Inject constructor(
@@ -42,11 +41,11 @@ class TradeSearchResultViewModel @Inject constructor(
 
     private val _categoryList: MutableStateFlow<List<String>> =
         MutableStateFlow(CategoryList.empty.categoryList)
-    val categoryList: StateFlow<List<String>> = _categoryList
+    val categoryList: StateFlow<List<String>> = _categoryList.asStateFlow()
 
     private val _tradeSearchQuery: MutableStateFlow<TradeSearchQuery> =
         MutableStateFlow(TradeSearchQuery())
-    val tradeSearchQuery: StateFlow<TradeSearchQuery> = _tradeSearchQuery
+    val tradeSearchQuery: StateFlow<TradeSearchQuery> = _tradeSearchQuery.asStateFlow()
 
     init {
         _tradeSearchQuery.value = TradeSearchQuery(
@@ -66,7 +65,6 @@ class TradeSearchResultViewModel @Inject constructor(
         when (intent) {
             is TradeSearchResultIntent.ApplyNewQuery -> {
                 _tradeSearchQuery.value = intent.newQuery
-                Timber.tag("siri22").d("${intent.newQuery}")
                 launch {
                     getCategoryList()
                     onUpdateQuery()
