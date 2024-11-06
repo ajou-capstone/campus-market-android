@@ -23,5 +23,14 @@ interface TradeRepository {
 
     suspend fun addSearchHistory(text: String)
 
+    suspend fun postNewTrade(
+        title: String,
+        description: String,
+        price: Int,
+        category: String,
+        thumbnail: String,
+        images: List<String>
+    ): Result<Long>
+
     suspend fun getCategoryList(): Result<CategoryList>
 }

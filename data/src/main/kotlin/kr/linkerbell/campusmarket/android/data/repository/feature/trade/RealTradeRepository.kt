@@ -66,6 +66,17 @@ class RealTradeRepository @Inject constructor(
         searchHistoryDao.insert(SearchHistoryEntity(queryString = text))
     }
 
+    override suspend fun postNewTrade(
+        title: String,
+        description: String,
+        price: Int,
+        category: String,
+        thumbnail: String,
+        images: List<String>
+    ): Result<Long> {
+        return tradeApi.postNewTrade(title, description, price, category, thumbnail, images)
+    }
+
     override suspend fun getCategoryList(): Result<CategoryList> {
         return tradeApi.getCategoryList().toDomain()
     }
