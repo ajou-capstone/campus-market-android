@@ -7,11 +7,7 @@ import kr.linkerbell.campusmarket.android.domain.repository.feature.ChatReposito
 class ConnectRoomUseCase @Inject constructor(
     private val chatRepository: ChatRepository
 ) {
-    suspend operator fun invoke(
-        id: Long
-    ): Result<Session> {
-        return chatRepository.connectRoom(
-            id = id
-        )
+    suspend operator fun invoke(): Result<Session> {
+        return chatRepository.connectRoom()
     }
 }

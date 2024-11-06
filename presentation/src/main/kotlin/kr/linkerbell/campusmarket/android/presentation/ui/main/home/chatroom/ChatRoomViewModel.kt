@@ -1,8 +1,12 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,8 +16,10 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
+import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Session
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ConnectRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetMessageListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetRoomListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.SetRoomNotificationUseCase
@@ -27,7 +33,8 @@ class ChatRoomViewModel @Inject constructor(
     private val getRoomListUseCase: GetRoomListUseCase,
     private val setRoomNotificationUseCase: SetRoomNotificationUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
-    private val getMessageListUseCase: GetMessageListUseCase
+    private val getMessageListUseCase: GetMessageListUseCase,
+    private val connectRoomUseCase: ConnectRoomUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<ChatRoomState> = MutableStateFlow(ChatRoomState.Init)
@@ -46,22 +53,68 @@ class ChatRoomViewModel @Inject constructor(
     private val _messageList: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
     val messageList: StateFlow<List<Message>> = _messageList.asStateFlow()
 
-    init {
-        launch {
-            getRoomListUseCase().catch {
-                _roomList.value = emptyList()
-            }.collect { roomList ->
-                _state.value = ChatRoomState.Init
-                _roomList.value = roomList
+    @OptIn(ObsoleteCoroutinesApi::class)
+    private val sessionAction = viewModelScope.actor<ChatRoomIntent.Session>(coroutineContext) {
+        var session: Session? = null
 
-                _userProfileList.value = roomList.filter { room ->
-                    userProfileList.value.none { userProfile ->
-                        room.id == userProfile.id
+        suspend fun connect() {
+            if (session != null) throw IllegalStateException("Session is already connected")
+
+            connectRoomUseCase()
+                .onSuccess {
+                    session = it
+                }.onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
                     }
-                }.mapNotNull { room ->
-                    getUserProfileUseCase(
-                        id = room.id
-                    ).getOrNull()
+                }
+        }
+
+        suspend fun subscribe(
+            id: Long
+        ) {
+            session?.let {
+                it.subscribe(id).catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+            } ?: throw IllegalStateException("Session is not connected")
+        }
+
+        suspend fun disconnect() {
+            session?.let {
+                it.disconnect()
+                session = null
+            } ?: throw IllegalStateException("Session is not connected")
+        }
+
+        consumeEach { intent ->
+            when (intent) {
+                ChatRoomIntent.Session.Connect -> {
+                    connect()
+                }
+
+                is ChatRoomIntent.Session.Subscribe -> {
+                    subscribe(
+                        id = intent.id
+                    )
+                }
+
+                ChatRoomIntent.Session.Disconnect -> {
+                    disconnect()
                 }
             }
         }
@@ -74,6 +127,16 @@ class ChatRoomViewModel @Inject constructor(
                     id = intent.id,
                     isNotification = intent.isNotification
                 )
+            }
+
+            ChatRoomIntent.Refresh -> {
+                refresh()
+            }
+
+            is ChatRoomIntent.Session -> {
+                launch {
+                    sessionAction.send(intent) // TODO : 도중에 생기는 Room 처리
+                }
             }
         }
     }
@@ -97,6 +160,59 @@ class ChatRoomViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun refresh() {
+        launch {
+            onIntent(ChatRoomIntent.Session.Connect)
+            getRoomListUseCase()
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                    _roomList.value = emptyList()
+                }.collect { roomList ->
+                    _state.value = ChatRoomState.Init
+                    val newRoomId: Set<Long> =
+                        _roomList.value.map { it.id }.toSet() - roomList.map { it.id }.toSet()
+                    newRoomId.forEach { id ->
+                        onIntent(ChatRoomIntent.Session.Subscribe(id))
+                    }
+                    _roomList.value = roomList
+
+                    _userProfileList.value = roomList.filter { room ->
+                        userProfileList.value.none { userProfile ->
+                            room.userId == userProfile.id
+                        }
+                    }.mapNotNull { room ->
+                        getUserProfileUseCase(
+                            id = room.userId
+                        ).getOrNull()
+                    }
+                }
+
+            getMessageListUseCase(roomId = -1)
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                    _messageList.value = emptyList()
+                }.collect {
+                    _messageList.value = it
+                }
         }
     }
 }

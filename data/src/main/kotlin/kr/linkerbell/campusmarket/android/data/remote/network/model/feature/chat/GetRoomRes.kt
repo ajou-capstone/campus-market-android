@@ -6,7 +6,17 @@ import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
 
 @Serializable
-data class GetRoomRes(
+data class GetRoomListRes(
+    @SerialName("data")
+    val data: List<GetRoomListItemRes>
+) : DataMapper<List<Room>> {
+    override fun toDomain(): List<Room> {
+        return data.map { it.toDomain() }
+    }
+}
+
+@Serializable
+data class GetRoomListItemRes(
     @SerialName("chatRoomId")
     val id: Long,
     @SerialName("userId")

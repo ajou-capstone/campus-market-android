@@ -34,7 +34,7 @@ sealed class HomeType(
 
     companion object {
         fun values(): List<HomeType> {
-            return listOf(Trade, MyPage)
+            return listOf(Trade, ChatRoom, MyPage)
         }
     }
 }

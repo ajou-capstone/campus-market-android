@@ -11,8 +11,8 @@ data class MyProfile(
 ) {
     companion object {
         val empty = MyProfile(
-            id = 0,
-            campusId = 0,
+            id = -1,
+            campusId = -1,
             loginEmail = "",
             schoolEmail = "",
             nickname = "",

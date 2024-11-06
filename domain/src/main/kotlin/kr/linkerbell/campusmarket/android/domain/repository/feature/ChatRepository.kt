@@ -9,6 +9,10 @@ interface ChatRepository {
 
     fun getRoomList(): Flow<List<Room>>
 
+    fun getRoom(
+        id: Long
+    ): Flow<Room>
+
     suspend fun quitRoom(
         id: Long
     ): Result<Unit>
@@ -23,13 +27,13 @@ interface ChatRepository {
         isAlarm: Boolean
     ): Result<Unit>
 
-    fun getMessageList(): Flow<List<Message>>
+    fun getMessageList(
+        roomId: Long
+    ): Flow<List<Message>>
 
     suspend fun readMessage(
         id: Long
     ): Result<Unit>
 
-    suspend fun connectRoom(
-        id: Long
-    ): Result<Session>
+    suspend fun connectRoom(): Result<Session>
 }
