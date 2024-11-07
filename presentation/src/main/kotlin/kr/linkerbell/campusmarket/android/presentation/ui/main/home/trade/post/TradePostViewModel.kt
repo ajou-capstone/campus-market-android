@@ -10,16 +10,22 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetCategoryListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.PostNewTradeUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.GetPreSignedUrlUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadImageUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultState
+import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 
 @HiltViewModel
 class TradePostViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val postNewTradeUseCase: PostNewTradeUseCase,
-    private val getCategoryListUseCase: GetCategoryListUseCase
+    private val getCategoryListUseCase: GetCategoryListUseCase,
+    private val getPreSignedUrlUseCase: GetPreSignedUrlUseCase,
+    private val uploadImageUseCase: UploadImageUseCase,
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<TradePostState> = MutableStateFlow(TradePostState.Init)
@@ -32,21 +38,65 @@ class TradePostViewModel @Inject constructor(
         MutableStateFlow(CategoryList.empty.categoryList)
     val categoryList: StateFlow<List<String>> = _categoryList.asStateFlow()
 
+    init {
+        launch {
+            getCategoryList()
+        }
+    }
+
     fun onIntent(intent: TradePostIntent) {
         when (intent) {
             is TradePostIntent.PostNewTrade -> {
                 launch {
+                    val s3UrlsForImages = buildPreSignedUrlListForImages(intent.images)
+                    val thumbnailImage = s3UrlsForImages[intent.thumbnailIndex]
                     postNewTrade(
                         intent.title,
                         intent.description,
                         intent.price,
                         intent.category,
-                        intent.thumbnail,
-                        intent.images
+                        thumbnailUrl = thumbnailImage,
+                        s3UrlsForImage = s3UrlsForImages
                     )
                 }
             }
         }
+    }
+
+    private suspend fun buildPreSignedUrlListForImages(images: List<GalleryImage>): List<String> {
+
+        var urlList: List<String> = emptyList()
+        var hasError = false
+
+        images.forEach { image ->
+            getPreSignedUrlUseCase(
+                fileName = image.name
+            ).map { preSignedUrl ->
+                uploadImageUseCase(
+                    preSignedUrl = preSignedUrl.presignedUrl,
+                    imageUri = image.filePath
+                )
+                urlList = urlList + preSignedUrl.s3url
+            }.onSuccess {
+                _state.value = TradePostState.Init
+                return urlList
+            }.onFailure { exception ->
+                _state.value = TradePostState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        hasError = true
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        hasError = true
+                    }
+                }
+            }
+        }
+        return if (hasError) emptyList()
+        else urlList
     }
 
     private suspend fun postNewTrade(
@@ -54,12 +104,19 @@ class TradePostViewModel @Inject constructor(
         description: String,
         price: Int,
         category: String,
-        thumbnail: String,
-        images: List<String>
+        thumbnailUrl: String,
+        s3UrlsForImage: List<String>
     ) {
         _state.value = TradePostState.Loading
 
-        postNewTradeUseCase(title, description, price, category, thumbnail, images).onSuccess {
+        postNewTradeUseCase(
+            title,
+            description,
+            price,
+            category,
+            thumbnailUrl,
+            s3UrlsForImage
+        ).onSuccess {
             _state.value = TradePostState.Init
             val postedTradeId = it
             //TODO("받아 온 페이지(id = postedTradeId)로 이동")

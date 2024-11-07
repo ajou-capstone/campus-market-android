@@ -1,7 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,7 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -56,6 +54,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
@@ -68,10 +67,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.Confi
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
-import timber.log.Timber
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TradePostScreen(
     navController: NavController,
@@ -86,40 +84,47 @@ fun TradePostScreen(
     val category = remember { mutableStateOf("OTHER") }
     val description = remember { mutableStateOf("") }
     val thumbnailIndex = remember { mutableIntStateOf(0) }
-    var imageList: List<String> by remember { mutableStateOf(emptyList()) }
+    var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     var bottomSheetContent = "Bottom Sheet Content"
 
-    val validatePostContentAndPost = validatePostContentAndPost@{
+    val validateContentAndPost = {
+        var isValid = true
+
         when {
             title.value.isBlank() -> {
                 bottomSheetContent = "제목을 입력해주세요"
-                return@validatePostContentAndPost
+                isBottomSheetVisible = true
+                isValid = false
             }
 
             description.value.isBlank() -> {
                 bottomSheetContent = "상품 상세 정보를 입력해주세요"
-                return@validatePostContentAndPost
+                isBottomSheetVisible = true
+                isValid = false
             }
 
             imageList.isEmpty() -> {
                 bottomSheetContent = "최소 한 장 이상의 사진이 필요해요"
-                return@validatePostContentAndPost
+                isBottomSheetVisible = true
+                isValid = false
             }
         }
-        argument.intent(
-            TradePostIntent.PostNewTrade(
-                title = title.value,
-                description = description.value,
-                price = price.value.toIntOrNull() ?: 0,
-                category = category.value,
-                thumbnail = imageList[thumbnailIndex.intValue],
-                images = imageList
+        if (!isValid) {
+            argument.intent(
+                TradePostIntent.PostNewTrade(
+                    title = title.value,
+                    description = description.value,
+                    price = price.value.toIntOrNull() ?: 0,
+                    category = category.value,
+                    thumbnailIndex = thumbnailIndex.intValue,
+                    images = imageList
+                )
             )
-        )
+        }
     }
 
     Column(
@@ -138,6 +143,7 @@ fun TradePostScreen(
             Column {
                 Text(
                     text = "사진",
+                    style = Headline3,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Row {
@@ -151,10 +157,10 @@ fun TradePostScreen(
                     ) {
                         imageList.forEachIndexed { index, image ->
                             TradePostScreenImageBox(
-                                imageSource = image,
+                                image = image,
                                 isThumbnail = (thumbnailIndex.intValue == index),
-                                onDeleteImageClicked = { uri ->
-                                    imageList = imageList.filter { it != uri }
+                                onDeleteImageClicked = { targetedImage ->
+                                    imageList.filter { it != targetedImage }
                                 },
                                 onContentClicked = {
                                     thumbnailIndex.intValue = index
@@ -172,7 +178,7 @@ fun TradePostScreen(
                     categoryList = data.categoryList
                 )
             }
-            TradePostScreenPostButton(onPostButtonClicked = validatePostContentAndPost)
+            TradePostScreenPostButton(onPostButtonClicked = validateContentAndPost)
         }
     }
 
@@ -182,8 +188,7 @@ fun TradePostScreen(
             onDismissRequest = { isGalleryShowing = false },
             onResult = {
                 if (imageList.size <= 5) {
-                    imageList = imageList + it.filePath
-                    Timber.tag("siri22").d("ImageList : $imageList")
+                    imageList = imageList + it
                 } else {
                     //TODO("사진은 5장까지만!")
                 }
@@ -256,14 +261,14 @@ private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
 
 @Composable
 private fun TradePostScreenImageBox(
-    imageSource: String,
+    image: GalleryImage,
     isThumbnail: Boolean,
-    onDeleteImageClicked: (String) -> Unit,
+    onDeleteImageClicked: (GalleryImage) -> Unit,
     onContentClicked: () -> Unit
 ) {
     Box(Modifier.padding(end = 16.dp)) {
         PostImage(
-            data = imageSource,
+            data = image.filePath,
             modifier = Modifier
                 .size(100.dp)
                 .background(
@@ -290,7 +295,7 @@ private fun TradePostScreenImageBox(
                     shape = RoundedCornerShape(32.dp)
                 )
                 .clickable {
-                    onDeleteImageClicked(imageSource)
+                    onDeleteImageClicked(image)
                 },
             painter = painterResource(id = R.drawable.ic_close),
             contentDescription = null,
@@ -329,17 +334,18 @@ private fun TradePostScreenTopBar(navigateUp: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Default.Done,
+            painter = painterResource(R.drawable.ic_chevron_left),
             contentDescription = "Navigate Up Button",
             modifier = Modifier
-                .size(24.dp)
+                .size(40.dp)
                 .clickable {
                     navigateUp()
                 }
                 .padding(horizontal = 8.dp)
         )
         Text(
-            text = "상품 등록"
+            text = "상품 등록",
+            style = Headline2
         )
     }
 }
@@ -353,9 +359,10 @@ private fun TradePostScreenTradeInfo(
     categoryList: List<String>
 ) {
     Column {
-        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Column(modifier = Modifier.padding(vertical = 16.dp)) {
             Text(
                 text = "제목",
+                style = Headline3,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             TypingTextField(
@@ -379,9 +386,7 @@ private fun TradePostScreenTradeInfo(
                     .fillMaxWidth()
             )
         }
-
         Row(modifier = Modifier.padding(bottom = 8.dp)) {
-
             Column(
                 modifier = Modifier
                     .weight(2f)
@@ -389,6 +394,7 @@ private fun TradePostScreenTradeInfo(
             ) {
                 Text(
                     text = "가격",
+                    style = Headline3,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 TypingTextField(
@@ -420,15 +426,17 @@ private fun TradePostScreenTradeInfo(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "분류",
+                    style = Headline3,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                TradePostCategorySelector(categoryList, category.value)
+                TradePostScreenCategorySelector(categoryList, category.value)
             }
         }
 
         Column {
             Text(
                 text = "상품 상세 정보",
+                style = Headline3,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             TypingTextField(
@@ -457,18 +465,16 @@ private fun TradePostScreenTradeInfo(
 }
 
 @Composable
-private fun TradePostCategorySelector(
+private fun TradePostScreenCategorySelector(
     categoryList: List<String>,
     category: String
 ) {
-
     val isDropDownExpanded = remember { mutableStateOf(false) }
     val itemIndex = remember {
         mutableIntStateOf(
             categoryList.indexOf(category).takeIf { it >= 0 } ?: 0
         )
     }
-
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
@@ -497,7 +503,6 @@ private fun TradePostCategorySelector(
                     }
             )
         }
-
         DropdownMenu(
             expanded = isDropDownExpanded.value,
             onDismissRequest = { isDropDownExpanded.value = false },
@@ -546,7 +551,7 @@ private fun TradePostScreenPostButton(onPostButtonClicked: () -> Unit) {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "올리기",
+            text = "등록하기",
             modifier = Modifier.padding(16.dp),
             style = Headline3,
             color = Color.White
@@ -563,8 +568,7 @@ private fun TradePostScreenTradeInfoPreview() {
     val description =
         remember {
             mutableStateOf(
-                "상품에 대한 자세한 정보입니다. 좀 길게 작성될 수도 있구요. " +
-                        "그럴 때 어떻게 되는지 제가 직접 한번 해보겠습니다."
+                "상품에 대한 자세한 정보입니다."
             )
         }
     TradePostScreenTradeInfo(
@@ -574,7 +578,6 @@ private fun TradePostScreenTradeInfoPreview() {
         description = description,
         categoryList = CategoryList.empty.categoryList
     )
-
 }
 
 @Preview

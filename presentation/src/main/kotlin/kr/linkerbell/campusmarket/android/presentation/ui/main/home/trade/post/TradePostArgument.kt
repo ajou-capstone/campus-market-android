@@ -3,6 +3,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
+import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 
 @Immutable
 data class TradePostArgument(
@@ -26,7 +27,7 @@ sealed interface TradePostIntent {
         val description: String,
         val price: Int,
         val category: String,
-        val thumbnail: String,
-        val images: List<String>
+        val thumbnailIndex: Int,
+        val images: List<GalleryImage>
     ) : TradePostIntent
 }
