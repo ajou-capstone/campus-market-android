@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +52,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
@@ -74,9 +75,9 @@ fun TradeSearchResultScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    val currentQuery by remember { mutableStateOf(data.currentQuery) }
+    val currentQuery by rememberSaveable { mutableStateOf(data.currentQuery) }
 
-    val categoryList = data.categoryList
+    val categoryList = listOf("") + data.categoryList
 
     val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
         argument.intent(TradeSearchResultIntent.ApplyNewQuery(updatedQuery))
@@ -215,8 +216,14 @@ private fun TradeSearchResultPriceFilter(
             TypingTextField(
                 text = minPrice.toString(),
                 onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() }) {
-                        minPrice = newValue.toInt()
+                    minPrice = if (newValue.isEmpty()) {
+                        0
+                    } else if (newValue.all { it.isDigit() }) {
+                        newValue.toInt()
+                    } else if (minPrice > maxPrice) {
+                        maxPrice
+                    } else {
+                        minPrice
                     }
                 },
                 hintText = "0",
@@ -233,8 +240,14 @@ private fun TradeSearchResultPriceFilter(
             TypingTextField(
                 text = maxPrice.toString(),
                 onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() }) {
-                        maxPrice = newValue.toInt()
+                    maxPrice = if (newValue.isEmpty()) {
+                        0
+                    } else if (newValue.all { it.isDigit() }) {
+                        newValue.toInt()
+                    } else if (minPrice > maxPrice) {
+                        minPrice
+                    } else {
+                        maxPrice
                     }
                 },
                 hintText = "999,999,999",
@@ -254,7 +267,9 @@ private fun TradeSearchResultPriceFilter(
                         updateQuery(
                             currentQuery.copy(
                                 minPrice = minPrice,
-                                maxPrice = maxPrice
+                                maxPrice = maxPrice,
+                                category = currentQuery.category,
+                                sorted = currentQuery.sorted
                             )
                         )
                     }
@@ -317,7 +332,12 @@ private fun TradeSearchResultCategoryFilter(
                         isDropDownExpanded.value = false
                         itemIndex.intValue = index
                         updateQuery(
-                            currentQuery.copy(category = categoryList[index])
+                            currentQuery.copy(
+                                minPrice = currentQuery.minPrice,
+                                maxPrice = currentQuery.maxPrice,
+                                category = categoryList[index],
+                                sorted = currentQuery.sorted
+                            )
                         )
                     }
                 )
@@ -351,7 +371,14 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByLatest,
                 onSelect = {
                     selectedSortedOption = sortByLatest
-                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
+                    updateQuery(
+                        currentQuery.copy(
+                            minPrice = currentQuery.minPrice,
+                            maxPrice = currentQuery.maxPrice,
+                            category = currentQuery.category,
+                            sorted = selectedSortedOption
+                        )
+                    )
                 }
             )
             SortOptionButton(
@@ -359,7 +386,14 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByLowPrice,
                 onSelect = {
                     selectedSortedOption = sortByLowPrice
-                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
+                    updateQuery(
+                        currentQuery.copy(
+                            minPrice = currentQuery.minPrice,
+                            maxPrice = currentQuery.maxPrice,
+                            category = currentQuery.category,
+                            sorted = selectedSortedOption
+                        )
+                    )
                 }
             )
             SortOptionButton(
@@ -367,7 +401,14 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByHighPrice,
                 onSelect = {
                     selectedSortedOption = sortByHighPrice
-                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
+                    updateQuery(
+                        currentQuery.copy(
+                            minPrice = currentQuery.minPrice,
+                            maxPrice = currentQuery.maxPrice,
+                            category = currentQuery.category,
+                            sorted = selectedSortedOption
+                        )
+                    )
                 }
             )
         }
@@ -502,44 +543,45 @@ private fun translateToKor(engCategory: String): String {
         "SPORTS_LEISURE" -> "스포츠/레저"
         "ENTERTAINMENT_HOBBIES" -> "엔터테인먼트/취미"
         "OTHER" -> "기타"
+        "" -> "전체"
         else -> "기타"
     }
 }
-
-@Preview
-@Composable
-private fun TradeSearchResultScreenPreview() {
-    TradeSearchResultScreen(
-        navController = rememberNavController(),
-        argument = TradeSearchResultArgument(
-            state = TradeSearchResultState.Init,
-            event = MutableEventFlow(),
-            intent = {},
-            logEvent = { _, _ -> },
-            coroutineContext = Dispatchers.IO
-        ),
-        data = TradeSearchResultData(
-            tradeList = MutableStateFlow(
-                PagingData.from(
-                    listOf(
-                        Trade(
-                            itemId = 1L,
-                            userId = 1L,
-                            nickname = "유저22",
-                            thumbnail = "https://picsum.photos/200",
-                            title = "콜라 팝니다 근데_제목이_좀_길어서_이렇게_넘어가면_어케됨",
-                            price = 1000,
-                            chatCount = 5,
-                            likeCount = 2,
-                            itemStatus = ""
-                        )
-                    )
-                )
-            ).collectAsLazyPagingItems(),
-            currentQuery = TradeSearchQuery(
-                name = "콜라"
-            ),
-            categoryList = CategoryList.empty.categoryList
-        )
-    )
-}
+//
+//@Preview
+//@Composable
+//private fun TradeSearchResultScreenPreview() {
+//    TradeSearchResultScreen(
+//        navController = rememberNavController(),
+//        argument = TradeSearchResultArgument(
+//            state = TradeSearchResultState.Init,
+//            event = MutableEventFlow(),
+//            intent = {},
+//            logEvent = { _, _ -> },
+//            coroutineContext = Dispatchers.IO
+//        ),
+//        data = TradeSearchResultData(
+//            tradeList = MutableStateFlow(
+//                PagingData.from(
+//                    listOf(
+//                        Trade(
+//                            itemId = 1L,
+//                            userId = 1L,
+//                            nickname = "유저22",
+//                            thumbnail = "https://picsum.photos/200",
+//                            title = "콜라 팝니다 근데_제목이_좀_길어서_이렇게_넘어가면_어케됨",
+//                            price = 1000,
+//                            chatCount = 5,
+//                            likeCount = 2,
+//                            itemStatus = ""
+//                        )
+//                    )
+//                )
+//            ).collectAsLazyPagingItems(),
+//            currentQuery = TradeSearchQuery(
+//                name = "콜라"
+//            ),
+//            categoryList = CategoryList.empty.categoryList
+//        )
+//    )
+//}

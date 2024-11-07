@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,13 +12,14 @@ import kotlinx.coroutines.flow.catch
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetCategoryListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import javax.inject.Inject
 
 @HiltViewModel
 class TradeSearchResultViewModel @Inject constructor(
@@ -50,7 +50,7 @@ class TradeSearchResultViewModel @Inject constructor(
     init {
         _tradeSearchQuery.value = TradeSearchQuery(
             name = savedStateHandle["name"] ?: "",
-            category = savedStateHandle["category"] ?: "OTHER",
+            category = savedStateHandle["category"] ?: "",
             minPrice = savedStateHandle["minPrice"] ?: 0,
             maxPrice = savedStateHandle["maxPrice"] ?: Int.MAX_VALUE,
             sorted = savedStateHandle["sorted"] ?: ""
@@ -112,5 +112,4 @@ class TradeSearchResultViewModel @Inject constructor(
             _categoryList.value = CategoryList.empty.categoryList
         }
     }
-
 }

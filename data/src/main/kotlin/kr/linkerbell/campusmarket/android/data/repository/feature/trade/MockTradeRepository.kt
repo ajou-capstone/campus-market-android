@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 import timber.log.Timber

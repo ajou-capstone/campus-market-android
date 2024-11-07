@@ -1,9 +1,9 @@
-package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.category
+package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 
 @Serializable
 data class CategoryListRes(
@@ -12,7 +12,7 @@ data class CategoryListRes(
 ) : DataMapper<CategoryList> {
     override fun toDomain(): CategoryList {
         return CategoryList(
-            categoryList = categoryList
+            categoryList = categoryList.sorted()
         )
     }
 }

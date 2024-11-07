@@ -25,11 +25,11 @@ class TradeViewModel @Inject constructor(
     private val searchTradeListUseCase: SearchTradeListUseCase
 ) : BaseViewModel() {
 
-    private val _state: MutableStateFlow<LandingPageState> = MutableStateFlow(LandingPageState.Init)
-    val state: StateFlow<LandingPageState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<TradeScreenState> = MutableStateFlow(TradeScreenState.Init)
+    val state: StateFlow<TradeScreenState> = _state.asStateFlow()
 
-    private val _event: MutableEventFlow<LandingPageEvent> = MutableEventFlow()
-    val event: EventFlow<LandingPageEvent> = _event.asEventFlow()
+    private val _event: MutableEventFlow<TradeScreenEvent> = MutableEventFlow()
+    val event: EventFlow<TradeScreenEvent> = _event.asEventFlow()
 
     private val _tradeList: MutableStateFlow<PagingData<Trade>> =
         MutableStateFlow(PagingData.empty())
@@ -61,7 +61,7 @@ class TradeViewModel @Inject constructor(
         }
     }
 
-    fun onIntent(intent: LandingPageIntent) {
+    fun onIntent(intent: TradeScreenIntent) {
 
     }
 }

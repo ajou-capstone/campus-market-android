@@ -14,7 +14,7 @@ data class TradeSearchResultData(
 @Immutable
 data class TradeSearchQuery(
     val name: String = "",
-    val category: String = "OTHER",
+    val category: String = "",
     val minPrice: Int = 0,
     val maxPrice: Int = Int.MAX_VALUE,
     val sorted: String = "createdDate,desc"

@@ -12,7 +12,7 @@ import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhisto
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.TradeApi
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.data.repository.feature.trade.paging.SearchTradePagingSource
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 

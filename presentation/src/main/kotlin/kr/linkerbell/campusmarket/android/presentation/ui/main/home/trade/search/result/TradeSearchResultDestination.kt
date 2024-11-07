@@ -18,7 +18,7 @@ fun NavGraphBuilder.tradeSearchResultDestination(
         route = TradeSearchResultConstant.ROUTE_STRUCTURE,
         arguments = listOf(
             navArgument("name") { type = NavType.StringType; defaultValue = "" },
-            navArgument("category") { type = NavType.StringType; defaultValue = "OTHER" },
+            navArgument("category") { type = NavType.StringType; defaultValue = "" },
             navArgument("minPrice") { type = NavType.IntType; defaultValue = 0 },
             navArgument("maxPrice") { type = NavType.IntType; defaultValue = Int.MAX_VALUE },
             navArgument("sorted") { type = NavType.StringType; defaultValue = "" }

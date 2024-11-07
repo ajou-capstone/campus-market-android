@@ -57,10 +57,10 @@ fun TradeScreen(
     navController: NavController,
     viewModel: TradeViewModel = hiltViewModel(),
 ) {
-    val argument: LandingPageArgument = Unit.let {
+    val argument: TradeScreenArgument = Unit.let {
         val state by viewModel.state.collectAsStateWithLifecycle()
 
-        LandingPageArgument(
+        TradeScreenArgument(
             state = state,
             event = viewModel.event,
             intent = viewModel::onIntent,
@@ -88,7 +88,7 @@ fun TradeScreen(
 @Composable
 private fun TradeScreen(
     navController: NavController,
-    argument: LandingPageArgument,
+    argument: TradeScreenArgument,
     data: TradeData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
@@ -145,17 +145,22 @@ private fun TradeItemCard(item: Trade) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Text(
                             text = item.title,
                             style = Headline3,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f),
                         )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        TradeItemStatus(isSold = item.itemStatus === "Available")
+                        TradeItemStatus(
+                            isSold = item.itemStatus === "Available"
+                        )
                     }
-                    Text("${item.price} 원")
+                    Text("${item.price} 원", modifier = Modifier.padding(start = 8.dp))
                 }
                 Text(
                     text = item.nickname,
@@ -274,8 +279,8 @@ private fun TradeItemStatus(
 private fun TradeScreenPreview() {
     TradeScreen(
         navController = rememberNavController(),
-        argument = LandingPageArgument(
-            state = LandingPageState.Init,
+        argument = TradeScreenArgument(
+            state = TradeScreenState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
