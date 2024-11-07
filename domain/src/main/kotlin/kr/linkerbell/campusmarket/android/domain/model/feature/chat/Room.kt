@@ -7,4 +7,15 @@ data class Room(
     val readLatestMessageId: Long,
     val title: String,
     val isAlarm: Boolean
-)
+) {
+    companion object {
+        val empty = Room(
+            id = -1,
+            userId = -1,
+            tradeId = -1,
+            readLatestMessageId = -1,
+            title = "",
+            isAlarm = false
+        )
+    }
+}

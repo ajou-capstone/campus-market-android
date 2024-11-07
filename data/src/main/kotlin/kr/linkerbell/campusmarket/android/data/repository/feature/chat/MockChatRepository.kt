@@ -38,6 +38,25 @@ class MockChatRepository @Inject constructor() : ChatRepository {
         }
     }
 
+    override fun getRoom(
+        id: Long
+    ): Flow<Room> {
+        return flow {
+            randomShortDelay()
+
+            emit(
+                Room(
+                    id = 1L,
+                    userId = 1L,
+                    tradeId = 1L,
+                    title = "title1",
+                    isAlarm = true,
+                    readLatestMessageId = 1L
+                )
+            )
+        }
+    }
+
     override suspend fun quitRoom(
         id: Long
     ): Result<Unit> {
@@ -73,10 +92,13 @@ class MockChatRepository @Inject constructor() : ChatRepository {
         return Result.success(Unit)
     }
 
-    override fun getMessageList(): Flow<List<Message>> {
+    override fun getMessageList(
+        roomId: Long
+    ): Flow<List<Message>> {
         return flow {
             randomShortDelay()
 
+            val currentTime = System.currentTimeMillis()
             emit(
                 listOf(
                     Message.Text(
@@ -84,16 +106,44 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                         chatRoomId = 1L,
                         userId = 1L,
                         content = "안녕하세요.",
-                        createdAt = System.currentTimeMillis()
+                        createdAt = currentTime - 5L
                     ),
                     Message.Image(
                         id = 2L,
                         chatRoomId = 1L,
                         userId = 1L,
                         content = "https://placehold.co/600x400",
-                        createdAt = System.currentTimeMillis()
+                        createdAt = currentTime - 4L
                     ),
-                )
+                    Message.Text(
+                        id = 3L,
+                        chatRoomId = 1L,
+                        userId = 1L,
+                        content = "해당 물품 구매 희망합니다.",
+                        createdAt = currentTime - 3L
+                    ),
+                    Message.Text(
+                        id = 4L,
+                        chatRoomId = 1L,
+                        userId = 2L,
+                        content = "이거 말씀하시는 건가요?",
+                        createdAt = currentTime - 2L
+                    ),
+                    Message.Image(
+                        id = 5L,
+                        chatRoomId = 1L,
+                        userId = 2L,
+                        content = "https://placehold.co/600x400",
+                        createdAt = currentTime - 1L
+                    ),
+                    Message.Text(
+                        id = 6L,
+                        chatRoomId = 1L,
+                        userId = 2L,
+                        content = "엄청나게 긴 메세지를 엄청나게 보내는데 ".repeat(20),
+                        createdAt = currentTime
+                    ),
+                ),
             )
         }
     }
@@ -106,15 +156,13 @@ class MockChatRepository @Inject constructor() : ChatRepository {
         return Result.success(Unit)
     }
 
-    override suspend fun connectRoom(
-        id: Long
-    ): Result<Session> {
+    override suspend fun connectRoom(): Result<Session> {
         randomShortDelay()
 
         return Result.success(
             Session(
                 subscribe = { flow { } },
-                send = { },
+                send = { _, _, _ -> Result.success(Unit) },
                 disconnect = { }
             )
         )

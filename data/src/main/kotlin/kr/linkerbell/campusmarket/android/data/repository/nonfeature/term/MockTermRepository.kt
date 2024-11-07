@@ -23,21 +23,21 @@ class MockTermRepository @Inject constructor() : TermRepository {
                     title = "고유식별 정보처리 동의",
                     url = "https://www.naver.com",
                     isRequired = true,
-                    isAgree = false
+                    isAgree = true
                 ),
                 Term(
                     id = 2L,
                     title = "통신사 이용약관 동의",
                     url = "https://www.naver.com",
                     isRequired = true,
-                    isAgree = false
+                    isAgree = true
                 ),
                 Term(
                     id = 3L,
                     title = "서비스 이용약관 동의",
                     url = "https://www.naver.com",
                     isRequired = false,
-                    isAgree = false
+                    isAgree = true
                 )
             )
         )

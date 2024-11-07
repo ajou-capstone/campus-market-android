@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -42,10 +43,13 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space40
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ComposableLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
 
 @Composable
 fun ChatRoomScreen(
@@ -96,13 +100,7 @@ private fun ChatRoomScreen(
     fun navigateToChatScreen(
         id: Long
     ) {
-//        val route = makeRoute(
-//            ChatConstant.ROUTE,
-//            listOf(
-//                ChatConstant.ROUTE_ARGUMENT_ROOM_ID to id
-//            )
-//        )
-//        navController.safeNavigate(route)
+        navController.safeNavigate("${ChatConstant.ROUTE}/$id")
     }
 
     fun navigateToNotificationScreen() {
@@ -226,6 +224,20 @@ private fun ChatRoomScreen(
         }
     }
 
+    ComposableLifecycle { lifecycleOwner, lifecycleEvent ->
+        when (lifecycleEvent) {
+            Lifecycle.Event.ON_START -> {
+                intent(ChatRoomIntent.Refresh)
+            }
+
+            Lifecycle.Event.ON_PAUSE -> {
+                intent(ChatRoomIntent.Session.Disconnect)
+            }
+
+            else -> Unit
+        }
+    }
+
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
@@ -236,6 +248,7 @@ private fun ChatRoomScreen(
 @Preview
 @Composable
 private fun ChatRoomScreenPreview() {
+    val currentTime = System.currentTimeMillis()
     ChatRoomScreen(
         navController = rememberNavController(),
         argument = ChatRoomArgument(
@@ -278,14 +291,42 @@ private fun ChatRoomScreenPreview() {
                     chatRoomId = 1L,
                     userId = 1L,
                     content = "안녕하세요.",
-                    createdAt = System.currentTimeMillis() - 1000L
+                    createdAt = currentTime - 5L
                 ),
                 Message.Image(
                     id = 2L,
                     chatRoomId = 1L,
                     userId = 1L,
                     content = "https://placehold.co/600x400",
-                    createdAt = System.currentTimeMillis()
+                    createdAt = currentTime - 4L
+                ),
+                Message.Text(
+                    id = 3L,
+                    chatRoomId = 1L,
+                    userId = 1L,
+                    content = "해당 물품 구매 희망합니다.",
+                    createdAt = currentTime - 3L
+                ),
+                Message.Text(
+                    id = 4L,
+                    chatRoomId = 1L,
+                    userId = 2L,
+                    content = "이거 말씀하시는 건가요?",
+                    createdAt = currentTime - 2L
+                ),
+                Message.Image(
+                    id = 5L,
+                    chatRoomId = 1L,
+                    userId = 2L,
+                    content = "https://placehold.co/600x400",
+                    createdAt = currentTime - 1L
+                ),
+                Message.Text(
+                    id = 6L,
+                    chatRoomId = 1L,
+                    userId = 2L,
+                    content = "엄청나게 긴 메세지를 엄청나게 보내는데 ".repeat(20),
+                    createdAt = currentTime
                 ),
             )
         )

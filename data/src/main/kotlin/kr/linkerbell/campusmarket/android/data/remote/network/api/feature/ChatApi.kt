@@ -15,6 +15,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetMessageListByIdRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetRecentMessageIdListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetRoomListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.GetRoomRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.MakeRoomReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.MakeRoomRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.ReadMessageReq
@@ -35,6 +36,13 @@ class ChatApi @Inject constructor(
 
     suspend fun getRoomList(): Result<GetRoomListRes> {
         return client.get("$baseUrl/api/v1/chat/rooms")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getRoom(
+        id: Long
+    ): Result<GetRoomRes> {
+        return client.get("$baseUrl/api/v1/chat/room/$id")
             .convert(errorMessageMapper::map)
     }
 

@@ -8,5 +8,8 @@ import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImag
 @Immutable
 data class GalleryData(
     val folderList: List<GalleryFolder>,
-    val galleryImageList: LazyPagingItems<GalleryImage>
+    val galleryImageList: LazyPagingItems<GalleryImage>,
+    val selectedImageList: List<GalleryImage>,
+    val minSelectCount: Int,
+    val maxSelectCount: Int
 )

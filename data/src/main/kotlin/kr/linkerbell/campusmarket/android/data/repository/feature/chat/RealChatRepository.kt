@@ -12,8 +12,8 @@ import kr.linkerbell.campusmarket.android.data.remote.local.database.message.toE
 import kr.linkerbell.campusmarket.android.data.remote.local.database.room.RoomDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.room.toEntity
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.ChatApi
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.MessageReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.MessageRes
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat.toRequest
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
@@ -43,6 +43,23 @@ class RealChatRepository @Inject constructor(
                 }
 
             roomDao.insert(*roomEntityList.toTypedArray())
+        }
+    }
+
+    override fun getRoom(
+        id: Long
+    ): Flow<Room> {
+        return roomDao.get(id = id).map { room ->
+            room.toDomain()
+        }.onStart {
+            val room = chatApi.getRoom(
+                id = id
+            )
+                .toDomain()
+                .getOrThrow()
+                .toEntity()
+
+            roomDao.insert(room)
         }
     }
 
@@ -82,10 +99,17 @@ class RealChatRepository @Inject constructor(
         }
     }
 
-    override fun getMessageList(): Flow<List<Message>> {
-        return messageDao.getAll().map { roomList ->
-            roomList.map { room ->
-                room.toDomain()
+    override fun getMessageList(
+        roomId: Long
+    ): Flow<List<Message>> {
+        val messageEntityList = if (roomId == -1L) {
+            messageDao.getAll()
+        } else {
+            messageDao.getByRoomId(roomId)
+        }
+        return messageEntityList.map { messageList ->
+            messageList.map { message ->
+                message.toDomain()
             }
         }.onStart {
             val messageIdList = chatApi.getRecentMessageIdList().toDomain().getOrThrow()
@@ -111,21 +135,56 @@ class RealChatRepository @Inject constructor(
         }
     }
 
-    override suspend fun connectRoom(
-        id: Long
-    ): Result<Session> {
+    override suspend fun connectRoom(): Result<Session> {
         return chatApi.connectRoom().map { stompSession ->
             Session(
-                subscribe = {
+                subscribe = { id ->
                     stompSession.subscribe("/sub/chat/$id").map {
-                        json.decodeFromString<MessageRes>(it.bodyAsText).toDomain()
+                        val message = json.decodeFromString<MessageRes>(it.bodyAsText).toDomain()
+                        val messageEntity = message.toEntity()
+                        messageDao.insert(messageEntity)
+                        if (roomDao.get(messageEntity.roomId).firstOrNull() == null) {
+                            val room = chatApi.getRoom(
+                                id = id
+                            )
+                                .toDomain()
+                                .getOrThrow()
+                                .toEntity()
+
+                            roomDao.insert(room)
+                        }
+                        message
                     }
                 },
-                send = { message ->
-                    stompSession.sendText(
-                        destination = "/send/chat/$id",
-                        body = json.encodeToString(message.toRequest())
-                    )
+                send = { id, content, contentType ->
+                    runCatching {
+                        val message = if (contentType == "TEXT") {
+                            MessageReq.Text(
+                                content = (content as? String).orEmpty(),
+                                contentType = contentType
+                            )
+                        } else {
+                            MessageReq.Image(
+                                content = (content as? String).orEmpty(),
+                                contentType = contentType
+                            )
+                        }
+                        stompSession.sendText(
+                            destination = "/send/chat/$id",
+                            body = json.encodeToString(message)
+                        )
+
+                        if (roomDao.get(id).firstOrNull() == null) {
+                            val room = chatApi.getRoom(
+                                id = id
+                            )
+                                .toDomain()
+                                .getOrThrow()
+                                .toEntity()
+
+                            roomDao.insert(room)
+                        }
+                    }.map { }
                 },
                 disconnect = {
                     stompSession.disconnect()
