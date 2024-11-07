@@ -34,3 +34,6 @@
 -keep class androidx.credentials.playservices.** {
   *;
 }
+
+-dontwarn java.net.http.HttpResponse
+-dontwarn java.net.http.WebSocketHandshakeException
