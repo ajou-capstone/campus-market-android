@@ -75,7 +75,6 @@ fun TradeSearchResultScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     var currentQuery by remember { mutableStateOf(data.currentQuery) }
-
     val categoryList = listOf("") + data.categoryList
 
     val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
