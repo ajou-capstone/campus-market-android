@@ -21,7 +21,8 @@ fun NavGraphBuilder.tradeSearchDestination(
                 defaultValue = ""
             }
         )
-    ) {
+    ) { backStackEntry ->
+
         val viewModel: TradeSearchViewModel = hiltViewModel()
 
         val argument: TradeSearchArgument = Unit.let {
@@ -40,7 +41,8 @@ fun NavGraphBuilder.tradeSearchDestination(
             val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
 
             TradeSearchData(
-                searchHistory = searchHistory
+                searchHistory = searchHistory,
+                previousQuery = backStackEntry.arguments?.getString("name") ?: ""
             )
         }
 

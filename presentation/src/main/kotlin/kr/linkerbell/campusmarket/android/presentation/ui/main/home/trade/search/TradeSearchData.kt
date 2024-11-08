@@ -4,5 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class TradeSearchData(
-    val searchHistory: List<String>
+    val searchHistory: List<String>,
+    val previousQuery: String
 )
