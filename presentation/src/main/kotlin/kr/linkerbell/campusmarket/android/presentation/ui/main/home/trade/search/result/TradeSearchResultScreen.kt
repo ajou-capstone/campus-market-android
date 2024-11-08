@@ -204,7 +204,7 @@ private fun TradeSearchResultPriceFilter(
     var minPrice by remember { mutableIntStateOf(currentQuery.minPrice) }
     var maxPrice by remember { mutableIntStateOf(currentQuery.maxPrice) }
     var minPriceInText by remember { mutableStateOf(if (minPrice == 0) "" else minPrice.toString()) }
-    var maxPriceInText by remember { mutableStateOf(if (maxPrice == 0) "" else maxPrice.toString()) }
+    var maxPriceInText by remember { mutableStateOf(if (maxPrice == Int.MAX_VALUE) "" else maxPrice.toString()) }
 
     Box {
         Row(verticalAlignment = Alignment.CenterVertically) {
