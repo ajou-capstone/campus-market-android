@@ -48,55 +48,61 @@ class TradePostViewModel @Inject constructor(
         when (intent) {
             is TradePostIntent.PostNewTrade -> {
                 launch {
-                    val s3UrlsForImages = buildPreSignedUrlListForImages(intent.images)
-                    val thumbnailImage = s3UrlsForImages[intent.thumbnailIndex]
+                    val s3UrlsForImages = intent.imageList?.map { image ->
+                        buildPreSignedUrlForImage(image)
+                    } ?: emptyList()
+
+                    val thumbnailUrl = s3UrlsForImages.firstOrNull() ?: ""
+                    val imageUrls = s3UrlsForImages.drop(1)
+
                     postNewTrade(
                         intent.title,
                         intent.description,
                         intent.price,
                         intent.category,
-                        thumbnailUrl = thumbnailImage,
-                        s3UrlsForImage = s3UrlsForImages
+                        thumbnailUrl = thumbnailUrl,
+                        s3UrlsForImage = imageUrls
                     )
                 }
             }
         }
     }
 
-    private suspend fun buildPreSignedUrlListForImages(images: List<GalleryImage>): List<String> {
+    private suspend fun buildPreSignedUrlForImage(image: GalleryImage?): String {
 
-        var urlList: List<String> = emptyList()
-        var hasError = false
+        if (image == null) return ""
 
-        images.forEach { image ->
-            getPreSignedUrlUseCase(
-                fileName = image.name
-            ).map { preSignedUrl ->
-                uploadImageUseCase(
-                    preSignedUrl = preSignedUrl.presignedUrl,
-                    imageUri = image.filePath
-                )
-                urlList = urlList + preSignedUrl.s3url
-            }.onSuccess {
-                _state.value = TradePostState.Init
-                return urlList
-            }.onFailure { exception ->
-                _state.value = TradePostState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        hasError = true
-                    }
+        var s3Url = ""
 
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                        hasError = true
-                    }
+        getPreSignedUrlUseCase(
+            fileName = image.name
+        ).map { preSignedUrl ->
+            uploadImageUseCase(
+                preSignedUrl = preSignedUrl.preSignedUrl,
+                imageUri = image.filePath
+            )
+            s3Url = cleanUrl(preSignedUrl.s3url)
+        }.onSuccess {
+            _state.value = TradePostState.Init
+        }.onFailure { exception ->
+            _state.value = TradePostState.Init
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
         }
-        return if (hasError) emptyList()
-        else urlList
+        return s3Url
+    }
+
+    //TODO("백엔드 서버 변경사항 반영되면 이 부분 수정")
+    private fun cleanUrl(rawUrl: String): String {
+        val pattern = "(\\.(jpg|png|gif|bmp|jpeg|webp))[^/]*$".toRegex()
+        return pattern.replace(rawUrl, "$1")
     }
 
     private suspend fun postNewTrade(
@@ -108,19 +114,18 @@ class TradePostViewModel @Inject constructor(
         s3UrlsForImage: List<String>
     ) {
         _state.value = TradePostState.Loading
-
         postNewTradeUseCase(
-            title,
-            description,
-            price,
-            category,
-            thumbnailUrl,
-            s3UrlsForImage
+            title = title,
+            description = description,
+            price = price,
+            category = category,
+            thumbnail = thumbnailUrl,
+            images = s3UrlsForImage
         ).onSuccess {
             _state.value = TradePostState.Init
             val postedTradeId = it
             //TODO("받아 온 페이지(id = postedTradeId)로 이동")
-        }.onFailure {
+        }.onFailure { errorLog ->
             _state.value = TradePostState.Init
             //TODO("실패 시 예외 처리")
         }
@@ -136,5 +141,4 @@ class TradePostViewModel @Inject constructor(
             _categoryList.value = CategoryList.empty.categoryList
         }
     }
-
 }

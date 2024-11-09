@@ -74,7 +74,7 @@ class RegisterProfileViewModel @Inject constructor(
                     fileName = image.name
                 ).map { preSignedUrl ->
                     uploadImageUseCase(
-                        preSignedUrl = preSignedUrl.presignedUrl,
+                        preSignedUrl = preSignedUrl.preSignedUrl,
                         imageUri = image.filePath
                     ).map {
                         setMyProfileUseCase(

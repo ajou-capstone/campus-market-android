@@ -27,7 +27,6 @@ sealed interface TradePostIntent {
         val description: String,
         val price: Int,
         val category: String,
-        val thumbnailIndex: Int,
-        val images: List<GalleryImage>
+        val imageList: List<GalleryImage>?
     ) : TradePostIntent
 }

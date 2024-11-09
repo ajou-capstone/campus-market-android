@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,9 +49,11 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
 
 @Composable
@@ -94,25 +98,34 @@ private fun TradeScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Indigo50)
-    ) {
-        TradeSearchBar {
-            navController.navigate(TradeSearchConstant.ROUTE)
-        }
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Indigo50)
         ) {
-            items(
-                count = data.tradeList.itemCount,
-                key = { index -> data.tradeList[index]?.itemId ?: -1 }
-            ) { index ->
-                val trade = data.tradeList[index] ?: return@items
-                TradeItemCard(trade)
-                Spacer(modifier = Modifier.height(8.dp))
+            TradeSearchBar {
+                navController.navigate(TradeSearchConstant.ROUTE)
             }
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
+            ) {
+                items(
+                    count = data.tradeList.itemCount,
+                    key = { index -> data.tradeList[index]?.itemId ?: -1 }
+                ) { index ->
+                    val trade = data.tradeList[index] ?: return@items
+                    TradeItemCard(trade)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(32.dp)
+        ) {
+            TradeScreenPostButton(onClick = { navController.navigate(TradePostConstant.ROUTE) })
         }
     }
 }
@@ -271,6 +284,16 @@ private fun TradeItemStatus(
         ) {
             Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
         }
+    }
+}
+
+@Composable
+private fun TradeScreenPostButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = { onClick() },
+        containerColor = Indigo100,
+    ) {
+        Icon(Icons.Filled.Add, "Add Post Button")
     }
 }
 

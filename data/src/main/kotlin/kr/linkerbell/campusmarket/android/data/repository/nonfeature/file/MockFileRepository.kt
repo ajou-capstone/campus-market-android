@@ -12,7 +12,7 @@ class MockFileRepository @Inject constructor() : FileRepository {
         randomShortDelay()
         return Result.success(
             PreSignedUrl(
-                presignedUrl = "https://www.naver.com",
+                preSignedUrl = "https://www.naver.com",
                 s3url = "https://www.naver.com"
             )
         )
