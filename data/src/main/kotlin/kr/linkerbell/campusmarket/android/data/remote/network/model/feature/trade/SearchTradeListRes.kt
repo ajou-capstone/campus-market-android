@@ -3,7 +3,7 @@ package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.tra
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 
 @Serializable
 data class SearchTradeListRes(
@@ -51,9 +51,9 @@ data class SearchTradeListItemRes(
     val likeCount: Int,
     @SerialName("itemStatus")
     val itemStatus: String
-) : DataMapper<Trade> {
-    override fun toDomain(): Trade {
-        return Trade(
+) : DataMapper<SummarizedTrade> {
+    override fun toDomain(): SummarizedTrade {
+        return SummarizedTrade(
             itemId = itemId,
             userId = userId,
             nickname = nickname,

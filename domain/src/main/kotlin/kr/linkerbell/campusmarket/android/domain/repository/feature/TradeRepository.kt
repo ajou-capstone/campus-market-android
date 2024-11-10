@@ -3,7 +3,11 @@ package kr.linkerbell.campusmarket.android.domain.repository.feature
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.DeletedLikedItemInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.LikedItemInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 
 interface TradeRepository {
 
@@ -13,7 +17,7 @@ interface TradeRepository {
         minPrice: Int,
         maxPrice: Int,
         sorted: String
-    ): Flow<PagingData<Trade>>
+    ): Flow<PagingData<SummarizedTrade>>
 
     suspend fun getSearchHistoryList(): Flow<List<String>>
 
@@ -23,7 +27,7 @@ interface TradeRepository {
 
     suspend fun addSearchHistory(text: String)
 
-    suspend fun postNewTrade(
+    suspend fun postTradeContents(
         title: String,
         description: String,
         price: Int,
@@ -32,5 +36,15 @@ interface TradeRepository {
         images: List<String>
     ): Result<Long>
 
+    suspend fun patchTradeContents(tradeContents: TradeContents, itemId: Long): Result<Long>
+
     suspend fun getCategoryList(): Result<CategoryList>
+
+    suspend fun searchTradeInfo(itemId: Long): Result<TradeInfo>
+
+    suspend fun postLikedItem(itemId: Long): Result<LikedItemInfo>
+
+    suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemInfo>
+
+    suspend fun deleteTradeInfo(itemId: Long): Result<Unit>
 }

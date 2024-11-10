@@ -3,7 +3,7 @@ package kr.linkerbell.campusmarket.android.domain.usecase.feature.trade
 import androidx.paging.PagingData
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 
 class SearchTradeListUseCase @Inject constructor(
@@ -15,7 +15,7 @@ class SearchTradeListUseCase @Inject constructor(
         minPrice: Int,
         maxPrice: Int,
         sorted: String
-    ): Flow<PagingData<Trade>> {
+    ): Flow<PagingData<SummarizedTrade>> {
         return tradeRepository.searchTradeList(
             name = name,
             category = category,

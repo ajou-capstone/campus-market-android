@@ -39,12 +39,12 @@ fun NavGraphBuilder.tradeSearchResultDestination(
         }
 
         val data: TradeSearchResultData = let {
-            val tradeList = viewModel.tradeList.collectAsLazyPagingItems()
+            val tradeList = viewModel.summarizedTradeList.collectAsLazyPagingItems()
             val categoryList = viewModel.categoryList.value
             val currentQuery = viewModel.tradeSearchQuery.value
 
             TradeSearchResultData(
-                tradeList = tradeList,
+                summarizedTradeList = tradeList,
                 currentQuery = currentQuery,
                 categoryList = categoryList
             )

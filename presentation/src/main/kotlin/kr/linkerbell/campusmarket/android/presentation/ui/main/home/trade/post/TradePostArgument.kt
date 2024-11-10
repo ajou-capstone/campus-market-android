@@ -22,7 +22,7 @@ sealed interface TradePostState {
 sealed interface TradePostEvent
 
 sealed interface TradePostIntent {
-    data class PostNewTrade(
+    data class PostOrPatchTrade(
         val title: String,
         val description: String,
         val price: Int,

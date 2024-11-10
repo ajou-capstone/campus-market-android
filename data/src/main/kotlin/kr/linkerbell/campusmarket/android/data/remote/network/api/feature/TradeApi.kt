@@ -1,8 +1,10 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.api.feature
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import javax.inject.Inject
@@ -10,10 +12,14 @@ import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.CategoryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.DeletedLikedItemRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostLikedItemRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostOrPatchTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeReq
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.SearchTradeListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.TradeInfoRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 
 class TradeApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,
@@ -50,7 +56,7 @@ class TradeApi @Inject constructor(
         category: String,
         thumbnail: String,
         images: List<String>
-    ): Result<PostTradeRes> {
+    ): Result<PostOrPatchTradeRes> {
         return client.post("$baseUrl/api/v1/items") {
             setBody(
                 PostTradeReq(
@@ -65,7 +71,42 @@ class TradeApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
+    suspend fun patchTradeContents(
+        tradeContents: TradeContents,
+        itemId: Long
+    ): Result<PostOrPatchTradeRes> {
+        return client.patch("$baseUrl/api/v1/items/$itemId") {
+            setBody(
+                PostTradeReq(
+                    title = tradeContents.title,
+                    description = tradeContents.description,
+                    price = tradeContents.price,
+                    category = tradeContents.category,
+                    thumbnail = tradeContents.thumbnail,
+                    images = tradeContents.images
+                )
+            )
+        }.convert(errorMessageMapper::map)
+    }
+
     suspend fun getCategoryList(): Result<CategoryListRes> {
         return client.get("$baseUrl/api/v1/items/categories").convert(errorMessageMapper::map)
+    }
+
+    suspend fun getTradeInfo(itemId: Long): Result<TradeInfoRes> {
+        return client.get("$baseUrl/api/v1/items/$itemId").convert(errorMessageMapper::map)
+    }
+
+
+    suspend fun postLikeItem(itemId: Long): Result<PostLikedItemRes> {
+        return client.post("$baseUrl/api/v1/$itemId/likes").convert(errorMessageMapper::map)
+    }
+
+    suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemRes> {
+        return client.delete("$baseUrl/api/v1/$itemId/likes").convert(errorMessageMapper::map)
+    }
+
+    suspend fun deleteTradeInfo(itemId: Long): Result<Unit> {
+        return client.delete("$baseUrl/api/v1/items/$itemId").convert(errorMessageMapper::map)
     }
 }

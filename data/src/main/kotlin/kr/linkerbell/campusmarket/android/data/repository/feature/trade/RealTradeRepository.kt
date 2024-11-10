@@ -13,7 +13,11 @@ import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.TradeA
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.data.repository.feature.trade.paging.SearchTradePagingSource
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.DeletedLikedItemInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.LikedItemInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 
 class RealTradeRepository @Inject constructor(
@@ -27,7 +31,7 @@ class RealTradeRepository @Inject constructor(
         minPrice: Int,
         maxPrice: Int,
         sorted: String
-    ): Flow<PagingData<Trade>> {
+    ): Flow<PagingData<SummarizedTrade>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGING_SIZE,
@@ -66,7 +70,7 @@ class RealTradeRepository @Inject constructor(
         searchHistoryDao.insert(SearchHistoryEntity(queryString = text))
     }
 
-    override suspend fun postNewTrade(
+    override suspend fun postTradeContents(
         title: String,
         description: String,
         price: Int,
@@ -78,7 +82,30 @@ class RealTradeRepository @Inject constructor(
             .toDomain()
     }
 
+    override suspend fun patchTradeContents(
+        tradeContents: TradeContents,
+        itemId: Long
+    ): Result<Long> {
+        return tradeApi.patchTradeContents(tradeContents, itemId).toDomain()
+    }
+
     override suspend fun getCategoryList(): Result<CategoryList> {
         return tradeApi.getCategoryList().toDomain()
+    }
+
+    override suspend fun searchTradeInfo(itemId: Long): Result<TradeInfo> {
+        return tradeApi.getTradeInfo(itemId).toDomain()
+    }
+
+    override suspend fun postLikedItem(itemId: Long): Result<LikedItemInfo> {
+        return tradeApi.postLikeItem(itemId).toDomain()
+    }
+
+    override suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemInfo> {
+        return tradeApi.deleteLikedItem(itemId).toDomain()
+    }
+
+    override suspend fun deleteTradeInfo(itemId: Long): Result<Unit> {
+        return tradeApi.deleteTradeInfo(itemId)
     }
 }

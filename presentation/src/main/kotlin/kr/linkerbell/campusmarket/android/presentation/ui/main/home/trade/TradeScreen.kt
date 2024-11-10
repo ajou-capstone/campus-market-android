@@ -45,16 +45,20 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
+
+//TODO(변경사항 많은지 체크)
 
 @Composable
 fun TradeScreen(
@@ -74,10 +78,10 @@ fun TradeScreen(
     }
 
     val data: TradeData = Unit.let {
-        val tradeList = viewModel.tradeList.collectAsLazyPagingItems()
+        val tradeList = viewModel.summarizedTradeList.collectAsLazyPagingItems()
 
         TradeData(
-            tradeList = tradeList,
+            summarizedTradeList = tradeList,
         )
     }
 
@@ -98,44 +102,60 @@ private fun TradeScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Indigo50)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Indigo50)
+    ) {
+        TradeSearchBar {
+            navController.navigate(TradeSearchConstant.ROUTE)
+        }
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
-            TradeSearchBar {
-                navController.navigate(TradeSearchConstant.ROUTE)
-            }
-            LazyColumn(
-                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
-            ) {
-                items(
-                    count = data.tradeList.itemCount,
-                    key = { index -> data.tradeList[index]?.itemId ?: -1 }
-                ) { index ->
-                    val trade = data.tradeList[index] ?: return@items
-                    TradeItemCard(trade)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+            items(
+                count = data.summarizedTradeList.itemCount,
+                key = { index -> data.summarizedTradeList[index]?.itemId ?: -1 }
+            ) { index ->
+                val trade = data.summarizedTradeList[index] ?: return@items
+                TradeItemCard(
+                    item = trade,
+                    navigateToTradeInfoScreen = {
+                        val tradeInfoRoute = makeRoute(
+                            route = TradeInfoConstant.ROUTE,
+                            arguments = mapOf(
+                                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+                            )
+                        )
+                        navController.navigate(tradeInfoRoute)
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(32.dp)
-        ) {
-            TradeScreenPostButton(onClick = { navController.navigate(TradePostConstant.ROUTE) })
-        }
+    }
+    Box(
+        modifier = Modifier
+            .padding(32.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        TradeScreenPostButton(onClick = { navController.navigate(TradePostConstant.ROUTE) })
     }
 }
 
 @Composable
-private fun TradeItemCard(item: Trade) {
+private fun TradeItemCard(
+    item: SummarizedTrade,
+    navigateToTradeInfoScreen: (Long) -> Unit
+) {
     Box(
         Modifier
             .shadow(4.dp)
             .clip(RoundedCornerShape(5.dp))
+            .clickable {
+                navigateToTradeInfoScreen(item.itemId)
+            }
     ) {
         Row(
             modifier = Modifier
@@ -169,9 +189,8 @@ private fun TradeItemCard(item: Trade) {
                             maxLines = 1,
                             modifier = Modifier.weight(1f),
                         )
-                        TradeItemStatus(
-                            isSold = item.itemStatus === "Available"
-                        )
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        TradeItemStatus(isSold = item.itemStatus === "FORSALE")
                     }
                     Text("${item.price} 원", modifier = Modifier.padding(start = 8.dp))
                 }
@@ -310,10 +329,10 @@ private fun TradeScreenPreview() {
             coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = TradeData(
-            tradeList = MutableStateFlow(
+            summarizedTradeList = MutableStateFlow(
                 PagingData.from(
                     listOf(
-                        Trade(
+                        SummarizedTrade(
                             itemId = 1L,
                             userId = 1L,
                             nickname = "장성혁",

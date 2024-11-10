@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
@@ -31,9 +31,9 @@ class TradeViewModel @Inject constructor(
     private val _event: MutableEventFlow<TradeScreenEvent> = MutableEventFlow()
     val event: EventFlow<TradeScreenEvent> = _event.asEventFlow()
 
-    private val _tradeList: MutableStateFlow<PagingData<Trade>> =
+    private val _summarizedTradeList: MutableStateFlow<PagingData<SummarizedTrade>> =
         MutableStateFlow(PagingData.empty())
-    val tradeList: StateFlow<PagingData<Trade>> = _tradeList.asStateFlow()
+    val summarizedTradeList: StateFlow<PagingData<SummarizedTrade>> = _summarizedTradeList.asStateFlow()
 
     init {
         launch {
@@ -56,7 +56,7 @@ class TradeViewModel @Inject constructor(
                         }
                     }
                 }.collect {
-                    _tradeList.value = it
+                    _summarizedTradeList.value = it
                 }
         }
     }

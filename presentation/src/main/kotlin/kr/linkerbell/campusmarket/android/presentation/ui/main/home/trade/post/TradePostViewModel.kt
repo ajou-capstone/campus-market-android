@@ -10,9 +10,12 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetCategoryListUseCase
-import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.PostNewTradeUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetTradeInfoUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.PatchTradeContentsUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.PostTradeContentsUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.GetPreSignedUrlUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadImageUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
@@ -22,10 +25,12 @@ import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImag
 @HiltViewModel
 class TradePostViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val postNewTradeUseCase: PostNewTradeUseCase,
+    private val postTradeContentsUseCase: PostTradeContentsUseCase,
+    private val patchTradeContentsUseCase: PatchTradeContentsUseCase,
     private val getCategoryListUseCase: GetCategoryListUseCase,
     private val getPreSignedUrlUseCase: GetPreSignedUrlUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
+    private val getTradeInfoUseCase: GetTradeInfoUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<TradePostState> = MutableStateFlow(TradePostState.Init)
@@ -38,31 +43,57 @@ class TradePostViewModel @Inject constructor(
         MutableStateFlow(CategoryList.empty.categoryList)
     val categoryList: StateFlow<List<String>> = _categoryList.asStateFlow()
 
+    private val _originalTradeContents: MutableStateFlow<TradeContents> =
+        MutableStateFlow(TradeContents.empty)
+    val originalTradeContents: StateFlow<TradeContents> = _originalTradeContents.asStateFlow()
+
+    private var _itemId: String = savedStateHandle["itemId"] ?: ""
+
     init {
         launch {
+            if (_itemId != "") {
+                getOriginalTradeInfo(_itemId.toLong())
+            }
             getCategoryList()
         }
     }
 
     fun onIntent(intent: TradePostIntent) {
         when (intent) {
-            is TradePostIntent.PostNewTrade -> {
+            is TradePostIntent.PostOrPatchTrade -> {
                 launch {
-                    val s3UrlsForImages = intent.imageList?.map { image ->
+                    var s3UrlsForImages =
+                        listOf(_originalTradeContents.value.thumbnail) + _originalTradeContents.value.images
+                    val newImages = intent.imageList?.map { image ->
                         buildPreSignedUrlForImage(image)
                     } ?: emptyList()
+
+                    s3UrlsForImages = (s3UrlsForImages + newImages).filter { it.isNotBlank() }
 
                     val thumbnailUrl = s3UrlsForImages.firstOrNull() ?: ""
                     val imageUrls = s3UrlsForImages.drop(1)
 
-                    postNewTrade(
+                    val tradeContent = TradeContents(
                         intent.title,
                         intent.description,
                         intent.price,
                         intent.category,
-                        thumbnailUrl = thumbnailUrl,
-                        s3UrlsForImage = imageUrls
+                        thumbnail = thumbnailUrl,
+                        images = imageUrls
                     )
+
+                    if (_itemId != "") {
+                        _itemId = patchTradeContents(tradeContent)
+                    } else {
+                        _itemId = postTradeContents(
+                            intent.title,
+                            intent.description,
+                            intent.price,
+                            intent.category,
+                            thumbnailUrl = thumbnailUrl,
+                            s3UrlsForImage = imageUrls
+                        )
+                    }
                 }
             }
         }
@@ -99,16 +130,16 @@ class TradePostViewModel @Inject constructor(
         return s3Url
     }
 
-    private suspend fun postNewTrade(
+    private suspend fun postTradeContents(
         title: String,
         description: String,
         price: Int,
         category: String,
         thumbnailUrl: String,
         s3UrlsForImage: List<String>
-    ) {
+    ): String {
         _state.value = TradePostState.Loading
-        postNewTradeUseCase(
+        postTradeContentsUseCase(
             title = title,
             description = description,
             price = price,
@@ -117,8 +148,43 @@ class TradePostViewModel @Inject constructor(
             images = s3UrlsForImage
         ).onSuccess {
             _state.value = TradePostState.Init
+            return it.toString()
         }.onFailure {
             _state.value = TradePostState.Init
+        }
+        return ""
+    }
+
+    private suspend fun patchTradeContents(
+        tradeContents: TradeContents
+    ): String {
+        _state.value = TradePostState.Loading
+        patchTradeContentsUseCase(
+            tradeContents, _itemId.toLong()
+        ).onSuccess {
+            _state.value = TradePostState.Init
+            return it.toString()
+        }.onFailure {
+            _state.value = TradePostState.Init
+        }
+        return ""
+    }
+
+    private suspend fun getOriginalTradeInfo(itemId: Long) {
+        _state.value = TradePostState.Loading
+        getTradeInfoUseCase(itemId).onSuccess {
+            _state.value = TradePostState.Init
+            _originalTradeContents.value = TradeContents(
+                title = it.title,
+                description = it.description,
+                price = it.price,
+                category = it.category,
+                thumbnail = it.thumbnail,
+                images = it.images
+            )
+        }.onFailure {
+            _state.value = TradePostState.Init
+            _originalTradeContents.value = TradeContents.empty
         }
     }
 

@@ -3,7 +3,7 @@ package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.tra
 import kotlinx.serialization.SerialName
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 
-data class PostTradeRes (
+data class PostOrPatchTradeRes (
     @SerialName("itemId")
     val itemId: Long
 ) : DataMapper<Long> {

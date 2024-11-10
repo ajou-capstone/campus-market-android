@@ -52,7 +52,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
@@ -61,9 +61,12 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
+import timber.log.Timber
 
 @Composable
 fun TradeSearchResultScreen(
@@ -79,7 +82,6 @@ fun TradeSearchResultScreen(
 
     val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
         currentQuery = updatedQuery
-
         argument.intent(TradeSearchResultIntent.ApplyNewQuery(updatedQuery))
     }
 
@@ -122,11 +124,23 @@ fun TradeSearchResultScreen(
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
             items(
-                count = data.tradeList.itemCount,
-                key = { index -> data.tradeList[index]?.itemId ?: -1 }
+                count = data.summarizedTradeList.itemCount,
+                key = { index -> data.summarizedTradeList[index]?.itemId ?: -1 }
             ) { index ->
-                val trade = data.tradeList[index] ?: return@items
-                TradeSearchResultItemCard(trade)
+                val trade = data.summarizedTradeList[index] ?: return@items
+                TradeSearchResultItemCard(
+                    item = trade,
+                    navigateToTradeInfoScreen = {
+                        val tradeInfoRoute = makeRoute(
+                            route = TradeInfoConstant.ROUTE,
+                            arguments = mapOf(
+                                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+                            )
+                        )
+                        Timber.tag("siri22").d("ROUTE : ${tradeInfoRoute}")
+                        navController.navigate(tradeInfoRoute)
+                    }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -422,11 +436,17 @@ private fun TradeSearchResultSortOption(
 }
 
 @Composable
-private fun TradeSearchResultItemCard(item: Trade) {
+private fun TradeSearchResultItemCard(
+    item: SummarizedTrade,
+    navigateToTradeInfoScreen: (Long) -> Unit
+) {
     Box(
         Modifier
             .shadow(4.dp)
             .clip(RoundedCornerShape(5.dp))
+            .clickable {
+                navigateToTradeInfoScreen(item.itemId)
+            }
     ) {
         Row(
             modifier = Modifier
@@ -565,10 +585,10 @@ private fun TradeSearchResultScreenPreview() {
             coroutineContext = Dispatchers.IO
         ),
         data = TradeSearchResultData(
-            tradeList = MutableStateFlow(
+            summarizedTradeList = MutableStateFlow(
                 PagingData.from(
                     listOf(
-                        Trade(
+                        SummarizedTrade(
                             itemId = 1L,
                             userId = 1L,
                             nickname = "유저22",

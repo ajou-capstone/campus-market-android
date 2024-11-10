@@ -14,7 +14,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetCategoryListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.SearchTradeListUseCase
@@ -35,9 +35,10 @@ class TradeSearchResultViewModel @Inject constructor(
     private val _event: MutableEventFlow<TradeSearchResultEvent> = MutableEventFlow()
     val event: EventFlow<TradeSearchResultEvent> = _event.asEventFlow()
 
-    private val _tradeList: MutableStateFlow<PagingData<Trade>> =
+    private val _summarizedTradeList: MutableStateFlow<PagingData<SummarizedTrade>> =
         MutableStateFlow(PagingData.empty())
-    val tradeList: StateFlow<PagingData<Trade>> = _tradeList.asStateFlow()
+    val summarizedTradeList: StateFlow<PagingData<SummarizedTrade>> =
+        _summarizedTradeList.asStateFlow()
 
     private val _categoryList: MutableStateFlow<List<String>> =
         MutableStateFlow(CategoryList.empty.categoryList)
@@ -98,7 +99,7 @@ class TradeSearchResultViewModel @Inject constructor(
                 }
             }.collect {
                 _state.value = TradeSearchResultState.Init
-                _tradeList.value = it
+                _summarizedTradeList.value = it
             }
     }
 

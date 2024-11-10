@@ -29,6 +29,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
@@ -71,6 +73,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
+import timber.log.Timber
 
 @Composable
 fun TradePostScreen(
@@ -81,11 +85,15 @@ fun TradePostScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
+    val originalContents = data.originalTradeContents
     var title by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("0") }
     var category by remember { mutableStateOf("OTHER") }
     var description by remember { mutableStateOf("") }
+
+    var originalImageList: List<String> by remember { mutableStateOf(emptyList()) }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
+    var hasThumbnails = false
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isBottomSheetVisible by remember { mutableStateOf(false) }
@@ -93,6 +101,15 @@ fun TradePostScreen(
 
     var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
 
+    LaunchedEffect(originalContents) {
+        title = originalContents.title
+        price = originalContents.price.toString()
+        category = originalContents.category
+        description = originalContents.description
+        originalImageList =
+            listOf(originalContents.thumbnail) + originalContents.images
+        Timber.tag("siri22").d("launchedEffect -> $originalImageList")
+    }
     val validateContentAndPost = {
         var isValid = true
         when {
@@ -143,15 +160,29 @@ fun TradePostScreen(
                             .horizontalScroll(rememberScrollState())
                             .padding(horizontal = 16.dp)
                     ) {
-                        imageList.forEachIndexed { index, image ->
+                        originalImageList = originalImageList.filter { it.isNotBlank() }
+                        originalImageList.forEachIndexed { index, url ->
                             TradePostScreenImageBox(
-                                image = image,
+                                imagePath = url,
                                 isThumbnail = (index == 0),
                                 onDeleteImageClicked = { imageToBeDeleted ->
-                                    imageList = imageList.filter { imageToBeDeleted.id != it.id }
+                                    originalImageList =
+                                        originalImageList.filter { imageToBeDeleted != it }
                                 }
                             )
+                            hasThumbnails = true
                         }
+                        imageList.forEachIndexed { index, image ->
+                            TradePostScreenImageBox(
+                                imagePath = image.filePath,
+                                isThumbnail = (index == 0 && !hasThumbnails),
+                                onDeleteImageClicked = { imageToBeDeleted ->
+                                    imageList = imageList.filter { imageToBeDeleted != it.filePath }
+                                }
+                            )
+                            hasThumbnails = true
+                        }
+                        Timber.tag("siri22").d("after render images -> $originalImageList\n $imageList")
                     }
                 }
                 TradePostScreenTradeInfo(
@@ -187,7 +218,7 @@ fun TradePostScreen(
                 imageList += addedImage
             },
             minSelectCount = 1,
-            maxSelectCount = 5 - imageList.size
+            maxSelectCount = 5 - originalImageList.size - imageList.size
         )
     }
 
@@ -230,8 +261,9 @@ fun TradePostScreen(
             title = "등록되었습니다!",
             isCancelable = false,
             onConfirm = {
+                Timber.tag("siri22").d("isConfirmButtonVisible-> $originalImageList\nImageList : $imageList")
                 argument.intent(
-                    TradePostIntent.PostNewTrade(
+                    TradePostIntent.PostOrPatchTrade(
                         title = title,
                         description = description,
                         price = price.toIntOrNull() ?: 0,
@@ -239,10 +271,10 @@ fun TradePostScreen(
                         imageList = imageList
                     )
                 )
-                //navController.navigate(to TradeInfoPAge)
             },
             onDismissRequest = {
                 isConfirmButtonVisible = false
+                //TODO("Ray Jang -> TradeInfoConstant.ROUTE?itemId={itemId}로 이동")
             }
         )
     }
@@ -276,13 +308,15 @@ private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
 
 @Composable
 private fun TradePostScreenImageBox(
-    image: GalleryImage,
+    imagePath: String,
     isThumbnail: Boolean,
-    onDeleteImageClicked: (GalleryImage) -> Unit,
+    onDeleteImageClicked: (String) -> Unit,
 ) {
+    Timber.tag("siri22").d("Render image with url ${imagePath}")
+
     Box(Modifier.padding(end = 16.dp)) {
         PostImage(
-            data = image.filePath,
+            data = imagePath,
             modifier = Modifier
                 .size(100.dp)
                 .background(
@@ -306,7 +340,7 @@ private fun TradePostScreenImageBox(
                     shape = RoundedCornerShape(32.dp)
                 )
                 .clickable {
-                    onDeleteImageClicked(image)
+                    onDeleteImageClicked(imagePath)
                 },
             painter = painterResource(id = R.drawable.ic_close),
             contentDescription = null,
@@ -592,6 +626,7 @@ private fun TradePostScreenPreview() {
         ),
         data = TradePostData(
             categoryList = CategoryList.empty.categoryList,
+            originalTradeContents = TradeContents.empty
         )
     )
 }
