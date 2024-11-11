@@ -203,7 +203,7 @@ private fun ScheduleEditScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         BasicTextField(
-                            value = scheduleStartTimeHour.toString(),
+                            value = scheduleStartTimeHour,
                             modifier = Modifier
                                 .width(Space32)
                                 .background(
@@ -212,7 +212,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleStartTimeHour = it
+                                scheduleEndTimeHour = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
@@ -221,7 +221,7 @@ private fun ScheduleEditScreen(
                             style = Body1.merge(Gray900)
                         )
                         BasicTextField(
-                            value = scheduleStartTimeMinute.toString(),
+                            value = scheduleStartTimeMinute,
                             modifier = Modifier
                                 .width(Space32)
                                 .background(
@@ -230,7 +230,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleStartTimeMinute = it
+                                scheduleEndTimeHour = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
@@ -239,7 +239,7 @@ private fun ScheduleEditScreen(
                             style = Body1.merge(Gray900)
                         )
                         BasicTextField(
-                            value = scheduleEndTimeHour.toString(),
+                            value = scheduleEndTimeHour,
                             modifier = Modifier
                                 .width(Space32)
                                 .background(
@@ -248,7 +248,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleEndTimeHour = it
+                                scheduleEndTimeHour = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
@@ -257,7 +257,7 @@ private fun ScheduleEditScreen(
                             style = Body1.merge(Gray900)
                         )
                         BasicTextField(
-                            value = scheduleEndTimeMinute.toString(),
+                            value = scheduleEndTimeMinute,
                             modifier = Modifier
                                 .width(Space32)
                                 .background(
@@ -266,7 +266,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleEndTimeMinute = it
+                                scheduleEndTimeHour = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
