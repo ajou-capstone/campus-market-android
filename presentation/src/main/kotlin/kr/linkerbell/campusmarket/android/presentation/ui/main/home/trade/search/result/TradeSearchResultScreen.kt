@@ -79,6 +79,7 @@ fun TradeSearchResultScreen(
 
     val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
         currentQuery = updatedQuery
+
         argument.intent(TradeSearchResultIntent.ApplyNewQuery(updatedQuery))
     }
 
@@ -90,7 +91,7 @@ fun TradeSearchResultScreen(
         TradeSearchResultSearchBar(currentQuery.name) {
             navController.navigate(TradeSearchConstant.ROUTE + "?name=${currentQuery.name}")
         }
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(20.dp)) {
             Column {
                 Row(
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -207,12 +208,15 @@ private fun TradeSearchResultPriceFilter(
     var maxPriceInText by remember { mutableStateOf(if (maxPrice == Int.MAX_VALUE) "" else maxPrice.toString()) }
 
     Box {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = "가격대",
-                style = Headline3
+                text = "가격",
+                style = Headline3,
             )
-            Spacer(modifier = Modifier.padding(2.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
             TypingTextField(
                 text = minPriceInText,
                 onValueChange = { newValue ->
@@ -223,10 +227,6 @@ private fun TradeSearchResultPriceFilter(
                         val filteredValue = newValue.filter { it.isDigit() }
                         minPrice = filteredValue.toInt()
                         minPriceInText = filteredValue
-                        if (minPrice > maxPrice) {
-                            minPrice = maxPrice
-                            minPriceInText = minPrice.toString()
-                        }
                     }
                 },
                 hintText = "최소 가격",
@@ -250,10 +250,6 @@ private fun TradeSearchResultPriceFilter(
                         val filteredValue = newValue.filter { it.isDigit() }
                         maxPrice = filteredValue.toInt()
                         maxPriceInText = filteredValue
-                        if (minPrice > maxPrice) {
-                            maxPrice = minPrice
-                            maxPriceInText = maxPrice.toString()
-                        }
                     }
                 },
                 hintText = "최대 가격",
@@ -270,6 +266,9 @@ private fun TradeSearchResultPriceFilter(
                     .size(24.dp)
                     .weight(1f)
                     .clickable {
+                        if (minPrice > maxPrice) {
+                            maxPrice = minPrice
+                        }
                         updateQuery(
                             currentQuery.copy(
                                 minPrice = minPrice,
@@ -367,10 +366,11 @@ private fun TradeSearchResultSortOption(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("정렬", style = Headline3, modifier = Modifier.padding(end = 12.dp))
+        Text("정렬", style = Headline3)
+        Spacer(modifier = Modifier.padding(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             SortOptionButton(
                 optionName = "최신순",
@@ -522,7 +522,6 @@ private fun SortOptionButton(
 
     Box(
         modifier = Modifier
-            .padding(4.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(buttonColor)
             .clickable { onSelect() }

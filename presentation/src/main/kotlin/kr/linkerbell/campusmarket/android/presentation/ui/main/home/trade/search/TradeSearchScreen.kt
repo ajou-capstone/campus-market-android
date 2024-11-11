@@ -38,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultConstant
@@ -51,8 +52,13 @@ fun TradeSearchScreen(
     var queryString by remember { mutableStateOf(data.previousQuery) }
 
     val navigateToResultScreen = { queryName: String ->
-        val route = TradeSearchResultConstant.ROUTE + "?name=$queryName"
-        navController.navigate(route){
+        val newRoute = makeRoute(
+            route = TradeSearchResultConstant.ROUTE,
+            arguments = mapOf(
+                TradeSearchResultConstant.ROUTE_ARGUMENT_NAME to queryName
+            )
+        )
+        navController.navigate(newRoute) {
             popUpTo(TradeConstant.ROUTE) { inclusive = false }
         }
     }
