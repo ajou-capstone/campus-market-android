@@ -14,11 +14,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -27,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
@@ -37,6 +34,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.ChatRoomScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.MyPageScreen
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.ScheduleScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeScreen
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,9 +48,9 @@ fun HomeScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     val pagerState = rememberPagerState(
+        initialPage = data.homeTypeList.indexOf(data.initialHomeType),
         pageCount = { data.homeTypeList.size }
     )
-    var selectedHomeType: HomeType by remember { mutableStateOf(data.initialHomeType) }
 
     Column(
         modifier = Modifier
@@ -64,6 +62,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .weight(1f),
             state = pagerState,
+            userScrollEnabled = false
         ) { page ->
             when (data.homeTypeList.getOrNull(page)) {
                 HomeType.Trade -> {
@@ -72,6 +71,10 @@ fun HomeScreen(
 
                 HomeType.ChatRoom -> {
                     ChatRoomScreen(navController = navController)
+                }
+
+                HomeType.Schedule -> {
+                    ScheduleScreen(navController = navController)
                 }
 
                 HomeType.MyPage -> {
@@ -84,9 +87,12 @@ fun HomeScreen(
 
         HomeBottomBarScreen(
             itemList = data.homeTypeList,
-            selectedHomeType = selectedHomeType,
+            selectedHomeType = data.homeTypeList.getOrNull(pagerState.currentPage)
+                ?: data.initialHomeType,
             onClick = {
-                selectedHomeType = it
+                scope.launch {
+                    pagerState.scrollToPage(data.homeTypeList.indexOf(it))
+                }
             }
         )
     }
