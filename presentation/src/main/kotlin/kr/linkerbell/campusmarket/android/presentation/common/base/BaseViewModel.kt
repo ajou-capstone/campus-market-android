@@ -6,6 +6,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -34,8 +35,8 @@ abstract class BaseViewModel : ViewModel() {
     @Inject
     lateinit var logEventUseCase: LogEventUseCase
 
-    fun launch(block: suspend CoroutineScope.() -> Unit) {
-        viewModelScope.launch(coroutineContext, block = block)
+    fun launch(block: suspend CoroutineScope.() -> Unit): Job {
+        return viewModelScope.launch(coroutineContext, block = block)
     }
 
     protected inline fun <T, R> StateFlow<T>.map(

@@ -3,6 +3,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
+import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 
 @Immutable
 data class ScheduleArgument(
@@ -20,4 +21,8 @@ sealed interface ScheduleState {
 
 sealed interface ScheduleEvent
 
-sealed interface ScheduleIntent
+sealed interface ScheduleIntent {
+    data class AddSchedule(val schedule: Schedule) : ScheduleIntent
+    data class RemoveSchedule(val schedule: Schedule) : ScheduleIntent
+    data class UpdateSchedule(val from: Schedule, val to: Schedule) : ScheduleIntent
+}

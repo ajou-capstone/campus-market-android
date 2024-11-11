@@ -6,10 +6,10 @@ import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 
 @Serializable
 data class GetRecentMessageIdListRes(
-    @SerialName("messages")
-    val messages: List<Long>
+    @SerialName("messageIdList")
+    val messageIdList: List<Long>
 ) : DataMapper<List<Long>> {
     override fun toDomain(): List<Long> {
-        return messages
+        return messageIdList
     }
 }
