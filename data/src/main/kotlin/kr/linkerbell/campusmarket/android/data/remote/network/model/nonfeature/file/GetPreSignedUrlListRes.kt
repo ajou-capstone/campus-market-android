@@ -14,7 +14,7 @@ data class GetPreSignedUrlRes(
 ) : DataMapper<PreSignedUrl> {
     override fun toDomain(): PreSignedUrl {
         return PreSignedUrl(
-            presignedUrl = presignedUrl,
+            preSignedUrl = presignedUrl,
             s3url = s3url
         )
     }

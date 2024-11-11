@@ -27,7 +27,7 @@ class FileApi @Inject constructor(
     suspend fun getPreSignedUrl(
         fileName: String
     ): Result<GetPreSignedUrlRes> {
-        return client.get("$baseUrl/v1/util/s3/url") {
+        return client.get("$baseUrl/api/v1/s3/presigned-url") {
             parameter("fileName", fileName)
         }.convert(errorMessageMapper::map)
     }

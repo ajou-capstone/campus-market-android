@@ -121,7 +121,7 @@ class ChatViewModel @Inject constructor(
                 ).mapCatching { preSignedUrl ->
                     uploadImageUseCase(
                         imageUri = image.filePath,
-                        preSignedUrl = preSignedUrl.presignedUrl
+                        preSignedUrl = preSignedUrl.preSignedUrl
                     ).getOrThrow()
 
                     preSignedUrl.s3url

@@ -70,6 +70,25 @@ class MockTradeRepository @Inject constructor(
         searchHistoryDao.insert(SearchHistoryEntity(queryString = text))
     }
 
+    override suspend fun postNewTrade(
+        title: String,
+        description: String,
+        price: Int,
+        category: String,
+        thumbnail: String,
+        images: List<String>
+    ): Result<Long> {
+        randomShortDelay()
+        val newPostContent = "title = $title" +
+                "description = $description" +
+                "price = $price" +
+                "category = $category" +
+                "thumbnail = $thumbnail" +
+                "images = $images"
+        Timber.tag("MockSearchHistoryRepository").d("call postNewTrade(${newPostContent})")
+        return Result.success(0L)
+    }
+
     override suspend fun getCategoryList(): Result<CategoryList> {
         return Result.success(CategoryList.empty)
     }
