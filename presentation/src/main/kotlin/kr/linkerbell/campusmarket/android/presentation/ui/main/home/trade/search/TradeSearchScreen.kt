@@ -38,7 +38,9 @@ import kotlinx.coroutines.Dispatchers
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultConstant
 
 @Composable
@@ -47,7 +49,19 @@ fun TradeSearchScreen(
     argument: TradeSearchArgument,
     data: TradeSearchData
 ) {
-    var queryString by remember { mutableStateOf("") }
+    var queryString by remember { mutableStateOf(data.previousQuery) }
+
+    val navigateToResultScreen = { queryName: String ->
+        val newRoute = makeRoute(
+            route = TradeSearchResultConstant.ROUTE,
+            arguments = mapOf(
+                TradeSearchResultConstant.ROUTE_ARGUMENT_NAME to queryName
+            )
+        )
+        navController.navigate(newRoute) {
+            popUpTo(TradeConstant.ROUTE) { inclusive = false }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -61,7 +75,7 @@ fun TradeSearchScreen(
             },
             onSearchIconClick = { queryString ->
                 argument.intent(TradeSearchIntent.Insert(queryString))
-                navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
+                navigateToResultScreen(queryString)
             }
         )
 
@@ -92,12 +106,13 @@ fun TradeSearchScreen(
                     },
                     onTextClick = { selectedHistory ->
                         queryString = selectedHistory
-                        navController.navigate(TradeSearchResultConstant.ROUTE + "?name=$queryString")
+                        navigateToResultScreen(selectedHistory)
                     }
                 )
             }
         }
     }
+
 }
 
 @Composable
@@ -224,7 +239,8 @@ private fun TradeSearchScreenPreview() {
             coroutineContext = Dispatchers.IO
         ),
         data = TradeSearchData(
-            listOf("history1", "history2", "history3")
+            listOf("history1", "history2", "history3"),
+            ""
         )
     )
 }

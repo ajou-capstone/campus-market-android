@@ -7,7 +7,7 @@ import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.category.CategoryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.CategoryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.SearchTradeListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 
@@ -33,7 +33,7 @@ class TradeApi @Inject constructor(
             parameter("category", category)
             parameter("minPrice", minPrice.toString())
             parameter("maxPrice", maxPrice.toString())
-            parameter("sorted", sorted)
+            parameter("sort", sorted)
             parameter("pageNum", pageNum.toString())
             parameter("pageSize", pageSize.toString())
         }.convert(errorMessageMapper::map)

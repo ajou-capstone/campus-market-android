@@ -10,7 +10,7 @@ object TradeSearchResultConstant {
     const val ROUTE_ARGUMENT_CATEGORY = "category"
     const val ROUTE_ARGUMENT_MINPRICE = "minPrice"
     const val ROUTE_ARGUMENT_MAXPRICE = "maxPrice"
-    const val ROUTE_ARGUMENT_SORTED = "sorted"
+    const val ROUTE_ARGUMENT_SORTED = "sort"
 
     const val ROUTE_STRUCTURE = "${ROUTE}?" +
             "$ROUTE_ARGUMENT_NAME={$ROUTE_ARGUMENT_NAME}" +

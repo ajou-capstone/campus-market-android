@@ -51,7 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
@@ -74,11 +74,12 @@ fun TradeSearchResultScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    val currentQuery by remember { mutableStateOf(data.currentQuery) }
-
-    val categoryList = data.categoryList
+    var currentQuery by remember { mutableStateOf(data.currentQuery) }
+    val categoryList = listOf("") + data.categoryList
 
     val updateCurrentQuery = { updatedQuery: TradeSearchQuery ->
+        currentQuery = updatedQuery
+
         argument.intent(TradeSearchResultIntent.ApplyNewQuery(updatedQuery))
     }
 
@@ -88,10 +89,9 @@ fun TradeSearchResultScreen(
             .background(Indigo50)
     ) {
         TradeSearchResultSearchBar(currentQuery.name) {
-            navController.popBackStack()
-            navController.navigate(TradeSearchConstant.ROUTE)
+            navController.navigate(TradeSearchConstant.ROUTE + "?name=${currentQuery.name}")
         }
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(20.dp)) {
             Column {
                 Row(
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -204,22 +204,32 @@ private fun TradeSearchResultPriceFilter(
 
     var minPrice by remember { mutableIntStateOf(currentQuery.minPrice) }
     var maxPrice by remember { mutableIntStateOf(currentQuery.maxPrice) }
+    var minPriceInText by remember { mutableStateOf(if (minPrice == 0) "" else minPrice.toString()) }
+    var maxPriceInText by remember { mutableStateOf(if (maxPrice == Int.MAX_VALUE) "" else maxPrice.toString()) }
 
     Box {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = "가격대",
-                style = Headline3
+                text = "가격",
+                style = Headline3,
             )
-            Spacer(modifier = Modifier.padding(2.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
             TypingTextField(
-                text = minPrice.toString(),
+                text = minPriceInText,
                 onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() }) {
-                        minPrice = newValue.toInt()
+                    if (newValue.isBlank()) {
+                        minPrice = 0
+                        minPriceInText = ""
+                    } else {
+                        val filteredValue = newValue.filter { it.isDigit() }
+                        minPrice = filteredValue.toInt()
+                        minPriceInText = filteredValue
                     }
                 },
-                hintText = "0",
+                hintText = "최소 가격",
                 maxLines = 1,
                 maxTextLength = 9,
                 modifier = Modifier.weight(3f),
@@ -231,13 +241,18 @@ private fun TradeSearchResultPriceFilter(
                 "~", modifier = Modifier.padding(horizontal = 4.dp)
             )
             TypingTextField(
-                text = maxPrice.toString(),
+                text = maxPriceInText,
                 onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() }) {
-                        maxPrice = newValue.toInt()
+                    if (newValue.isBlank()) {
+                        maxPrice = 0
+                        maxPriceInText = ""
+                    } else {
+                        val filteredValue = newValue.filter { it.isDigit() }
+                        maxPrice = filteredValue.toInt()
+                        maxPriceInText = filteredValue
                     }
                 },
-                hintText = "999,999,999",
+                hintText = "최대 가격",
                 maxLines = 1,
                 maxTextLength = 9,
                 modifier = Modifier.weight(3f),
@@ -251,10 +266,15 @@ private fun TradeSearchResultPriceFilter(
                     .size(24.dp)
                     .weight(1f)
                     .clickable {
+                        if (minPrice > maxPrice) {
+                            maxPrice = minPrice
+                        }
                         updateQuery(
                             currentQuery.copy(
                                 minPrice = minPrice,
-                                maxPrice = maxPrice
+                                maxPrice = maxPrice,
+                                category = currentQuery.category,
+                                sorted = currentQuery.sorted
                             )
                         )
                     }
@@ -317,7 +337,12 @@ private fun TradeSearchResultCategoryFilter(
                         isDropDownExpanded.value = false
                         itemIndex.intValue = index
                         updateQuery(
-                            currentQuery.copy(category = categoryList[index])
+                            currentQuery.copy(
+                                minPrice = currentQuery.minPrice,
+                                maxPrice = currentQuery.maxPrice,
+                                category = categoryList[index],
+                                sorted = currentQuery.sorted
+                            )
                         )
                     }
                 )
@@ -341,17 +366,25 @@ private fun TradeSearchResultSortOption(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("정렬", style = Headline3, modifier = Modifier.padding(end = 12.dp))
+        Text("정렬", style = Headline3)
+        Spacer(modifier = Modifier.padding(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             SortOptionButton(
                 optionName = "최신순",
                 isSelected = selectedSortedOption == sortByLatest,
                 onSelect = {
                     selectedSortedOption = sortByLatest
-                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
+                    updateQuery(
+                        currentQuery.copy(
+                            minPrice = currentQuery.minPrice,
+                            maxPrice = currentQuery.maxPrice,
+                            category = currentQuery.category,
+                            sorted = selectedSortedOption
+                        )
+                    )
                 }
             )
             SortOptionButton(
@@ -359,7 +392,14 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByLowPrice,
                 onSelect = {
                     selectedSortedOption = sortByLowPrice
-                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
+                    updateQuery(
+                        currentQuery.copy(
+                            minPrice = currentQuery.minPrice,
+                            maxPrice = currentQuery.maxPrice,
+                            category = currentQuery.category,
+                            sorted = selectedSortedOption
+                        )
+                    )
                 }
             )
             SortOptionButton(
@@ -367,7 +407,14 @@ private fun TradeSearchResultSortOption(
                 isSelected = selectedSortedOption == sortByHighPrice,
                 onSelect = {
                     selectedSortedOption = sortByHighPrice
-                    updateQuery(currentQuery.copy(sorted = selectedSortedOption))
+                    updateQuery(
+                        currentQuery.copy(
+                            minPrice = currentQuery.minPrice,
+                            maxPrice = currentQuery.maxPrice,
+                            category = currentQuery.category,
+                            sorted = selectedSortedOption
+                        )
+                    )
                 }
             )
         }
@@ -475,7 +522,6 @@ private fun SortOptionButton(
 
     Box(
         modifier = Modifier
-            .padding(4.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(buttonColor)
             .clickable { onSelect() }
@@ -502,6 +548,7 @@ private fun translateToKor(engCategory: String): String {
         "SPORTS_LEISURE" -> "스포츠/레저"
         "ENTERTAINMENT_HOBBIES" -> "엔터테인먼트/취미"
         "OTHER" -> "기타"
+        "" -> "전체"
         else -> "기타"
     }
 }

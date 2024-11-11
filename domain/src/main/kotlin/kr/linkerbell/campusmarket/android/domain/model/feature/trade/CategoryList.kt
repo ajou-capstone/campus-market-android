@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.domain.model.feature.category
+package kr.linkerbell.campusmarket.android.domain.model.feature.trade
 
 data class CategoryList(
     val categoryList: List<String>
@@ -17,7 +17,8 @@ data class CategoryList(
                 "FURNITURE_INTERIOR",
                 "SPORTS_LEISURE",
                 "ENTERTAINMENT_HOBBIES",
-                "OTHER"
+                "OTHER",
+                ""
             )
         )
     }
