@@ -11,6 +11,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUr
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.CategoryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeReq
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.SearchTradeListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 
@@ -49,7 +50,7 @@ class TradeApi @Inject constructor(
         category: String,
         thumbnail: String,
         images: List<String>
-    ): Result<Long> {
+    ): Result<PostTradeRes> {
         return client.post("$baseUrl/api/v1/items") {
             setBody(
                 PostTradeReq(

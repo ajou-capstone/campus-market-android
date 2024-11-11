@@ -81,7 +81,7 @@ class TradePostViewModel @Inject constructor(
                 preSignedUrl = preSignedUrl.preSignedUrl,
                 imageUri = image.filePath
             )
-            s3Url = cleanUrl(preSignedUrl.s3url)
+            s3Url = preSignedUrl.s3url
         }.onSuccess {
             _state.value = TradePostState.Init
         }.onFailure { exception ->
@@ -97,12 +97,6 @@ class TradePostViewModel @Inject constructor(
             }
         }
         return s3Url
-    }
-
-    //TODO("백엔드 서버 변경사항 반영되면 이 부분 수정")
-    private fun cleanUrl(rawUrl: String): String {
-        val pattern = "(\\.(jpg|png|gif|bmp|jpeg|webp))[^/]*$".toRegex()
-        return pattern.replace(rawUrl, "$1")
     }
 
     private suspend fun postNewTrade(
@@ -123,11 +117,8 @@ class TradePostViewModel @Inject constructor(
             images = s3UrlsForImage
         ).onSuccess {
             _state.value = TradePostState.Init
-            val postedTradeId = it
-            //TODO("받아 온 페이지(id = postedTradeId)로 이동")
-        }.onFailure { errorLog ->
+        }.onFailure {
             _state.value = TradePostState.Init
-            //TODO("실패 시 예외 처리")
         }
     }
 

@@ -29,7 +29,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +60,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.BottomSheetScreen
+import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButton
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
@@ -80,42 +81,35 @@ fun TradePostScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    val title = remember { mutableStateOf("") }
-    val price = remember { mutableStateOf("0") }
-    val category = remember { mutableStateOf("OTHER") }
-    val description = remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("0") }
+    var category by remember { mutableStateOf("OTHER") }
+    var description by remember { mutableStateOf("") }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isBottomSheetVisible by remember { mutableStateOf(false) }
+    var isConfirmButtonVisible by remember { mutableStateOf(false) }
 
-    val bottomSheetContent = remember { mutableStateOf("Bottom Sheet Content") }
+    var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
 
     val validateContentAndPost = {
         var isValid = true
         when {
-            title.value.isBlank() -> {
-                bottomSheetContent.value = "제목을 입력해주세요"
+            title.isBlank() -> {
+                bottomSheetContent = "제목을 입력해주세요"
                 isBottomSheetVisible = true
                 isValid = false
             }
 
-            description.value.isBlank() -> {
-                bottomSheetContent.value = "상품 상세 정보를 입력해주세요"
+            description.isBlank() -> {
+                bottomSheetContent = "상품 상세 정보를 입력해주세요"
                 isBottomSheetVisible = true
                 isValid = false
             }
         }
         if (isValid) {
-            argument.intent(
-                TradePostIntent.PostNewTrade(
-                    title = title.value,
-                    description = description.value,
-                    price = price.value.toIntOrNull() ?: 0,
-                    category = category.value,
-                    imageList = imageList
-                )
-            )
+            isConfirmButtonVisible = true
         }
     }
 
@@ -124,7 +118,7 @@ fun TradePostScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        TradePostScreenTopBar(navigateUp = { navController.popBackStack() })
+        TradePostScreenTopBar(navigateUp = { navController.safeNavigateUp() })
 
         Column(
             modifier = Modifier
@@ -166,8 +160,17 @@ fun TradePostScreen(
                     category = category,
                     description = description,
                     categoryList = listOf("ALL") + data.categoryList,
-                    changeCategory = { changedCategory ->
-                        category.value = changedCategory
+                    changeTitle = { changedValue ->
+                        title = changedValue
+                    },
+                    changeDescription = { changedValue ->
+                        description = changedValue
+                    },
+                    changeCategory = { changedValue ->
+                        category = changedValue
+                    },
+                    changePrice = { changedValue ->
+                        price = changedValue
                     }
                 )
             }
@@ -197,7 +200,7 @@ fun TradePostScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = bottomSheetContent.value,
+                    text = bottomSheetContent,
                     style = Body0
                 )
                 Spacer(
@@ -220,6 +223,28 @@ fun TradePostScreen(
                 }
             }
         }
+    }
+
+    if (isConfirmButtonVisible) {
+        DialogScreen(
+            title = "등록되었습니다!",
+            isCancelable = false,
+            onConfirm = {
+                argument.intent(
+                    TradePostIntent.PostNewTrade(
+                        title = title,
+                        description = description,
+                        price = price.toIntOrNull() ?: 0,
+                        category = category,
+                        imageList = imageList
+                    )
+                )
+                //navController.navigate(to TradeInfoPAge)
+            },
+            onDismissRequest = {
+                isConfirmButtonVisible = false
+            }
+        )
     }
 }
 
@@ -338,11 +363,14 @@ private fun TradePostScreenTopBar(navigateUp: () -> Unit) {
 
 @Composable
 private fun TradePostScreenTradeInfo(
-    title: MutableState<String>,
-    category: MutableState<String>,
-    price: MutableState<String>,
-    description: MutableState<String>,
+    title: String,
+    category: String,
+    price: String,
+    description: String,
     categoryList: List<String>,
+    changeTitle: (String) -> Unit,
+    changeDescription: (String) -> Unit,
+    changePrice: (String) -> Unit,
     changeCategory: (String) -> Unit
 ) {
     Column {
@@ -353,8 +381,8 @@ private fun TradePostScreenTradeInfo(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             TypingTextField(
-                text = title.value,
-                onValueChange = { title.value = it },
+                text = title,
+                onValueChange = { changeTitle(it) },
                 hintText = "제목을 입력하세요",
                 maxLines = 1,
                 maxTextLength = 100,
@@ -365,7 +393,7 @@ private fun TradePostScreenTradeInfo(
                         modifier = Modifier
                             .size(20.dp)
                             .clickable {
-                                title.value = ""
+                                changeTitle("")
                             }
                     )
                 },
@@ -385,10 +413,10 @@ private fun TradePostScreenTradeInfo(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 TypingTextField(
-                    text = price.value,
+                    text = price,
                     onValueChange = { newValue ->
                         if (newValue.all { it.isDigit() })
-                            price.value = newValue
+                            changePrice(newValue)
                     },
                     hintText = "가격을 입력하세요",
                     maxLines = 1,
@@ -403,7 +431,7 @@ private fun TradePostScreenTradeInfo(
                             modifier = Modifier
                                 .size(20.dp)
                                 .clickable {
-                                    price.value = "0"
+                                    changePrice(price)
                                 }
                         )
                     },
@@ -417,7 +445,7 @@ private fun TradePostScreenTradeInfo(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 TradePostScreenCategorySelector(
-                    categoryList, category.value,
+                    categoryList, category,
                     changeCategory = changeCategory
                 )
             }
@@ -429,8 +457,8 @@ private fun TradePostScreenTradeInfo(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             TypingTextField(
-                text = description.value,
-                onValueChange = { description.value = it },
+                text = description,
+                onValueChange = { changeDescription(it) },
                 hintText = "상품 정보를 입력해주세요 (최대 1,000자)",
                 maxLines = 100,
                 maxTextLength = 1000,
@@ -441,7 +469,7 @@ private fun TradePostScreenTradeInfo(
                         modifier = Modifier
                             .size(20.dp)
                             .clickable {
-                                description.value = ""
+                                changeDescription("")
                             }
                     )
                 },
@@ -459,8 +487,8 @@ private fun TradePostScreenCategorySelector(
     category: String,
     changeCategory: (String) -> Unit
 ) {
-    val isDropDownExpanded = remember { mutableStateOf(false) }
-    val itemIndex = remember {
+    var isDropDownExpanded by remember { mutableStateOf(false) }
+    var itemIndex by remember {
         mutableIntStateOf(
             categoryList.indexOf(category).takeIf { it >= 0 } ?: 0
         )
@@ -476,13 +504,13 @@ private fun TradePostScreenCategorySelector(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    isDropDownExpanded.value = !isDropDownExpanded.value
+                    isDropDownExpanded = !isDropDownExpanded
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = translateToKor(categoryList[itemIndex.intValue]),
+                text = translateToKor(categoryList[itemIndex]),
                 maxLines = 1,
                 style = Body2,
                 modifier = Modifier.padding(8.dp)
@@ -495,15 +523,15 @@ private fun TradePostScreenCategorySelector(
             )
         }
         DropdownMenu(
-            expanded = isDropDownExpanded.value,
-            onDismissRequest = { isDropDownExpanded.value = false },
+            expanded = isDropDownExpanded,
+            onDismissRequest = { isDropDownExpanded = false },
         ) {
             categoryList.forEachIndexed { index, category ->
                 DropdownMenuItem(
                     text = { Text(text = translateToKor(category)) },
                     onClick = {
-                        isDropDownExpanded.value = false
-                        itemIndex.intValue = index
+                        isDropDownExpanded = false
+                        itemIndex = index
                         changeCategory(category)
                     }
                 )
@@ -549,28 +577,6 @@ private fun TradePostScreenPostButton(onPostButtonClicked: () -> Unit) {
             color = Color.White
         )
     }
-}
-
-@Preview
-@Composable
-private fun TradePostScreenTradeInfoPreview() {
-    val title = remember { mutableStateOf("제목제목") }
-    val price = remember { mutableStateOf("1000") }
-    val category = remember { mutableStateOf("OTHER") }
-    val description =
-        remember {
-            mutableStateOf(
-                "상품에 대한 자세한 정보입니다."
-            )
-        }
-    TradePostScreenTradeInfo(
-        title = title,
-        price = price,
-        category = category,
-        description = description,
-        categoryList = CategoryList.empty.categoryList,
-        changeCategory = {}
-    )
 }
 
 @Preview

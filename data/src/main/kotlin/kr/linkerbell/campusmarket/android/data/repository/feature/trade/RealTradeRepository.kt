@@ -75,6 +75,7 @@ class RealTradeRepository @Inject constructor(
         images: List<String>
     ): Result<Long> {
         return tradeApi.postNewTrade(title, description, price, category, thumbnail, images)
+            .toDomain()
     }
 
     override suspend fun getCategoryList(): Result<CategoryList> {
