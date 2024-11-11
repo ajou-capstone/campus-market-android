@@ -212,7 +212,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleEndTimeHour = it.filter { it.isDigit() }
+                                scheduleStartTimeHour = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
@@ -230,7 +230,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleEndTimeHour = it.filter { it.isDigit() }
+                                scheduleStartTimeMinute = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
@@ -266,7 +266,7 @@ private fun ScheduleEditScreen(
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
-                                scheduleEndTimeHour = it.filter { it.isDigit() }
+                                scheduleEndTimeMinute = it.filter { it.isDigit() }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
