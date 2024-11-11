@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetCategoryListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.PostNewTradeUseCase

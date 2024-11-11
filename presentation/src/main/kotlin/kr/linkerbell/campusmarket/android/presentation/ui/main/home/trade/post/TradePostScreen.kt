@@ -48,7 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.domain.model.feature.category.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
