@@ -12,6 +12,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.schedule.EditScheduleUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.schedule.GetScheduleUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
@@ -21,7 +22,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 class ScheduleViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getMyProfileUseCase: GetMyProfileUseCase,
-    private val getScheduleUseCase: GetScheduleUseCase
+    private val getScheduleUseCase: GetScheduleUseCase,
+    private val editScheduleUseCase: EditScheduleUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<ScheduleState> = MutableStateFlow(ScheduleState.Init)
@@ -63,6 +65,95 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun onIntent(intent: ScheduleIntent) {
+        when (intent) {
+            is ScheduleIntent.AddSchedule -> {
+                addSchedule(
+                    schedule = intent.schedule
+                )
+            }
 
+            is ScheduleIntent.RemoveSchedule -> {
+                removeSchedule(
+                    schedule = intent.schedule
+                )
+            }
+
+            is ScheduleIntent.UpdateSchedule -> {
+                updateSchedule(
+                    from = intent.from,
+                    to = intent.to
+                )
+            }
+        }
+    }
+
+    private fun addSchedule(
+        schedule: Schedule
+    ) {
+        launch {
+            val newScheduleList = scheduleList.value + schedule
+            editScheduleUseCase(
+                scheduleList = newScheduleList
+            ).onSuccess {
+                _scheduleList.value = newScheduleList
+            }.onFailure { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun removeSchedule(
+        schedule: Schedule
+    ) {
+        launch {
+            val newScheduleList = scheduleList.value - schedule
+            editScheduleUseCase(
+                scheduleList = newScheduleList
+            ).onSuccess {
+                _scheduleList.value = newScheduleList
+            }.onFailure { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateSchedule(
+        from: Schedule,
+        to: Schedule
+    ) {
+        launch {
+            val newScheduleList = scheduleList.value - from + to
+            editScheduleUseCase(
+                scheduleList = newScheduleList
+            ).onSuccess {
+                _scheduleList.value = newScheduleList
+            }.onFailure { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
     }
 }

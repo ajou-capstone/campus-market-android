@@ -81,7 +81,7 @@ class ChatApi @Inject constructor(
     }
 
     suspend fun getRecentMessageIdList(): Result<GetRecentMessageIdListRes> {
-        return client.get("$baseUrl/api/v1/chat")
+        return client.get("$baseUrl/api/v1/chat/recent-message")
             .convert(errorMessageMapper::map)
     }
 
