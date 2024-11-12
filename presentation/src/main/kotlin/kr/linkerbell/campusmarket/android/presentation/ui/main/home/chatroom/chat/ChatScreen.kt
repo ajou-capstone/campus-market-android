@@ -188,7 +188,7 @@ fun ChatScreen(
                             3L
                         }
 
-                        message is Message.Schedule && message.userId == data.userProfile.id -> {
+                        message is Message.Schedule && message.userId != data.userProfile.id -> {
                             4L
                         }
 
