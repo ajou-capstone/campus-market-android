@@ -8,6 +8,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 
 private const val CONTENT_TYPE_TEXT = "TEXT"
 private const val CONTENT_TYPE_IMAGE = "IMAGE"
+private const val CONTENT_TYPE_SCHEDULE = "TIMETABLE"
 
 @Entity(tableName = "message")
 data class MessageEntity(
@@ -36,6 +37,13 @@ data class MessageEntity(
                 createdAt = createdAt
             )
 
+            CONTENT_TYPE_SCHEDULE -> Message.Schedule(
+                id = id,
+                chatRoomId = roomId,
+                userId = userId,
+                createdAt = createdAt
+            )
+
             else -> throw IllegalArgumentException("Unknown content type: $contentType")
         }
     }
@@ -58,6 +66,15 @@ fun Message.toEntity(): MessageEntity {
             userId = userId,
             contentType = CONTENT_TYPE_IMAGE,
             content = content,
+            createdAt = createdAt
+        )
+
+        is Message.Schedule -> MessageEntity(
+            id = id,
+            roomId = chatRoomId,
+            userId = userId,
+            contentType = CONTENT_TYPE_SCHEDULE,
+            content = "",
             createdAt = createdAt
         )
     }
