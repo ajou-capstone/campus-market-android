@@ -159,7 +159,7 @@ fun TradePostScreen(
                     price = price,
                     category = category,
                     description = description,
-                    categoryList = listOf("ALL") + data.categoryList,
+                    categoryList = data.categoryList,
                     changeTitle = { changedValue ->
                         title = changedValue
                     },
@@ -545,7 +545,6 @@ private fun translateToKor(engCategory: String): String {
         "ELECTRONICS_IT" -> "전자기기/IT"
         "HOME_APPLIANCES" -> "가전제품"
         "FASHION_ACCESSORIES" -> "패션/액세서리"
-        "ACCESSORIES" -> "액세서리"
         "BOOKS_EDUCATIONAL_MATERIALS" -> "서적/교육 자료"
         "STATIONERY_OFFICE_SUPPLIES" -> "문구/사무용품"
         "HOUSEHOLD_ITEMS" -> "생활용품"
