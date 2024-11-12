@@ -17,6 +17,8 @@ sealed interface HomeState {
     data object Init : HomeState
 }
 
-sealed interface HomeEvent
+sealed interface HomeEvent {
+    data object NeedSchedule : HomeEvent
+}
 
 sealed interface HomeIntent

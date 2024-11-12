@@ -62,4 +62,26 @@ sealed interface MessageRes : DataMapper<Message> {
             )
         }
     }
+
+    @Serializable
+    @SerialName("TIMETABLE")
+    data class Schedule(
+        @SerialName("messageId")
+        val id: Long,
+        @SerialName("chatRoomId")
+        val chatRoomId: Long,
+        @SerialName("userId")
+        val userId: Long,
+        @SerialName("createdAt")
+        val createdAt: Instant
+    ) : MessageRes {
+        override fun toDomain(): Message.Schedule {
+            return Message.Schedule(
+                id = id,
+                chatRoomId = chatRoomId,
+                userId = userId,
+                createdAt = createdAt.toEpochMilliseconds()
+            )
+        }
+    }
 }

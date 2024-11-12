@@ -101,6 +101,12 @@ class MockChatRepository @Inject constructor() : ChatRepository {
             val currentTime = System.currentTimeMillis()
             emit(
                 listOf(
+                    Message.Schedule(
+                        id = 0L,
+                        chatRoomId = 1L,
+                        userId = 1L,
+                        createdAt = currentTime - 6L
+                    ),
                     Message.Text(
                         id = 1L,
                         chatRoomId = 1L,

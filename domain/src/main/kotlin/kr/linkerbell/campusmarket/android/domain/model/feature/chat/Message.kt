@@ -16,4 +16,11 @@ sealed interface Message {
         val content: String,
         val createdAt: Long
     ) : Message
+
+    data class Schedule(
+        val id: Long,
+        val chatRoomId: Long,
+        val userId: Long,
+        val createdAt: Long
+    ) : Message
 }

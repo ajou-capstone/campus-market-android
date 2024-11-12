@@ -141,6 +141,12 @@ class ChatViewModel @Inject constructor(
             } ?: throw IllegalStateException("Session is not connected")
         }
 
+        suspend fun sendSchedule() {
+            session?.let {
+                it.send(roomId, "", "TIMETABLE")
+            } ?: throw IllegalStateException("Session is not connected")
+        }
+
         suspend fun disconnect() {
             session?.let {
                 it.disconnect()
@@ -166,6 +172,10 @@ class ChatViewModel @Inject constructor(
 
                 is ChatIntent.Session.SendImage -> {
                     sendImage(image = intent.image)
+                }
+
+                is ChatIntent.Session.SendSchedule -> {
+                    sendSchedule()
                 }
 
                 ChatIntent.Session.Disconnect -> {

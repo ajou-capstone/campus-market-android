@@ -168,6 +168,14 @@ private fun ChatRoomScreen(
                                 -1L
                             }
                         }
+
+                        is Message.Schedule -> {
+                            if (message.chatRoomId == room.id) {
+                                message.createdAt
+                            } else {
+                                -1L
+                            }
+                        }
                     }
                 }?.let { message ->
                     when (message) {
@@ -182,6 +190,14 @@ private fun ChatRoomScreen(
                         is Message.Image -> {
                             if (message.chatRoomId == room.id) {
                                 "(사진)"
+                            } else {
+                                ""
+                            }
+                        }
+
+                        is Message.Schedule -> {
+                            if (message.chatRoomId == room.id) {
+                                "(스케줄)"
                             } else {
                                 ""
                             }
