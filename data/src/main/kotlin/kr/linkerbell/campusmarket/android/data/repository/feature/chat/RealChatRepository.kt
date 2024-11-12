@@ -163,9 +163,13 @@ class RealChatRepository @Inject constructor(
                                 content = (content as? String).orEmpty(),
                                 contentType = contentType
                             )
-                        } else {
+                        } else if (contentType == "IMAGE") {
                             MessageReq.Image(
                                 content = (content as? String).orEmpty(),
+                                contentType = contentType
+                            )
+                        } else {
+                            MessageReq.Schedule(
                                 contentType = contentType
                             )
                         }
