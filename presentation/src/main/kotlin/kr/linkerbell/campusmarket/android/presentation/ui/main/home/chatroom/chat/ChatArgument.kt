@@ -29,6 +29,7 @@ sealed interface ChatIntent {
         data object Subscribe : Session
         data class SendText(val text: String) : Session
         data class SendImage(val image: GalleryImage) : Session
+        data object SendSchedule : Session
         data object Disconnect : Session
     }
 }

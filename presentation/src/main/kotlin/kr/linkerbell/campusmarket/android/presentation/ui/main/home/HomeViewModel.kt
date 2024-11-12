@@ -9,11 +9,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.schedule.GetScheduleUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
+import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.ScheduleState
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val getScheduleUseCase: GetScheduleUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<HomeState> = MutableStateFlow(HomeState.Init)
@@ -25,6 +32,31 @@ class HomeViewModel @Inject constructor(
     val initialHomeType: HomeType by lazy {
         val route = savedStateHandle.get<String>(HomeConstant.ROUTE_ARGUMENT_SCREEN)
         HomeType.values().firstOrNull { it.route == route } ?: HomeType.values().first()
+    }
+
+    init {
+        launch {
+            getMyProfileUseCase()
+                .mapCatching { myProfile ->
+                    getScheduleUseCase(
+                        id = myProfile.id
+                    ).getOrThrow()
+                }.onSuccess { scheduleList ->
+                    if (scheduleList.isEmpty()) {
+                        _event.emit(HomeEvent.NeedSchedule)
+                    }
+                }.onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+        }
     }
 
     fun onIntent(intent: HomeIntent) {

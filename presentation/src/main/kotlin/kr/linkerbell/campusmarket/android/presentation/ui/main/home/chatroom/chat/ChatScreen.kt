@@ -48,6 +48,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
@@ -67,14 +68,18 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space60
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space80
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Teal400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ComposableLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
 
 @Composable
 fun ChatScreen(
@@ -93,6 +98,14 @@ fun ChatScreen(
 
     fun navigateToUserProfile(id: Long) {
 
+    }
+
+    fun navigateToScheduleCompare(id: Long) {
+        val route = makeRoute(
+            ScheduleCompareConstant.ROUTE_STRUCTURE,
+            listOf(ScheduleCompareConstant.ROUTE_ARGUMENT_USER_ID to id)
+        )
+        navController.safeNavigate(route)
     }
 
     if (isGalleryShowing) {
@@ -154,6 +167,7 @@ fun ChatScreen(
                     when (message) {
                         is Message.Image -> message.id
                         is Message.Text -> message.id
+                        is Message.Schedule -> message.id
                     }
                 },
                 contentType = { message ->
@@ -172,6 +186,14 @@ fun ChatScreen(
 
                         message is Message.Text && message.userId == data.userProfile.id -> {
                             3L
+                        }
+
+                        message is Message.Schedule && message.userId != data.userProfile.id -> {
+                            4L
+                        }
+
+                        message is Message.Schedule && message.userId == data.userProfile.id -> {
+                            5L
                         }
 
                         else -> {
@@ -296,6 +318,97 @@ fun ChatScreen(
                             }
                         }
                     }
+
+                    message is Message.Schedule && message.userId != data.userProfile.id -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Space20),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Box(
+                                modifier = Modifier.background(
+                                    color = Blue100,
+                                    shape = RoundedCornerShape(Space12, Space12, Space12, Space12)
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.clickable {
+                                        navigateToScheduleCompare(
+                                            id = data.userProfile.id
+                                        )
+                                    },
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "시간표 확인하기",
+                                        style = Body1.merge(Gray900),
+                                        modifier = Modifier
+                                            .padding(Space12)
+                                            .widthIn(max = localConfiguration.screenWidthDp.dp * 3 / 5)
+                                    )
+                                    Icon(
+                                        modifier = Modifier.size(Space24),
+                                        painter = painterResource(R.drawable.ic_chevron_right),
+                                        contentDescription = null,
+                                        tint = Gray900
+                                    )
+                                    Spacer(modifier = Modifier.width(Space12))
+                                }
+                            }
+                        }
+                    }
+
+                    message is Message.Schedule && message.userId == data.userProfile.id -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Space20),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            PostImage(
+                                data = data.userProfile.profileImage,
+                                modifier = Modifier
+                                    .size(Space40)
+                                    .clickable {
+                                        navigateToUserProfile(
+                                            id = data.userProfile.id
+                                        )
+                                    }
+                            )
+                            Spacer(modifier = Modifier.width(Space8))
+                            Box(
+                                modifier = Modifier.background(
+                                    color = Blue100,
+                                    shape = RoundedCornerShape(Space12, Space12, Space12, Space12)
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.clickable {
+                                        navigateToScheduleCompare(
+                                            id = data.userProfile.id
+                                        )
+                                    },
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "시간표 확인하기",
+                                        style = Body1.merge(Gray900),
+                                        modifier = Modifier
+                                            .padding(Space12)
+                                            .widthIn(max = localConfiguration.screenWidthDp.dp * 3 / 5)
+                                    )
+                                    Icon(
+                                        modifier = Modifier.size(Space24),
+                                        painter = painterResource(R.drawable.ic_chevron_right),
+                                        contentDescription = null,
+                                        tint = Gray900
+                                    )
+                                    Spacer(modifier = Modifier.width(Space12))
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -414,6 +527,40 @@ fun ChatScreen(
                         }
                         Spacer(modifier = Modifier.height(Space60))
                     }
+                    Column {
+                        Spacer(modifier = Modifier.height(Space20))
+                        RippleBox(
+                            onClick = {
+                                intent(ChatIntent.Session.SendSchedule)
+                            }
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(Space52)
+                                        .clip(CircleShape)
+                                        .background(Teal400, CircleShape),
+                                ) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(Space32)
+                                            .align(Alignment.Center),
+                                        painter = painterResource(R.drawable.ic_calendar),
+                                        contentDescription = null,
+                                        tint = White
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(Space8))
+                                Text(
+                                    text = "시간표",
+                                    style = Body1.merge(Gray900)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(Space60))
+                    }
                 }
             }
         }
@@ -455,6 +602,12 @@ private fun ChatScreenPreview() {
         ),
         data = ChatData(
             messageList = listOf(
+                Message.Schedule(
+                    id = 0L,
+                    chatRoomId = 1L,
+                    userId = 1L,
+                    createdAt = currentTime - 6L
+                ),
                 Message.Text(
                     id = 1L,
                     chatRoomId = 1L,

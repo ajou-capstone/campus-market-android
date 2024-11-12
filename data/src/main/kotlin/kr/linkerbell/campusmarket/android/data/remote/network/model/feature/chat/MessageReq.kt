@@ -2,7 +2,6 @@ package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.cha
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 
 sealed interface MessageReq {
 
@@ -21,11 +20,10 @@ sealed interface MessageReq {
         @SerialName("contentType")
         val contentType: String = "IMAGE"
     ) : MessageReq
-}
 
-fun Message.toRequest(): MessageReq {
-    return when (this) {
-        is Message.Text -> MessageReq.Text(content = content)
-        is Message.Image -> MessageReq.Image(content = content)
-    }
+    @Serializable
+    data class Schedule(
+        @SerialName("contentType")
+        val contentType: String = "TIMETABLE"
+    ) : MessageReq
 }

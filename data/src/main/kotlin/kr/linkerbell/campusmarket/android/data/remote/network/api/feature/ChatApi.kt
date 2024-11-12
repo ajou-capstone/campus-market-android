@@ -100,7 +100,7 @@ class ChatApi @Inject constructor(
     suspend fun getMessageListById(
         idList: List<Long>
     ): Result<GetMessageListByIdRes> {
-        return client.get("$baseUrl/api/v1/chat/message") {
+        return client.post("$baseUrl/api/v1/chat/message") {
             setBody(
                 GetMessageListByIdReq(
                     messageIdList = idList

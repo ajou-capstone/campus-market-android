@@ -14,7 +14,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -32,6 +36,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.ChatRoomScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.MyPageScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.ScheduleScreen
@@ -51,6 +56,25 @@ fun HomeScreen(
         initialPage = data.homeTypeList.indexOf(data.initialHomeType),
         pageCount = { data.homeTypeList.size }
     )
+
+    var isScheduleDialogShowing: Boolean by remember { mutableStateOf(false) }
+
+    if (isScheduleDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "시간표가 없어요",
+            message = "지금 시간표를 등록해보세요",
+            onConfirm = {
+                scope.launch {
+                    pagerState.scrollToPage(data.homeTypeList.indexOf(HomeType.Schedule))
+                }
+            },
+            onCancel = {},
+            onDismissRequest = {
+                isScheduleDialogShowing = false
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -99,7 +123,11 @@ fun HomeScreen(
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
-
+            when (event) {
+                HomeEvent.NeedSchedule -> {
+                    isScheduleDialogShowing = true
+                }
+            }
         }
     }
 }
