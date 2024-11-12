@@ -9,7 +9,6 @@ data class CategoryList(
                 "ELECTRONICS_IT",
                 "HOME_APPLIANCES",
                 "FASHION_ACCESSORIES",
-                "ACCESSORIES",
                 "BOOKS_EDUCATIONAL_MATERIALS",
                 "STATIONERY_OFFICE_SUPPLIES",
                 "HOUSEHOLD_ITEMS",
