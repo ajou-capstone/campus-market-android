@@ -32,26 +32,36 @@ class MyPageViewModel @Inject constructor(
 
     init {
         launch {
-            _state.value = MyPageState.Loading
-            getMyProfileUseCase().onSuccess {
-                _state.value = MyPageState.Init
-                _myProfile.value = it
-            }.onFailure { exception ->
-                _state.value = MyPageState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
+            getMyProfile()
+        }
+    }
 
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                    }
+    fun onIntent(intent: MyPageIntent) {
+        when(intent){
+            is MyPageIntent.RefreshData -> {
+                launch{
+                    getMyProfile()
                 }
             }
         }
     }
 
-    fun onIntent(intent: MyPageIntent) {
+    private suspend fun getMyProfile(){
+        getMyProfileUseCase().onSuccess {
+            _state.value = MyPageState.Init
+            _myProfile.value = it
+        }.onFailure { exception ->
+            _state.value = MyPageState.Init
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
 
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
+            _myProfile.value = MyProfile.empty
+        }
     }
 }

@@ -4,6 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.chatDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.homeDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.logoutDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.withdrawal.withdrawalDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.scheduleCompareDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.tradeInfoDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.tradePostDestination
@@ -30,4 +32,7 @@ fun NavGraphBuilder.mainDestination(
     chatDestination(navController = navController)
 
     scheduleCompareDestination(navController = navController)
+
+    logoutDestination(navController = navController)
+    withdrawalDestination(navController = navController)
 }
