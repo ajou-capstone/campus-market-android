@@ -7,7 +7,9 @@ import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeReposit
 class DeleteLikedItemUseCase @Inject constructor(
     private val tradeRepository: TradeRepository
 ) {
-    suspend operator fun invoke(itemId: Long): Result<DeletedLikedItemInfo> {
+    suspend operator fun invoke(
+        itemId: Long
+    ): Result<DeletedLikedItemInfo> {
         return tradeRepository.deleteLikedItem(itemId)
     }
 }

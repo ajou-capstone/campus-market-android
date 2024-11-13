@@ -48,6 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
@@ -60,10 +61,12 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 
 @Composable
@@ -81,8 +84,14 @@ fun TradeInfoScreen(
 
     var isDeleteConfirmButtonVisible by remember { mutableStateOf(false) }
 
-    val onChatButtonClick: () -> Unit = {
-        //TODO(Ray Jang : tradeInfo.itemId 기반으로 채팅 시작 로직)
+    fun navigateToChatRoom(id: Long) {
+        val route = makeRoute(
+            ChatConstant.ROUTE,
+            listOf(
+                ChatConstant.ROUTE_ARGUMENT_ROOM_ID to id.toString()
+            )
+        )
+        navController.navigate(route)
     }
 
     Scaffold(
@@ -113,7 +122,9 @@ fun TradeInfoScreen(
                 onLikeButtonClick = {
                     argument.intent(TradeInfoIntent.LikeButtonClicked)
                 },
-                onChatButtonClick = onChatButtonClick
+                onChatButtonClick = {
+                    argument.intent(TradeInfoIntent.OnTradeStart)
+                }
             )
         }
     ) { innerPadding ->
@@ -162,6 +173,16 @@ fun TradeInfoScreen(
                         isDeleteConfirmButtonVisible = false
                     }
                 )
+            }
+        }
+    }
+
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
+        event.eventObserve { event ->
+            when (event) {
+                is TradeInfoEvent.NavigateToChatRoom -> {
+                    navigateToChatRoom(id = event.id)
+                }
             }
         }
     }

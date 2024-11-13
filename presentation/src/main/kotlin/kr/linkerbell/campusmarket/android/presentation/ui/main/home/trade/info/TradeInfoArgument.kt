@@ -19,9 +19,12 @@ sealed interface TradeInfoState {
 }
 
 
-sealed interface TradeInfoEvent
+sealed interface TradeInfoEvent {
+    data class NavigateToChatRoom(val id: Long) : TradeInfoEvent
+}
 
 sealed interface TradeInfoIntent {
     data object LikeButtonClicked : TradeInfoIntent
     data object DeleteThisPost : TradeInfoIntent
+    data object OnTradeStart : TradeInfoIntent
 }

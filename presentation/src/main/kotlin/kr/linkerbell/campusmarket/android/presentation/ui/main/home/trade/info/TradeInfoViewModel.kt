@@ -9,9 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.zip
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.MakeRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.DeleteLikedItemUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.DeleteTradeInfoUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetTradeInfoUseCase
@@ -19,6 +22,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.PostLiked
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
+import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class TradeInfoViewModel @Inject constructor(
@@ -28,7 +32,8 @@ class TradeInfoViewModel @Inject constructor(
     private val postLikedItemUseCase: PostLikedItemUseCase,
     private val deleteLikedItemUseCase: DeleteLikedItemUseCase,
     private val deleteTradeInfoUseCase: DeleteTradeInfoUseCase,
-    private val getMyProfileUseCase: GetMyProfileUseCase
+    private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val makeRoomUseCase: MakeRoomUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<TradeInfoState> = MutableStateFlow(TradeInfoState.Init)
@@ -46,13 +51,36 @@ class TradeInfoViewModel @Inject constructor(
     private val _userInfo: MutableStateFlow<MyProfile> = MutableStateFlow(MyProfile.empty)
     val userInfo: StateFlow<MyProfile> = _userInfo.asStateFlow()
 
-    private val itemId = savedStateHandle["itemId"] ?: "-1"
+    private val itemId: Long by lazy {
+        savedStateHandle.get<Long>("itemId") ?: -1L
+    }
 
     init {
         launch {
-            getTradeInfo(itemId.toLong())
-            getUserInfo(_tradeInfo.value.userId)
-            getMyInfo()
+            _state.value = TradeInfoState.Loading
+            zip(
+                { getMyProfileUseCase() },
+                { getTradeInfoUseCase(itemId) }
+            ).mapCatching { (myProfile, tradeInfo) ->
+                _userInfo.value = myProfile
+                _tradeInfo.value = tradeInfo
+
+                getUserProfileUseCase(tradeInfo.userId).getOrThrow()
+            }.onSuccess {
+                _state.value = TradeInfoState.Init
+                _authorInfo.value = it
+            }.onFailure { exception ->
+                _state.value = TradeInfoState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 
@@ -65,63 +93,98 @@ class TradeInfoViewModel @Inject constructor(
             is TradeInfoIntent.DeleteThisPost -> {
                 deleteTradeInfo()
             }
-        }
-    }
 
-    private suspend fun getMyInfo() {
-        _state.value = TradeInfoState.Loading
-        getMyProfileUseCase().onSuccess {
-            _state.value = TradeInfoState.Init
-            _userInfo.value = it
-        }.onFailure {
-            _state.value = TradeInfoState.Init
-        }
-    }
-
-    private suspend fun getTradeInfo(itemId: Long) {
-        _state.value = TradeInfoState.Loading
-        getTradeInfoUseCase(itemId).onSuccess {
-            _state.value = TradeInfoState.Init
-            _tradeInfo.value = it
-        }.onFailure {
-            _state.value = TradeInfoState.Init
-        }
-    }
-
-    private suspend fun getUserInfo(id: Long) {
-        _state.value = TradeInfoState.Loading
-
-        getUserProfileUseCase(id).onSuccess {
-            _state.value = TradeInfoState.Init
-            _authorInfo.value = it
-        }.onFailure {
-            _state.value = TradeInfoState.Init
+            is TradeInfoIntent.OnTradeStart -> {
+                makeRoom()
+            }
         }
     }
 
     private fun changeLikeStatus() {
-        if (_tradeInfo.value.isLiked) {
-            _tradeInfo.value = _tradeInfo.value.copy(
-                isLiked = !_tradeInfo.value.isLiked,
-                likeCount = _tradeInfo.value.likeCount - 1
+        if (tradeInfo.value.isLiked) {
+            _tradeInfo.value = tradeInfo.value.copy(
+                isLiked = !tradeInfo.value.isLiked,
+                likeCount = tradeInfo.value.likeCount - 1
             )
-            launch { deleteLikedItemUseCase(_tradeInfo.value.itemId) }
+            launch {
+                deleteLikedItemUseCase(
+                    itemId = _tradeInfo.value.itemId
+                ).onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+            }
         } else {
-            _tradeInfo.value = _tradeInfo.value.copy(
-                isLiked = !_tradeInfo.value.isLiked,
-                likeCount = _tradeInfo.value.likeCount + 1
+            _tradeInfo.value = tradeInfo.value.copy(
+                isLiked = !tradeInfo.value.isLiked,
+                likeCount = tradeInfo.value.likeCount + 1
             )
-            launch { postLikedItemUseCase(_tradeInfo.value.itemId) }
+            launch {
+                postLikedItemUseCase(
+                    itemId = tradeInfo.value.itemId
+                ).onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+            }
         }
     }
 
     private fun deleteTradeInfo() {
         _state.value = TradeInfoState.Loading
         launch {
-            deleteTradeInfoUseCase(_tradeInfo.value.itemId).onSuccess {
+            deleteTradeInfoUseCase(
+                itemId = tradeInfo.value.itemId
+            ).onSuccess {
                 _state.value = TradeInfoState.Init
-            }.onFailure {
+            }.onFailure { exception ->
                 _state.value = TradeInfoState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun makeRoom() {
+        launch {
+            makeRoomUseCase(
+                userId = userInfo.value.id,
+                tradeId = itemId
+            ).onSuccess {
+                _state.value = TradeInfoState.Init
+                _event.emit(TradeInfoEvent.NavigateToChatRoom(id = it.id))
+            }.onFailure { exception ->
+                _state.value = TradeInfoState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
             }
         }
     }

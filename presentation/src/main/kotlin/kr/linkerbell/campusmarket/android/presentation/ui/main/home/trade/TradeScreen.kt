@@ -58,8 +58,6 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.T
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
 
-//TODO(변경사항 많은지 체크)
-
 @Composable
 fun TradeScreen(
     navController: NavController,

@@ -16,7 +16,10 @@ fun NavGraphBuilder.tradeInfoDestination(
     composable(
         route = TradeInfoConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument("itemId") { type = NavType.StringType; defaultValue = "0" },
+            navArgument("itemId") {
+                type = NavType.StringType
+                defaultValue = "0"
+            }
         )
     ) {
         val viewModel: TradeInfoViewModel = hiltViewModel()

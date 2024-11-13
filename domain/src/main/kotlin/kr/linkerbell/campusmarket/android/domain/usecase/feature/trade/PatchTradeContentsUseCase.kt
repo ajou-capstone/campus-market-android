@@ -8,7 +8,8 @@ class PatchTradeContentsUseCase @Inject constructor(
     private val tradeRepository: TradeRepository
 ) {
     suspend operator fun invoke(
-        tradeContents: TradeContents, itemId: Long
+        tradeContents: TradeContents,
+        itemId: Long
     ): Result<Long> {
         return tradeRepository.patchTradeContents(tradeContents, itemId)
     }

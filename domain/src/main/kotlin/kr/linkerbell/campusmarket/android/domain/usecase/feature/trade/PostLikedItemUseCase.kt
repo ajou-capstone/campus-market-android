@@ -7,7 +7,9 @@ import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeReposit
 class PostLikedItemUseCase @Inject constructor(
     private val tradeRepository: TradeRepository
 ) {
-    suspend operator fun invoke(itemId: Long): Result<LikedItemInfo> {
+    suspend operator fun invoke(
+        itemId: Long
+    ): Result<LikedItemInfo> {
         return tradeRepository.postLikedItem(itemId)
     }
 }
