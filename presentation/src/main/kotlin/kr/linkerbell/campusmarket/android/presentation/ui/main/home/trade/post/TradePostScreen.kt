@@ -56,6 +56,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
@@ -73,7 +74,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import timber.log.Timber
 
 @Composable
@@ -182,7 +182,8 @@ fun TradePostScreen(
                             )
                             hasThumbnails = true
                         }
-                        Timber.tag("siri22").d("after render images -> $originalImageList\n $imageList")
+                        Timber.tag("siri22")
+                            .d("after render images -> $originalImageList\n $imageList")
                     }
                 }
                 TradePostScreenTradeInfo(
@@ -261,7 +262,8 @@ fun TradePostScreen(
             title = "등록되었습니다!",
             isCancelable = false,
             onConfirm = {
-                Timber.tag("siri22").d("isConfirmButtonVisible-> $originalImageList\nImageList : $imageList")
+                Timber.tag("siri22")
+                    .d("isConfirmButtonVisible-> $originalImageList\nImageList : $imageList")
                 argument.intent(
                     TradePostIntent.PostOrPatchTrade(
                         title = title,
@@ -485,33 +487,38 @@ private fun TradePostScreenTradeInfo(
             }
         }
         Column {
-            Text(
-                text = "상품 상세 정보",
-                style = Headline3,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "상품 상세 정보",
+                    style = Headline3,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "모두 지우기",
+                    style = Body2,
+                    color = Gray600,
+                    modifier = Modifier
+                        .padding(top = 8.dp, end = 8.dp)
+                        .clickable {
+                            changeDescription("")
+                        }
+                )
+            }
             TypingTextField(
                 text = description,
                 onValueChange = { changeDescription(it) },
                 hintText = "상품 정보를 입력해주세요 (최대 1,000자)",
                 maxLines = 100,
                 maxTextLength = 1000,
-                trailingIconContent = {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear button",
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                                changeDescription("")
-                            }
-                    )
-                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
             )
         }
+
     }
 }
 

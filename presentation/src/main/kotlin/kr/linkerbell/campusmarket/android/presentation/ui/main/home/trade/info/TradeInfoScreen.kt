@@ -55,7 +55,6 @@ import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.BlueGray200
-import kr.linkerbell.campusmarket.android.presentation.common.theme.BlueGray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
@@ -90,7 +89,7 @@ fun TradeInfoScreen(
         topBar = {
             TradeInfoTopBar(
                 isOwnerOfThisTrade = isOwnerOfThisTrade,
-                onNavigatePreviousScreenButton = { navController.popBackStack() },
+                onNavigatePreviousScreenButton = { navController.safeNavigateUp() },
                 reportArticle = { }, //신고 페이지로
                 deleteArticle = {
                     isDeleteConfirmButtonVisible = true
@@ -182,7 +181,7 @@ private fun TradeInfoTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, Color.Gray)
-            .background(Color.Transparent)
+            .background(White)
             .height(56.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -191,7 +190,7 @@ private fun TradeInfoTopBar(
             Icon(
                 painter = painterResource(id = R.drawable.ic_chevron_left),
                 contentDescription = "Navigate Up Button",
-                tint = BlueGray50,
+                tint = Black,
                 modifier = Modifier
                     .size(48.dp)
                     .clickable {
@@ -202,13 +201,13 @@ private fun TradeInfoTopBar(
             Text(
                 text = "상세 정보",
                 style = Headline2,
-                color = BlueGray50
+                color = Black
             )
         }
         Box {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                tint = BlueGray50,
+                tint = Black,
                 contentDescription = "More Option Button",
                 modifier = Modifier
                     .size(48.dp)
