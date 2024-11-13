@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -111,48 +112,61 @@ private fun TradeScreen(
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
-            items(
-                count = data.summarizedTradeList.itemCount,
-                key = { index -> data.summarizedTradeList[index]?.itemId ?: -1 }
-            ) { index ->
-                val trade = data.summarizedTradeList[index] ?: return@items
-                TradeItemCard(
-                    item = trade,
-                    navigateToTradeInfoScreen = {
-                        val tradeInfoRoute = makeRoute(
-                            route = TradeInfoConstant.ROUTE,
-                            arguments = mapOf(
-                                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+            itemsIndexed(
+                items = data.summarizedTradeList.itemSnapshotList,
+                key = { _, item -> item?.itemId ?: -1 }
+            ) { _, trade ->
+                trade?.let {
+                    TradeItemCard(
+                        item = it,
+                        onItemCardClicked = {
+                            val tradeInfoRoute = makeRoute(
+                                route = TradeInfoConstant.ROUTE,
+                                arguments = mapOf(
+                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+                                )
                             )
-                        )
-                        navController.navigate(tradeInfoRoute)
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                            navController.navigate(tradeInfoRoute)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
+
     Box(
         modifier = Modifier
             .padding(32.dp)
             .fillMaxSize(),
         contentAlignment = Alignment.BottomEnd
     ) {
-        TradeScreenPostButton(onClick = { navController.navigate(TradePostConstant.ROUTE) })
+        TradeScreenPostButton(
+            onClick = {
+                val postRoute = makeRoute(
+                    route = TradePostConstant.ROUTE,
+                    arguments = mapOf(
+                        TradePostConstant.ROUTE_ARGUMENT_ITEM_ID to "-1"
+                    )
+                )
+                navController.navigate(postRoute)
+            }
+        )
     }
+
 }
 
 @Composable
 private fun TradeItemCard(
     item: SummarizedTrade,
-    navigateToTradeInfoScreen: (Long) -> Unit
+    onItemCardClicked: (Long) -> Unit
 ) {
     Box(
         Modifier
             .shadow(4.dp)
             .clip(RoundedCornerShape(5.dp))
             .clickable {
-                navigateToTradeInfoScreen(item.itemId)
+                onItemCardClicked(item.itemId)
             }
     ) {
         Row(

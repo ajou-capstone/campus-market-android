@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -63,6 +64,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.BottomSheetScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
@@ -74,7 +77,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
-import timber.log.Timber
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 
 @Composable
 fun TradePostScreen(
@@ -93,12 +96,13 @@ fun TradePostScreen(
 
     var originalImageList: List<String> by remember { mutableStateOf(emptyList()) }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
-    var hasThumbnails = false
+    var hasThumbnails by remember { mutableStateOf(false) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isBottomSheetVisible by remember { mutableStateOf(false) }
     var isConfirmButtonVisible by remember { mutableStateOf(false) }
 
+    var isValidContents by remember { mutableStateOf(true) }
     var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
 
     LaunchedEffect(originalContents) {
@@ -107,27 +111,36 @@ fun TradePostScreen(
         category = originalContents.category
         description = originalContents.description
         originalImageList =
-            listOf(originalContents.thumbnail) + originalContents.images
-        Timber.tag("siri22").d("launchedEffect -> $originalImageList")
+            (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
     }
+
     val validateContentAndPost = {
-        var isValid = true
         when {
             title.isBlank() -> {
                 bottomSheetContent = "제목을 입력해주세요"
                 isBottomSheetVisible = true
-                isValid = false
+                isValidContents = false
             }
 
             description.isBlank() -> {
                 bottomSheetContent = "상품 상세 정보를 입력해주세요"
                 isBottomSheetVisible = true
-                isValid = false
+                isValidContents = false
             }
         }
-        if (isValid) {
+        if (isValidContents) {
             isConfirmButtonVisible = true
         }
+    }
+
+    fun navigateToTrade(itemId: Long) {
+        val tradeInfoRoute = makeRoute(
+            route = TradeInfoConstant.ROUTE,
+            arguments = mapOf(
+                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
+            )
+        )
+        navController.navigate(tradeInfoRoute)
     }
 
     Column(
@@ -182,8 +195,6 @@ fun TradePostScreen(
                             )
                             hasThumbnails = true
                         }
-                        Timber.tag("siri22")
-                            .d("after render images -> $originalImageList\n $imageList")
                     }
                 }
                 TradePostScreenTradeInfo(
@@ -214,8 +225,10 @@ fun TradePostScreen(
     if (isGalleryShowing) {
         GalleryScreen(
             navController = navController,
+            selectedImageList = imageList,
             onDismissRequest = { isGalleryShowing = false },
             onResult = { addedImage ->
+                imageList = emptyList()
                 imageList += addedImage
             },
             minSelectCount = 1,
@@ -262,23 +275,31 @@ fun TradePostScreen(
             title = "등록되었습니다!",
             isCancelable = false,
             onConfirm = {
-                Timber.tag("siri22")
-                    .d("isConfirmButtonVisible-> $originalImageList\nImageList : $imageList")
                 argument.intent(
                     TradePostIntent.PostOrPatchTrade(
                         title = title,
                         description = description,
                         price = price.toIntOrNull() ?: 0,
                         category = category,
+                        originalImageList = originalImageList,
                         imageList = imageList
                     )
                 )
             },
             onDismissRequest = {
                 isConfirmButtonVisible = false
-                //TODO("Ray Jang -> TradeInfoConstant.ROUTE?itemId={itemId}로 이동")
             }
         )
+    }
+
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
+        event.eventObserve { event ->
+            when (event) {
+                is TradePostEvent.NavigateToTrade -> {
+                    navigateToTrade(itemId = event.tradeId)
+                }
+            }
+        }
     }
 }
 
@@ -314,7 +335,6 @@ private fun TradePostScreenImageBox(
     isThumbnail: Boolean,
     onDeleteImageClicked: (String) -> Unit,
 ) {
-    Timber.tag("siri22").d("Render image with url ${imagePath}")
 
     Box(Modifier.padding(end = 16.dp)) {
         PostImage(

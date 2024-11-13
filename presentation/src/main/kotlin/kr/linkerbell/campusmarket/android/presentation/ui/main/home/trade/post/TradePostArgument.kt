@@ -19,7 +19,9 @@ sealed interface TradePostState {
     data object Loading : TradePostState
 }
 
-sealed interface TradePostEvent
+sealed interface TradePostEvent{
+    data class NavigateToTrade(val tradeId: Long) : TradePostEvent
+}
 
 sealed interface TradePostIntent {
     data class PostOrPatchTrade(
@@ -27,6 +29,7 @@ sealed interface TradePostIntent {
         val description: String,
         val price: Int,
         val category: String,
-        val imageList: List<GalleryImage>?
+        val originalImageList: List<String>,
+        val imageList: List<GalleryImage>
     ) : TradePostIntent
 }

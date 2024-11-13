@@ -17,8 +17,8 @@ fun NavGraphBuilder.tradeInfoDestination(
         route = TradeInfoConstant.ROUTE_STRUCTURE,
         arguments = listOf(
             navArgument("itemId") {
-                type = NavType.StringType
-                defaultValue = "0"
+                type = NavType.LongType
+                defaultValue = -1
             }
         )
     ) {

@@ -47,12 +47,13 @@ class TradePostViewModel @Inject constructor(
         MutableStateFlow(TradeContents.empty)
     val originalTradeContents: StateFlow<TradeContents> = _originalTradeContents.asStateFlow()
 
-    private var _itemId: String = savedStateHandle["itemId"] ?: ""
-
+    private val itemId: Long by lazy {
+        savedStateHandle.get<Long>("itemId") ?: -1L
+    }
     init {
         launch {
-            if (_itemId != "") {
-                getOriginalTradeInfo(_itemId.toLong())
+            if (itemId != -1L) {
+                getOriginalTradeInfo(itemId)
             }
             getCategoryList()
         }
@@ -62,44 +63,29 @@ class TradePostViewModel @Inject constructor(
         when (intent) {
             is TradePostIntent.PostOrPatchTrade -> {
                 launch {
-                    var s3UrlsForImages =
-                        listOf(_originalTradeContents.value.thumbnail) + _originalTradeContents.value.images
-                    val newImages = intent.imageList?.map { image ->
-                        buildPreSignedUrlForImage(image)
-                    } ?: emptyList()
-
-                    s3UrlsForImages = (s3UrlsForImages + newImages).filter { it.isNotBlank() }
-
-                    val thumbnailUrl = s3UrlsForImages.firstOrNull() ?: ""
-                    val imageUrls = s3UrlsForImages.drop(1)
+                    val s3UrlsForImages = buildImageList(intent.originalImageList, intent.imageList)
 
                     val tradeContent = TradeContents(
                         intent.title,
                         intent.description,
                         intent.price,
                         intent.category,
-                        thumbnail = thumbnailUrl,
-                        images = imageUrls
+                        thumbnail = s3UrlsForImages.firstOrNull() ?: "",
+                        images = s3UrlsForImages.drop(1)
                     )
 
-                    if (_itemId != "") {
-                        _itemId = patchTradeContents(tradeContent)
+                    val tradeId = if (itemId != -1L) {
+                        patchTradeContents(tradeContent)
                     } else {
-                        _itemId = postTradeContents(
-                            intent.title,
-                            intent.description,
-                            intent.price,
-                            intent.category,
-                            thumbnailUrl = thumbnailUrl,
-                            s3UrlsForImage = imageUrls
-                        )
+                        postTradeContents(tradeContent)
                     }
+                    _event.emit(TradePostEvent.NavigateToTrade(tradeId = tradeId))
                 }
             }
         }
     }
 
-    private suspend fun buildPreSignedUrlForImage(image: GalleryImage?): String {
+    private suspend fun getPreSignedUrlForImage(image: GalleryImage?): String {
 
         if (image == null) return ""
 
@@ -130,44 +116,49 @@ class TradePostViewModel @Inject constructor(
         return s3Url
     }
 
-    private suspend fun postTradeContents(
-        title: String,
-        description: String,
-        price: Int,
-        category: String,
-        thumbnailUrl: String,
-        s3UrlsForImage: List<String>
-    ): String {
+    private suspend fun buildImageList(
+        originalImageList: List<String>,
+        newImageList: List<GalleryImage>
+    )
+            : List<String> {
+        val newS3Links = newImageList.map { image ->
+            getPreSignedUrlForImage(image)
+        }
+        return (originalImageList + newS3Links).filter { it.isNotBlank() }
+    }
+
+
+    private suspend fun postTradeContents(tradeContents: TradeContents): Long {
         _state.value = TradePostState.Loading
         postTradeContentsUseCase(
-            title = title,
-            description = description,
-            price = price,
-            category = category,
-            thumbnail = thumbnailUrl,
-            images = s3UrlsForImage
+            title = tradeContents.title,
+            description = tradeContents.description,
+            price = tradeContents.price,
+            category = tradeContents.category,
+            thumbnail = tradeContents.thumbnail,
+            images = tradeContents.images
         ).onSuccess {
             _state.value = TradePostState.Init
-            return it.toString()
+            return it
         }.onFailure {
             _state.value = TradePostState.Init
         }
-        return ""
+        return 0
     }
 
     private suspend fun patchTradeContents(
         tradeContents: TradeContents
-    ): String {
+    ): Long {
         _state.value = TradePostState.Loading
         patchTradeContentsUseCase(
-            tradeContents, _itemId.toLong()
+            tradeContents, itemId
         ).onSuccess {
             _state.value = TradePostState.Init
-            return it.toString()
+            return it
         }.onFailure {
             _state.value = TradePostState.Init
         }
-        return ""
+        return 0
     }
 
     private suspend fun getOriginalTradeInfo(itemId: Long) {

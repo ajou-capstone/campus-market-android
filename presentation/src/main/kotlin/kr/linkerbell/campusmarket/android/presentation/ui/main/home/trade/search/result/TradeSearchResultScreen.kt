@@ -62,11 +62,11 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
-import timber.log.Timber
 
 @Composable
 fun TradeSearchResultScreen(
@@ -130,15 +130,14 @@ fun TradeSearchResultScreen(
                 val trade = data.summarizedTradeList[index] ?: return@items
                 TradeSearchResultItemCard(
                     item = trade,
-                    navigateToTradeInfoScreen = {
+                    onItemCardClicked = {
                         val tradeInfoRoute = makeRoute(
                             route = TradeInfoConstant.ROUTE,
                             arguments = mapOf(
                                 TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
                             )
                         )
-                        Timber.tag("siri22").d("ROUTE : ${tradeInfoRoute}")
-                        navController.navigate(tradeInfoRoute)
+                        navController.safeNavigate(tradeInfoRoute)
                     }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -149,7 +148,7 @@ fun TradeSearchResultScreen(
 
 @Composable
 private fun TradeSearchResultSearchBar(
-    currentQuery: String, navigateToTradeSearchScreen: () -> Unit
+    currentQuery: String, onSearchBarClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -181,7 +180,7 @@ private fun TradeSearchResultSearchBar(
                     .clip(RoundedCornerShape(5.dp))
                     .background(Gray50)
                     .clickable {
-                        navigateToTradeSearchScreen()
+                        onSearchBarClicked()
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -438,14 +437,14 @@ private fun TradeSearchResultSortOption(
 @Composable
 private fun TradeSearchResultItemCard(
     item: SummarizedTrade,
-    navigateToTradeInfoScreen: (Long) -> Unit
+    onItemCardClicked: (Long) -> Unit
 ) {
     Box(
         Modifier
             .shadow(4.dp)
             .clip(RoundedCornerShape(5.dp))
             .clickable {
-                navigateToTradeInfoScreen(item.itemId)
+                onItemCardClicked(item.itemId)
             }
     ) {
         Row(

@@ -8,7 +8,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.tradePostDestination(
@@ -17,7 +16,10 @@ fun NavGraphBuilder.tradePostDestination(
     composable(
         route = TradePostConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument("itemId") { type = NavType.StringType; defaultValue = "0" },
+            navArgument("itemId") {
+                type = NavType.LongType
+                defaultValue = -1L
+            },
         )
     ) {
         val viewModel: TradePostViewModel = hiltViewModel()
@@ -41,40 +43,6 @@ fun NavGraphBuilder.tradePostDestination(
             TradePostData(
                 categoryList = categoryList,
                 originalTradeContents = originalTradePostInfo
-            )
-        }
-
-        ErrorObserver(viewModel)
-        TradePostScreen(
-            navController = navController,
-            argument = argument,
-            data = data
-        )
-    }
-
-    composable(
-        route = TradePostConstant.ROUTE
-    ) {
-        val viewModel: TradePostViewModel = hiltViewModel()
-
-        val argument: TradePostArgument = let {
-            val state by viewModel.state.collectAsStateWithLifecycle()
-
-            TradePostArgument(
-                state = state,
-                event = viewModel.event,
-                intent = viewModel::onIntent,
-                logEvent = viewModel::logEvent,
-                coroutineContext = viewModel.coroutineContext
-            )
-        }
-
-        val data: TradePostData = let {
-            val categoryList = viewModel.categoryList.value
-
-            TradePostData(
-                categoryList = categoryList,
-                originalTradeContents = TradeContents.empty
             )
         }
 

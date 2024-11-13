@@ -63,6 +63,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
@@ -99,18 +100,18 @@ fun TradeInfoScreen(
             TradeInfoTopBar(
                 isOwnerOfThisTrade = isOwnerOfThisTrade,
                 onNavigatePreviousScreenButton = { navController.safeNavigateUp() },
-                reportArticle = { }, //신고 페이지로
-                deleteArticle = {
+                onReportOptionClicked = { }, //TODO(신고 페이지로 이동)
+                onDeleteArticleOptionClicked = {
                     isDeleteConfirmButtonVisible = true
                 },
-                patchArticle = {
+                onPatchArticleOptionClicked = {
                     val newRoute = makeRoute(
                         route = TradePostConstant.ROUTE,
                         arguments = mapOf(
                             TradePostConstant.ROUTE_ARGUMENT_ITEM_ID to tradeInfo.itemId.toString()
                         )
                     )
-                    navController.navigate(newRoute)
+                    navController.safeNavigate(newRoute)
                 }
             )
         },
@@ -159,10 +160,10 @@ fun TradeInfoScreen(
                     isCancelable = true,
                     onConfirm = {
                         argument.intent(TradeInfoIntent.DeleteThisPost)
+                        navController.safeNavigateUp()
                     },
                     onDismissRequest = {
                         isDeleteConfirmButtonVisible = false
-                        navController.safeNavigateUp()
                     }
                 )
             } else {
@@ -192,9 +193,9 @@ fun TradeInfoScreen(
 private fun TradeInfoTopBar(
     isOwnerOfThisTrade: Boolean,
     onNavigatePreviousScreenButton: () -> Unit,
-    reportArticle: () -> Unit,
-    patchArticle: () -> Unit,
-    deleteArticle: () -> Unit,
+    onReportOptionClicked: () -> Unit,
+    onPatchArticleOptionClicked: () -> Unit,
+    onDeleteArticleOptionClicked: () -> Unit,
 ) {
     var isDropDownExpanded by remember { mutableStateOf(false) }
 
@@ -256,15 +257,15 @@ private fun TradeInfoTopBar(
                             isDropDownExpanded = false
                             when (option) {
                                 "신고" -> {
-                                    reportArticle()
+                                    onReportOptionClicked()
                                 }
 
                                 "삭제" -> {
-                                    deleteArticle()
+                                    onDeleteArticleOptionClicked()
                                 }
 
                                 "수정" -> {
-                                    patchArticle()
+                                    onPatchArticleOptionClicked()
                                 }
                             }
                         }
@@ -288,10 +289,12 @@ private fun TradeInfoImageViewer(thumbUrl: String, imageUrls: List<String>) {
             .fillMaxWidth()
             .heightIn(min = 200.dp)
     ) { page ->
-        PostImage(
-            data = thumbnailAndImage[page],
-            modifier = Modifier.clip(shape = RoundedCornerShape(0))
-        )
+        thumbnailAndImage.getOrNull(page).let {
+            PostImage(
+                data = thumbnailAndImage[page],
+                modifier = Modifier.clip(shape = RoundedCornerShape(0))
+            )
+        }
     }
 }
 
