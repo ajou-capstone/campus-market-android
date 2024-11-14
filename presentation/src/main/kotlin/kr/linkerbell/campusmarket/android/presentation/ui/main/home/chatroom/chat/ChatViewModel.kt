@@ -3,7 +3,6 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.ch
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
@@ -31,6 +30,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUser
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
+import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
@@ -110,7 +110,17 @@ class ChatViewModel @Inject constructor(
 
         suspend fun sendText(text: String) {
             session?.let {
-                it.send(roomId, text, "TEXT")
+                it.send(roomId, text, "TEXT").onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
             } ?: throw IllegalStateException("Session is not connected")
         }
 
@@ -253,7 +263,8 @@ class ChatViewModel @Inject constructor(
                         }
                 }
             }
-
+        }
+        launch {
             getMessageListUseCase(roomId = roomId)
                 .catch { exception ->
                     when (exception) {

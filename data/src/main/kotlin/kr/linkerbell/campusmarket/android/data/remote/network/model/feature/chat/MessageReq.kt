@@ -3,6 +3,7 @@ package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.cha
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface MessageReq {
 
     @Serializable
@@ -10,7 +11,7 @@ sealed interface MessageReq {
         @SerialName("content")
         val content: String,
         @SerialName("contentType")
-        val contentType: String = "TEXT"
+        val contentType: String
     ) : MessageReq
 
     @Serializable
@@ -18,12 +19,12 @@ sealed interface MessageReq {
         @SerialName("content")
         val content: String,
         @SerialName("contentType")
-        val contentType: String = "IMAGE"
+        val contentType: String
     ) : MessageReq
 
     @Serializable
     data class Schedule(
         @SerialName("contentType")
-        val contentType: String = "TIMETABLE"
+        val contentType: String
     ) : MessageReq
 }

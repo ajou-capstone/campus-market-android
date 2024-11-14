@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,11 +53,12 @@ import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
@@ -131,6 +135,7 @@ private fun TradeScreen(
                 .background(Indigo50)
                 .padding(innerPadding)
         ) {
+
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
@@ -228,9 +233,11 @@ private fun TradeItemCard(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    val favIcon =
+                        if (item.isLiked) Icons.Default.FavoriteBorder else Icons.Default.Favorite
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Home",
+                        imageVector = favIcon,
+                        contentDescription = "isLike",
                         tint = Black,
                         modifier = Modifier.size(12.dp)
                     )
@@ -262,7 +269,6 @@ private fun TradeSearchBar(
             verticalAlignment = Alignment.CenterVertically,
         )
         {
-            //Banner
             Box(
                 modifier = Modifier
                     .width(76.dp)
@@ -288,12 +294,13 @@ private fun TradeSearchBar(
             ) {
                 Text(
                     text = "검색어를 입력하세요",
-                    color = Black,
+                    color = Gray,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search button",
+                    tint = Black,
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .size(20.dp)
@@ -303,6 +310,7 @@ private fun TradeSearchBar(
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = "Notification Button",
+                tint = Black,
                 modifier = Modifier
                     .size(24.dp)
                     .weight(1f)
@@ -319,7 +327,7 @@ private fun TradeItemStatus(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .background(Color.Gray),
+                .background(Gray),
             contentAlignment = Alignment.Center
         ) {
             Text("거래 완료", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
@@ -330,7 +338,11 @@ private fun TradeItemStatus(
                 .clip(RoundedCornerShape(5.dp))
                 .background(Color.LightGray)
         ) {
-            Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+            Text(
+                text = "거래중",
+                color = Black,
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+            )
         }
     }
 }
@@ -339,7 +351,9 @@ private fun TradeItemStatus(
 private fun TradeScreenPostButton(onClick: () -> Unit) {
     FloatingActionButton(
         onClick = { onClick() },
-        containerColor = Indigo100,
+        modifier = Modifier.size(Space56),
+        shape = CircleShape,
+        containerColor = Blue400,
     ) {
         Icon(Icons.Filled.Add, "Add Post Button")
     }
@@ -370,7 +384,8 @@ private fun TradeScreenPreview() {
                             price = 1000,
                             chatCount = 5,
                             likeCount = 2,
-                            itemStatus = ""
+                            itemStatus = "",
+                            isLiked = true
                         )
                     )
                 )

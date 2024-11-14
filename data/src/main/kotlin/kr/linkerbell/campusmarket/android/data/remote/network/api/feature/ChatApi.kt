@@ -112,7 +112,7 @@ class ChatApi @Inject constructor(
     suspend fun connectRoom(): Result<StompSession> {
         return runCatching {
             stompClient.connect(
-                url = "$baseUrl/ws/chat"
+                url = "$baseUrl/ws/chat".replaceFirst("https", "wss")
             )
         }.onFailure { exception ->
             Timber.d(exception)

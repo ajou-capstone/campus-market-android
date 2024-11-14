@@ -113,6 +113,7 @@ fun TradeInfoScreen(
         bottomBar = {
             TradeInfoBottomBar(
                 isLiked = tradeInfo.isLiked,
+                isOwnerOfThisTrade = isOwnerOfThisTrade,
                 isSold = tradeInfo.isSold,
                 price = tradeInfo.price,
                 onLikeButtonClick = {
@@ -381,6 +382,7 @@ private fun TradeInfoContent(
 @Composable
 private fun TradeInfoBottomBar(
     isLiked: Boolean,
+    isOwnerOfThisTrade: Boolean,
     price: Int,
     isSold: Boolean,
     onLikeButtonClick: () -> Unit,
@@ -419,7 +421,7 @@ private fun TradeInfoBottomBar(
         ) {
             TradeItemStatus(isSold)
             Spacer(Modifier.padding(8.dp))
-            TradeStartButton(isSold, onChatButtonClick)
+            TradeStartButton(isSold, isOwnerOfThisTrade, onChatButtonClick)
         }
     }
 }
@@ -451,10 +453,10 @@ private fun TradeItemStatus(
 @Composable
 private fun TradeStartButton(
     isSold: Boolean,
+    isOwnerOfThisArticle: Boolean,
     onChatButtonClick: () -> Unit,
 ) {
-
-    if (isSold) {
+    if (isOwnerOfThisArticle) {
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
@@ -462,28 +464,44 @@ private fun TradeStartButton(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "거래 완료",
+                text = "내 판매 글입니다.",
                 modifier = Modifier.padding(8.dp),
                 style = Headline2,
                 color = Color.White
             )
         }
     } else {
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(Blue400)
-                .clickable {
-                    onChatButtonClick()
-                },
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "거래하기",
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 28.dp),
-                style = Headline2,
-                color = Color.White
-            )
+        if (isSold) {
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(BlueGray200),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "거래 완료",
+                    modifier = Modifier.padding(8.dp),
+                    style = Headline2,
+                    color = Color.White
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Blue400)
+                    .clickable {
+                        onChatButtonClick()
+                    },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "거래하기",
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 28.dp),
+                    style = Headline2,
+                    color = Color.White
+                )
+            }
         }
     }
 }

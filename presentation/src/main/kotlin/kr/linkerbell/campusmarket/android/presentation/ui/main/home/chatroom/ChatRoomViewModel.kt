@@ -197,7 +197,8 @@ class ChatRoomViewModel @Inject constructor(
                         ).getOrNull()
                     }
                 }
-
+        }
+        launch {
             getMessageListUseCase(roomId = -1)
                 .catch { exception ->
                     when (exception) {

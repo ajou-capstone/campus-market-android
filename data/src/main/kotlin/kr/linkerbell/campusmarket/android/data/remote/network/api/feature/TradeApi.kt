@@ -99,11 +99,11 @@ class TradeApi @Inject constructor(
 
 
     suspend fun postLikeItem(itemId: Long): Result<PostLikedItemRes> {
-        return client.post("$baseUrl/api/v1/$itemId/likes").convert(errorMessageMapper::map)
+        return client.post("$baseUrl/api/v1/items/$itemId/likes").convert(errorMessageMapper::map)
     }
 
     suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemRes> {
-        return client.delete("$baseUrl/api/v1/$itemId/likes").convert(errorMessageMapper::map)
+        return client.delete("$baseUrl/api/v1/items/$itemId/likes").convert(errorMessageMapper::map)
     }
 
     suspend fun deleteTradeInfo(itemId: Long): Result<Unit> {

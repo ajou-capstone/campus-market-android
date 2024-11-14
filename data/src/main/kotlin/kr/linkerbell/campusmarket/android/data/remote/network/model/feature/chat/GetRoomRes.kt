@@ -7,11 +7,11 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
 
 @Serializable
 data class GetRoomListRes(
-    @SerialName("data")
-    val data: List<GetRoomListItemRes>
+    @SerialName("chatRoomList")
+    val chatRoomList: List<GetRoomListItemRes>
 ) : DataMapper<List<Room>> {
     override fun toDomain(): List<Room> {
-        return data.map { it.toDomain() }
+        return chatRoomList.map { it.toDomain() }
     }
 }
 

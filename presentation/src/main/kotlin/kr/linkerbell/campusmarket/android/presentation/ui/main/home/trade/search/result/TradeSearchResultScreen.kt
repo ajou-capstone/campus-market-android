@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
@@ -124,7 +125,6 @@ fun TradeSearchResultScreen(
                 )
             }
         }
-
         HorizontalDivider(thickness = (0.4).dp, color = Black)
         if (data.summarizedTradeList.itemSnapshotList.size == 0) {
             Row(
@@ -261,7 +261,7 @@ private fun TradeSearchResultPriceFilter(
                         minPriceInText = ""
                     } else {
                         val filteredValue = newValue.filter { it.isDigit() }
-                        minPrice = filteredValue.toInt()
+                        minPrice = filteredValue.toIntOrNull() ?: 0
                         minPriceInText = filteredValue
                     }
                 },
@@ -284,7 +284,7 @@ private fun TradeSearchResultPriceFilter(
                         maxPriceInText = ""
                     } else {
                         val filteredValue = newValue.filter { it.isDigit() }
-                        maxPrice = filteredValue.toInt()
+                        maxPrice = filteredValue.toIntOrNull() ?: 1000000
                         maxPriceInText = filteredValue
                     }
                 },
@@ -337,7 +337,7 @@ private fun TradeSearchResultCategoryFilter(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
             .background(Blue400)
-            .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+            .border(1.dp, Gray, shape = RoundedCornerShape(4.dp))
             .fillMaxWidth()
     ) {
         Row(
@@ -519,9 +519,11 @@ private fun TradeSearchResultItemCard(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    val favIcon =
+                        if (item.isLiked) Icons.Default.FavoriteBorder else Icons.Default.Favorite
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Home",
+                        imageVector = favIcon,
+                        contentDescription = "isLike",
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.padding(2.dp))
@@ -619,7 +621,8 @@ private fun TradeSearchResultScreenPreview() {
                             price = 1000,
                             chatCount = 5,
                             likeCount = 2,
-                            itemStatus = ""
+                            itemStatus = "",
+                            isLiked = true
                         )
                     )
                 )

@@ -91,7 +91,13 @@ class ScheduleViewModel @Inject constructor(
         schedule: Schedule
     ) {
         launch {
-            val newScheduleList = scheduleList.value + schedule
+            val scheduleList = scheduleList.value
+            val duplicateScheduleList: List<Schedule> = scheduleList.filter {
+                if (it.dayOfWeek != schedule.dayOfWeek) return@filter false
+
+                it.endTime > schedule.startTime && it.startTime < schedule.endTime
+            }
+            val newScheduleList = scheduleList - duplicateScheduleList.toSet() + schedule
             editScheduleUseCase(
                 scheduleList = newScheduleList
             ).onSuccess {
@@ -138,7 +144,13 @@ class ScheduleViewModel @Inject constructor(
         to: Schedule
     ) {
         launch {
-            val newScheduleList = scheduleList.value - from + to
+            val scheduleList = scheduleList.value - from
+            val duplicateScheduleList: List<Schedule> = scheduleList.filter {
+                if (it.dayOfWeek != to.dayOfWeek) return@filter false
+
+                it.endTime > to.startTime && it.startTime < to.endTime
+            }
+            val newScheduleList = scheduleList - duplicateScheduleList.toSet() + to
             editScheduleUseCase(
                 scheduleList = newScheduleList
             ).onSuccess {

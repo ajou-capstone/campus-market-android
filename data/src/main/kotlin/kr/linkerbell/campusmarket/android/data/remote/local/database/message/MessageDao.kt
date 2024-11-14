@@ -24,8 +24,8 @@ interface MessageDao {
     @Query("SELECT * FROM message")
     fun getAll(): Flow<List<MessageEntity>>
 
-    @Query("SELECT id FROM message WHERE id NOT IN(:idList)")
-    suspend fun findMissingIdList(idList: List<Long>): List<Long>
+    @Query("SELECT id FROM message WHERE id IN(:idList)")
+    suspend fun findExistingIdList(idList: List<Long>): List<Long>
 
     @Update
     suspend fun update(vararg users: MessageEntity)

@@ -21,6 +21,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Session
 import kr.linkerbell.campusmarket.android.domain.repository.feature.ChatRepository
 import org.hildan.krossbow.stomp.sendText
 import org.hildan.krossbow.stomp.subscribe
+import timber.log.Timber
 
 class RealChatRepository @Inject constructor(
     private val chatApi: ChatApi,
@@ -113,7 +114,8 @@ class RealChatRepository @Inject constructor(
             }
         }.onStart {
             val messageIdList = chatApi.getRecentMessageIdList().toDomain().getOrThrow()
-            val missingIdList = messageDao.findMissingIdList(idList = messageIdList)
+            val existingIdList = messageDao.findExistingIdList(idList = messageIdList)
+            val missingIdList = messageIdList - existingIdList
             val messageList = chatApi.getMessageListById(idList = missingIdList)
                 .toDomain()
                 .getOrThrow()
@@ -161,16 +163,16 @@ class RealChatRepository @Inject constructor(
                         val message = if (contentType == "TEXT") {
                             MessageReq.Text(
                                 content = (content as? String).orEmpty(),
-                                contentType = contentType
+                                contentType = "TEXT"
                             )
                         } else if (contentType == "IMAGE") {
                             MessageReq.Image(
                                 content = (content as? String).orEmpty(),
-                                contentType = contentType
+                                contentType = "IMAGE"
                             )
                         } else {
                             MessageReq.Schedule(
-                                contentType = contentType
+                                contentType = "TIMETABLE"
                             )
                         }
                         stompSession.sendText(

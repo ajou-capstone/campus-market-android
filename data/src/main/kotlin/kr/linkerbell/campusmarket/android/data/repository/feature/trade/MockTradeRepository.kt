@@ -41,7 +41,8 @@ class MockTradeRepository @Inject constructor(
                         price = 1000,
                         chatCount = 5,
                         likeCount = 2,
-                        itemStatus = ""
+                        itemStatus = "",
+                        isLiked = true
                     )
                 )
             )

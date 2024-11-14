@@ -184,6 +184,7 @@ class TradePostViewModel @Inject constructor(
                 thumbnail = it.thumbnail,
                 images = it.images
             )
+            _event.emit(TradePostEvent.FetchOriginalContents(_originalTradeContents.value))
         }.onFailure { exception ->
             when (exception) {
                 is ServerException -> {

@@ -1,6 +1,8 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.chat
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,7 +27,7 @@ sealed interface MessageRes : DataMapper<Message> {
         @SerialName("content")
         val content: String,
         @SerialName("createdAt")
-        val createdAt: Instant
+        val createdAt: LocalDateTime
     ) : MessageRes {
         override fun toDomain(): Message.Text {
             return Message.Text(
@@ -33,7 +35,8 @@ sealed interface MessageRes : DataMapper<Message> {
                 chatRoomId = chatRoomId,
                 userId = userId,
                 content = content,
-                createdAt = createdAt.toEpochMilliseconds()
+                createdAt = createdAt.toInstant(TimeZone.currentSystemDefault())
+                    .toEpochMilliseconds()
             )
         }
     }
@@ -50,7 +53,7 @@ sealed interface MessageRes : DataMapper<Message> {
         @SerialName("content")
         val content: String,
         @SerialName("createdAt")
-        val createdAt: Instant
+        val createdAt: LocalDateTime
     ) : MessageRes {
         override fun toDomain(): Message.Image {
             return Message.Image(
@@ -58,7 +61,8 @@ sealed interface MessageRes : DataMapper<Message> {
                 chatRoomId = chatRoomId,
                 userId = userId,
                 content = content,
-                createdAt = createdAt.toEpochMilliseconds()
+                createdAt = createdAt.toInstant(TimeZone.currentSystemDefault())
+                    .toEpochMilliseconds()
             )
         }
     }
@@ -73,14 +77,15 @@ sealed interface MessageRes : DataMapper<Message> {
         @SerialName("userId")
         val userId: Long,
         @SerialName("createdAt")
-        val createdAt: Instant
+        val createdAt: LocalDateTime
     ) : MessageRes {
         override fun toDomain(): Message.Schedule {
             return Message.Schedule(
                 id = id,
                 chatRoomId = chatRoomId,
                 userId = userId,
-                createdAt = createdAt.toEpochMilliseconds()
+                createdAt = createdAt.toInstant(TimeZone.currentSystemDefault())
+                    .toEpochMilliseconds()
             )
         }
     }
