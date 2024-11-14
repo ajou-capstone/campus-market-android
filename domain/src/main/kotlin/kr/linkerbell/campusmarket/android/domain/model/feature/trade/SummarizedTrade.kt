@@ -1,6 +1,6 @@
 package kr.linkerbell.campusmarket.android.domain.model.feature.trade
 
-data class Trade(
+data class SummarizedTrade(
     val itemId: Long,
     val userId: Long,
     val nickname: String,
@@ -12,7 +12,7 @@ data class Trade(
     val itemStatus: String
 ) {
     companion object {
-        val empty = Trade(
+        val empty = SummarizedTrade(
             itemId = 0,
             userId = 0,
             nickname = "",

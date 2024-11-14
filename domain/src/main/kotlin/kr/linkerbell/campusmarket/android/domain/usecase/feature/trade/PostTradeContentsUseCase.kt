@@ -3,7 +3,7 @@ package kr.linkerbell.campusmarket.android.domain.usecase.feature.trade
 import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 
-class PostNewTradeUseCase @Inject constructor(
+class PostTradeContentsUseCase @Inject constructor(
     private val tradeRepository: TradeRepository
 ) {
     suspend operator fun invoke(
@@ -14,7 +14,7 @@ class PostNewTradeUseCase @Inject constructor(
         thumbnail: String,
         images: List<String>
     ): Result<Long> {
-        return tradeRepository.postNewTrade(
+        return tradeRepository.postTradeContents(
             title = title,
             description = description,
             price = price,

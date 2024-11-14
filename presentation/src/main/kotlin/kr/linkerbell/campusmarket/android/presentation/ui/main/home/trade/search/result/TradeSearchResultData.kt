@@ -2,11 +2,11 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.searc
 
 import androidx.compose.runtime.Immutable
 import androidx.paging.compose.LazyPagingItems
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 
 @Immutable
 data class TradeSearchResultData(
-    val tradeList: LazyPagingItems<Trade>,
+    val summarizedTradeList: LazyPagingItems<SummarizedTrade>,
     val currentQuery: TradeSearchQuery,
     val categoryList: List<String>
 )

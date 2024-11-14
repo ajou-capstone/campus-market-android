@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,24 +10,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 
-fun NavGraphBuilder.tradePostDestination(
+fun NavGraphBuilder.tradeInfoDestination(
     navController: NavController
 ) {
     composable(
-        route = TradePostConstant.ROUTE_STRUCTURE,
+        route = TradeInfoConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument(TradePostConstant.ROUTE_ARGUMENT_ITEM_ID) {
+            navArgument(TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
-            },
+            }
         )
     ) {
-        val viewModel: TradePostViewModel = hiltViewModel()
+        val viewModel: TradeInfoViewModel = hiltViewModel()
 
-        val argument: TradePostArgument = let {
+        val argument: TradeInfoArgument = let {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            TradePostArgument(
+            TradeInfoArgument(
                 state = state,
                 event = viewModel.event,
                 intent = viewModel::onIntent,
@@ -36,18 +36,20 @@ fun NavGraphBuilder.tradePostDestination(
             )
         }
 
-        val data: TradePostData = Unit.let {
-            val categoryList by viewModel.categoryList.collectAsStateWithLifecycle()
-            val originalTradePostInfo by viewModel.originalTradeContents.collectAsStateWithLifecycle()
+        val data: TradeInfoData = let {
+            val tradeInfo by viewModel.tradeInfo.collectAsStateWithLifecycle()
+            val authorInfo by viewModel.authorInfo.collectAsStateWithLifecycle()
+            val userInfo by viewModel.userInfo.collectAsStateWithLifecycle()
 
-            TradePostData(
-                categoryList = categoryList,
-                originalTradeContents = originalTradePostInfo
+            TradeInfoData(
+                tradeInfo = tradeInfo,
+                authorInfo = authorInfo,
+                userInfo = userInfo
             )
         }
 
         ErrorObserver(viewModel)
-        TradePostScreen(
+        TradeInfoScreen(
             navController = navController,
             argument = argument,
             data = data

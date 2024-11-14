@@ -8,7 +8,11 @@ import kotlinx.coroutines.flow.flowOf
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.DeletedLikedItemInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.LikedItemInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 import timber.log.Timber
 
@@ -22,13 +26,13 @@ class MockTradeRepository @Inject constructor(
         minPrice: Int,
         maxPrice: Int,
         sorted: String
-    ): Flow<PagingData<Trade>> {
+    ): Flow<PagingData<SummarizedTrade>> {
         randomShortDelay()
 
         return flowOf(
             PagingData.from(
                 listOf(
-                    Trade(
+                    SummarizedTrade(
                         itemId = 1L,
                         userId = 1L,
                         nickname = "장성혁",
@@ -70,7 +74,7 @@ class MockTradeRepository @Inject constructor(
         searchHistoryDao.insert(SearchHistoryEntity(queryString = text))
     }
 
-    override suspend fun postNewTrade(
+    override suspend fun postTradeContents(
         title: String,
         description: String,
         price: Int,
@@ -89,8 +93,38 @@ class MockTradeRepository @Inject constructor(
         return Result.success(0L)
     }
 
+    override suspend fun patchTradeContents(
+        tradeContents: TradeContents,
+        itemId: Long
+    ): Result<Unit> {
+        val newPostContent = "title = ${tradeContents.title}" +
+                "description = ${tradeContents.description}" +
+                "price = ${tradeContents.price}" +
+                "category = ${tradeContents.category}" +
+                "thumbnail = ${tradeContents.thumbnail}" +
+                "images = ${tradeContents.images}"
+        Timber.tag("MockSearchHistoryRepository").d("call patchTradeContents(${newPostContent})")
+        return Result.success(Unit)
+    }
+
     override suspend fun getCategoryList(): Result<CategoryList> {
         return Result.success(CategoryList.empty)
+    }
+
+    override suspend fun searchTradeInfo(itemId: Long): Result<TradeInfo> {
+        return Result.success(TradeInfo.empty)
+    }
+
+    override suspend fun postLikedItem(itemId: Long): Result<LikedItemInfo> {
+        return Result.success(LikedItemInfo.empty)
+    }
+
+    override suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemInfo> {
+        return Result.success(DeletedLikedItemInfo.empty)
+    }
+
+    override suspend fun deleteTradeInfo(itemId: Long): Result<Unit> {
+        return Result.success(Unit)
     }
 
     private suspend fun randomShortDelay() {

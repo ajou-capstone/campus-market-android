@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kr.linkerbell.campusmarket.android.data.common.DEFAULT_PAGE_START
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.TradeApi
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.Trade
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 
 class SearchTradePagingSource(
     private val tradeApi: TradeApi,
@@ -13,16 +13,16 @@ class SearchTradePagingSource(
     private val minPrice: Int,
     private val maxPrice: Int,
     private val sorted: String,
-) : PagingSource<Int, Trade>() {
+) : PagingSource<Int, SummarizedTrade>() {
 
-    override fun getRefreshKey(state: PagingState<Int, Trade>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, SummarizedTrade>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Trade> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SummarizedTrade> {
         val pageNum = params.key ?: DEFAULT_PAGE_START
         val pageSize = params.loadSize
 

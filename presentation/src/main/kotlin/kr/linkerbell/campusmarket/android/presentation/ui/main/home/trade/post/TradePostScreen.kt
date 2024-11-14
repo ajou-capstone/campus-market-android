@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,18 +49,23 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.BottomSheetScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
@@ -71,6 +77,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 
 @Composable
 fun TradePostScreen(
@@ -81,36 +88,50 @@ fun TradePostScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    var title by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("0") }
-    var category by remember { mutableStateOf("OTHER") }
-    var description by remember { mutableStateOf("") }
+    val originalContents = data.originalTradeContents
+
+    var tradeId by remember { mutableLongStateOf(-1L) }
+    var title by remember { mutableStateOf(originalContents.title) }
+    var price by remember { mutableStateOf(originalContents.price.toString()) }
+    var category by remember { mutableStateOf(originalContents.category) }
+    var description by remember { mutableStateOf(originalContents.description) }
+    var originalImageList: List<String> by remember {
+        mutableStateOf(
+            (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
+        )
+    }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
+    var hasThumbnails by remember { mutableStateOf(false) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
-    var isConfirmButtonVisible by remember { mutableStateOf(false) }
+    var isValidationBottomSheetVisible by remember { mutableStateOf(false) }
+    var isSuccessDialogVisible by remember { mutableStateOf(false) }
 
+    var isValidContents by remember { mutableStateOf(true) }
     var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
 
-    val validateContentAndPost = {
-        var isValid = true
+    val validateContent = {
         when {
             title.isBlank() -> {
                 bottomSheetContent = "제목을 입력해주세요"
-                isBottomSheetVisible = true
-                isValid = false
+                isValidContents = false
             }
 
             description.isBlank() -> {
                 bottomSheetContent = "상품 상세 정보를 입력해주세요"
-                isBottomSheetVisible = true
-                isValid = false
+                isValidContents = false
             }
         }
-        if (isValid) {
-            isConfirmButtonVisible = true
-        }
+    }
+
+    fun navigateToTrade(itemId: Long) {
+        val tradeInfoRoute = makeRoute(
+            route = TradeInfoConstant.ROUTE,
+            arguments = mapOf(
+                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
+            )
+        )
+        navController.navigate(tradeInfoRoute)
     }
 
     Column(
@@ -143,14 +164,27 @@ fun TradePostScreen(
                             .horizontalScroll(rememberScrollState())
                             .padding(horizontal = 16.dp)
                     ) {
-                        imageList.forEachIndexed { index, image ->
+                        originalImageList = originalImageList.filter { it.isNotBlank() }
+                        originalImageList.forEachIndexed { index, url ->
                             TradePostScreenImageBox(
-                                image = image,
+                                imagePath = url,
                                 isThumbnail = (index == 0),
                                 onDeleteImageClicked = { imageToBeDeleted ->
-                                    imageList = imageList.filter { imageToBeDeleted.id != it.id }
+                                    originalImageList =
+                                        originalImageList.filter { imageToBeDeleted != it }
                                 }
                             )
+                            hasThumbnails = true
+                        }
+                        imageList.forEachIndexed { index, image ->
+                            TradePostScreenImageBox(
+                                imagePath = image.filePath,
+                                isThumbnail = (index == 0 && !hasThumbnails),
+                                onDeleteImageClicked = { imageToBeDeleted ->
+                                    imageList = imageList.filter { imageToBeDeleted != it.filePath }
+                                }
+                            )
+                            hasThumbnails = true
                         }
                     }
                 }
@@ -175,76 +209,73 @@ fun TradePostScreen(
                 )
             }
             Spacer(Modifier.padding(vertical = 32.dp))
-            TradePostScreenPostButton(onPostButtonClicked = validateContentAndPost)
+            TradePostScreenPostButton(
+                onPostButtonClicked = {
+                    validateContent()
+                    if (isValidContents) {
+                        argument.intent(
+                            TradePostIntent.PostOrPatchTrade(
+                                title = title,
+                                description = description,
+                                price = price.toIntOrNull() ?: 0,
+                                category = category,
+                                originalImageList = originalImageList,
+                                imageList = imageList
+                            )
+                        )
+                    } else {
+                        isValidationBottomSheetVisible = true
+                    }
+                }
+            )
         }
     }
 
     if (isGalleryShowing) {
         GalleryScreen(
             navController = navController,
+            selectedImageList = imageList,
             onDismissRequest = { isGalleryShowing = false },
             onResult = { addedImage ->
-                imageList += addedImage
+                imageList = addedImage
             },
             minSelectCount = 1,
-            maxSelectCount = 5 - imageList.size
+            maxSelectCount = 5 - originalImageList.size
         )
     }
 
-    if (isBottomSheetVisible) {
-        BottomSheetScreen(
-            onDismissRequest = { isBottomSheetVisible = false },
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = bottomSheetContent,
-                    style = Body0
-                )
-                Spacer(
-                    modifier = Modifier.height(60.dp)
-                )
-                ConfirmButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    properties = ConfirmButtonProperties(
-                        size = ConfirmButtonSize.Large,
-                        type = ConfirmButtonType.Primary
-                    ),
-                    onClick = {
-                        isBottomSheetVisible = false
-                    }
-                ) { style ->
-                    Text(
-                        text = "확인",
-                        style = style
-                    )
+    if (isValidationBottomSheetVisible) {
+        ContentValidationWarningBottomSheet(
+            bottomSheetContent = bottomSheetContent,
+            onDismissRequest = { isValidationBottomSheetVisible = false }
+        )
+    }
+
+    if (isSuccessDialogVisible) {
+        SuccessToPostOrPatchDialog(
+            onConfirmButtonClicked = { navigateToTrade(tradeId) },
+            onDismissRequest = { isSuccessDialogVisible = false }
+        )
+    }
+
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
+        event.eventObserve { event ->
+            when (event) {
+                is TradePostEvent.NavigateToTrade -> {
+                    tradeId = event.tradeId
+                    isSuccessDialogVisible = true
+                }
+
+                is TradePostEvent.FetchOriginalContents -> {
+                    title = originalContents.title
+                    price = originalContents.price.toString()
+                    category = originalContents.category
+                    description = originalContents.description
+                    originalImageList =
+                        (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
                 }
             }
         }
-    }
-
-    if (isConfirmButtonVisible) {
-        DialogScreen(
-            title = "등록되었습니다!",
-            isCancelable = false,
-            onConfirm = {
-                argument.intent(
-                    TradePostIntent.PostNewTrade(
-                        title = title,
-                        description = description,
-                        price = price.toIntOrNull() ?: 0,
-                        category = category,
-                        imageList = imageList
-                    )
-                )
-                //navController.navigate(to TradeInfoPAge)
-            },
-            onDismissRequest = {
-                isConfirmButtonVisible = false
-            }
-        )
     }
 }
 
@@ -276,13 +307,14 @@ private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
 
 @Composable
 private fun TradePostScreenImageBox(
-    image: GalleryImage,
+    imagePath: String,
     isThumbnail: Boolean,
-    onDeleteImageClicked: (GalleryImage) -> Unit,
+    onDeleteImageClicked: (String) -> Unit,
 ) {
+
     Box(Modifier.padding(end = 16.dp)) {
         PostImage(
-            data = image.filePath,
+            data = imagePath,
             modifier = Modifier
                 .size(100.dp)
                 .background(
@@ -306,7 +338,7 @@ private fun TradePostScreenImageBox(
                     shape = RoundedCornerShape(32.dp)
                 )
                 .clickable {
-                    onDeleteImageClicked(image)
+                    onDeleteImageClicked(imagePath)
                 },
             painter = painterResource(id = R.drawable.ic_close),
             contentDescription = null,
@@ -451,33 +483,38 @@ private fun TradePostScreenTradeInfo(
             }
         }
         Column {
-            Text(
-                text = "상품 상세 정보",
-                style = Headline3,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "상품 상세 정보",
+                    style = Headline3,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "모두 지우기",
+                    style = Body2,
+                    color = Gray600,
+                    modifier = Modifier
+                        .padding(top = 8.dp, end = 8.dp)
+                        .clickable {
+                            changeDescription("")
+                        }
+                )
+            }
             TypingTextField(
                 text = description,
                 onValueChange = { changeDescription(it) },
                 hintText = "상품 정보를 입력해주세요 (최대 1,000자)",
                 maxLines = 100,
                 maxTextLength = 1000,
-                trailingIconContent = {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear button",
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                                changeDescription("")
-                            }
-                    )
-                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
             )
         }
+
     }
 }
 
@@ -578,6 +615,58 @@ private fun TradePostScreenPostButton(onPostButtonClicked: () -> Unit) {
     }
 }
 
+@Composable
+private fun SuccessToPostOrPatchDialog(
+    onConfirmButtonClicked: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "등록 완료!",
+        message = "게시글이 성공적으로 등록되었습니다.",
+        isCancelable = false,
+        onConfirm = onConfirmButtonClicked,
+        onDismissRequest = { onDismissRequest() }
+    )
+}
+
+@Composable
+private fun ContentValidationWarningBottomSheet(
+    bottomSheetContent: String,
+    onDismissRequest: () -> Unit
+) {
+    BottomSheetScreen(
+        onDismissRequest = { onDismissRequest() },
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = bottomSheetContent,
+                style = Body0
+            )
+            Spacer(
+                modifier = Modifier.height(60.dp)
+            )
+            ConfirmButton(
+                modifier = Modifier.fillMaxWidth(),
+                properties = ConfirmButtonProperties(
+                    size = ConfirmButtonSize.Large,
+                    type = ConfirmButtonType.Primary
+                ),
+                onClick = {
+                    onDismissRequest()
+                }
+            ) { style ->
+                Text(
+                    text = "확인",
+                    style = style
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun TradePostScreenPreview() {
@@ -592,6 +681,7 @@ private fun TradePostScreenPreview() {
         ),
         data = TradePostData(
             categoryList = CategoryList.empty.categoryList,
+            originalTradeContents = TradeContents.empty
         )
     )
 }
