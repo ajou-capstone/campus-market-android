@@ -87,13 +87,7 @@ fun TradeInfoScreen(
     var isFailedToFetchDataDialogVisible by remember { mutableStateOf(false) }
 
     fun navigateToChatRoom(id: Long) {
-        val route = makeRoute(
-            ChatConstant.ROUTE,
-            listOf(
-                ChatConstant.ROUTE_ARGUMENT_ROOM_ID to id.toString()
-            )
-        )
-        navController.navigate(route)
+        navController.navigate("${ChatConstant.ROUTE}/$id")
     }
 
     Scaffold(
