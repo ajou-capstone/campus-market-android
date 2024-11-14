@@ -48,7 +48,7 @@ class TradePostViewModel @Inject constructor(
     val originalTradeContents: StateFlow<TradeContents> = _originalTradeContents.asStateFlow()
 
     private val tradeId: Long by lazy {
-        savedStateHandle.get<Long>("itemId") ?: -1L
+        savedStateHandle.get<Long>(TradePostConstant.ROUTE_ARGUMENT_ITEM_ID) ?: -1L
     }
 
     init {
@@ -138,22 +138,37 @@ class TradePostViewModel @Inject constructor(
         ).onSuccess {
             _state.value = TradePostState.Init
             _event.emit(TradePostEvent.NavigateToTrade(tradeId = it))
-        }.onFailure {
-            _state.value = TradePostState.Init
-            _event.emit(TradePostEvent.FailedToPostOrPatch)
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
         }
     }
 
     private suspend fun patchTradeContents(tradeContents: TradeContents) {
         _state.value = TradePostState.Loading
         patchTradeContentsUseCase(
-            tradeContents, tradeId
+            tradeContents,
+            tradeId
         ).onSuccess {
             _state.value = TradePostState.Init
             _event.emit(TradePostEvent.NavigateToTrade(tradeId = tradeId))
-        }.onFailure {
-            _state.value = TradePostState.Init
-            _event.emit(TradePostEvent.FailedToPostOrPatch)
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
         }
     }
 
@@ -169,10 +184,17 @@ class TradePostViewModel @Inject constructor(
                 thumbnail = it.thumbnail,
                 images = it.images
             )
-        }.onFailure {
-            _state.value = TradePostState.Init
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
             _originalTradeContents.value = TradeContents.empty
-            _event.emit(TradePostEvent.FailedToFetchOriginalContents)
         }
     }
 
@@ -181,9 +203,16 @@ class TradePostViewModel @Inject constructor(
         getCategoryListUseCase().onSuccess {
             _state.value = TradePostState.Init
             _categoryList.value = it.categoryList
-        }.onFailure {
-            _state.value = TradePostState.Init
-            _categoryList.value = CategoryList.empty.categoryList
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
         }
     }
 }

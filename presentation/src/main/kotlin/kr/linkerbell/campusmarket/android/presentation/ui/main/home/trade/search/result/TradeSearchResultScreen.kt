@@ -59,6 +59,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedT
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
@@ -127,12 +128,14 @@ fun TradeSearchResultScreen(
         HorizontalDivider(thickness = (0.4).dp, color = Black)
         if (data.summarizedTradeList.itemSnapshotList.size == 0) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "표시할 항목이 없습니다.",
-                    style = Headline3,
+                    style = Body0,
                     color = Gray,
                     modifier = Modifier.padding(start = 16.dp)
                 )

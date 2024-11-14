@@ -16,7 +16,7 @@ fun NavGraphBuilder.tradePostDestination(
     composable(
         route = TradePostConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument("itemId") {
+            navArgument(TradePostConstant.ROUTE_ARGUMENT_ITEM_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
             },
@@ -37,13 +37,12 @@ fun NavGraphBuilder.tradePostDestination(
         }
 
         val data: TradePostData = Unit.let {
-            val categoryList = viewModel.categoryList.value
-            val originalTradePostInfo = viewModel.originalTradeContents.collectAsStateWithLifecycle(
-            )
+            val categoryList by viewModel.categoryList.collectAsStateWithLifecycle()
+            val originalTradePostInfo by viewModel.originalTradeContents.collectAsStateWithLifecycle()
 
             TradePostData(
                 categoryList = categoryList,
-                originalTradeContents = originalTradePostInfo.value
+                originalTradeContents = originalTradePostInfo
             )
         }
 

@@ -52,7 +52,7 @@ class TradeInfoViewModel @Inject constructor(
     val userInfo: StateFlow<MyProfile> = _userInfo.asStateFlow()
 
     private val itemId: Long by lazy {
-        savedStateHandle.get<Long>("itemId") ?: -1L
+        savedStateHandle.get<Long>(TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID) ?: -1L
     }
 
     init {
@@ -70,16 +70,13 @@ class TradeInfoViewModel @Inject constructor(
                 _state.value = TradeInfoState.Init
                 _authorInfo.value = it
             }.onFailure { exception ->
-                _state.value = TradeInfoState.Init
                 when (exception) {
                     is ServerException -> {
                         _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        _event.emit(TradeInfoEvent.FailedToFetchData)
                     }
 
                     else -> {
                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                        _event.emit(TradeInfoEvent.FailedToFetchData)
                     }
                 }
             }

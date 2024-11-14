@@ -29,9 +29,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -90,14 +90,15 @@ fun TradePostScreen(
 
     val originalContents = data.originalTradeContents
 
-    var tradeId by remember { mutableStateOf(-1L) }
+    var tradeId by remember { mutableLongStateOf(-1L) }
     var title by remember { mutableStateOf(originalContents.title) }
     var price by remember { mutableStateOf(originalContents.price.toString()) }
     var category by remember { mutableStateOf(originalContents.category) }
     var description by remember { mutableStateOf(originalContents.description) }
     var originalImageList: List<String> by remember {
         mutableStateOf(
-            (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() })
+            (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
+        )
     }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
     var hasThumbnails by remember { mutableStateOf(false) }
@@ -105,20 +106,9 @@ fun TradePostScreen(
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isValidationBottomSheetVisible by remember { mutableStateOf(false) }
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
-    var isFailedToFetchErrorDialogVisible by remember { mutableStateOf(false) }
-    var isFailedToPostOrPatchDialogVisible by remember { mutableStateOf(false) }
 
     var isValidContents by remember { mutableStateOf(true) }
     var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
-
-    LaunchedEffect(originalContents) {
-        title = originalContents.title
-        price = originalContents.price.toString()
-        category = originalContents.category
-        description = originalContents.description
-        originalImageList =
-            (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
-    }
 
     val validateContent = {
         when {
@@ -247,11 +237,10 @@ fun TradePostScreen(
             selectedImageList = imageList,
             onDismissRequest = { isGalleryShowing = false },
             onResult = { addedImage ->
-                imageList = emptyList()
-                imageList += addedImage
+                imageList = addedImage
             },
             minSelectCount = 1,
-            maxSelectCount = 5 - originalImageList.size - imageList.size
+            maxSelectCount = 5 - originalImageList.size
         )
     }
 
@@ -269,33 +258,21 @@ fun TradePostScreen(
         )
     }
 
-    if (isFailedToFetchErrorDialogVisible) {
-        FailedToFetchOriginalContentsDialog(
-            onDismissRequest = { isFailedToFetchErrorDialogVisible = false }
-        )
-    }
-
-    if (isFailedToPostOrPatchDialogVisible) {
-        FailedToPostOrPatchDialog(
-            onDismissRequest = { isFailedToPostOrPatchDialogVisible = false }
-        )
-    }
-
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is TradePostEvent.NavigateToTrade -> {
                     tradeId = event.tradeId
                     isSuccessDialogVisible = true
-                    //navigateToTrade(itemId = event.tradeId)
                 }
 
-                is TradePostEvent.FailedToFetchOriginalContents -> {
-                    isFailedToFetchErrorDialogVisible = true
-                }
-
-                is TradePostEvent.FailedToPostOrPatch -> {
-                    isFailedToPostOrPatchDialogVisible = true
+                is TradePostEvent.FetchOriginalContents -> {
+                    title = originalContents.title
+                    price = originalContents.price.toString()
+                    category = originalContents.category
+                    description = originalContents.description
+                    originalImageList =
+                        (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
                 }
             }
         }
@@ -636,30 +613,6 @@ private fun TradePostScreenPostButton(onPostButtonClicked: () -> Unit) {
             color = Color.White
         )
     }
-}
-
-@Composable
-private fun FailedToFetchOriginalContentsDialog(
-    onDismissRequest: () -> Unit
-) {
-    DialogScreen(
-        title = "오류 발생!",
-        message = "기존 게시글 정보를 불러오지 못했습니다.",
-        isCancelable = false,
-        onDismissRequest = { onDismissRequest() }
-    )
-}
-
-@Composable
-private fun FailedToPostOrPatchDialog(
-    onDismissRequest: () -> Unit
-) {
-    DialogScreen(
-        title = "오류 발생!",
-        message = "게시글 등록에 실패했습니다.\n잠시 후 다시 시도해주세요.",
-        isCancelable = false,
-        onDismissRequest = { onDismissRequest() }
-    )
 }
 
 @Composable
