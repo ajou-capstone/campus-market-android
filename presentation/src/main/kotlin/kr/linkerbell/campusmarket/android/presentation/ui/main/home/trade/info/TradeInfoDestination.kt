@@ -16,9 +16,9 @@ fun NavGraphBuilder.tradeInfoDestination(
     composable(
         route = TradeInfoConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument("itemId") {
+            navArgument(TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID) {
                 type = NavType.LongType
-                defaultValue = -1
+                defaultValue = -1L
             }
         )
     ) {

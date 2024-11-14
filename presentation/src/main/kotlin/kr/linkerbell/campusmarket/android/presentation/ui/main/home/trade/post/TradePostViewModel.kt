@@ -50,6 +50,7 @@ class TradePostViewModel @Inject constructor(
     private val itemId: Long by lazy {
         savedStateHandle.get<Long>("itemId") ?: -1L
     }
+
     init {
         launch {
             if (itemId != -1L) {
@@ -74,10 +75,12 @@ class TradePostViewModel @Inject constructor(
                         images = s3UrlsForImages.drop(1)
                     )
 
-                    val tradeId = if (itemId != -1L) {
+                    var tradeId: Long
+                    if (itemId != -1L) {
+                        tradeId = itemId
                         patchTradeContents(tradeContent)
                     } else {
-                        postTradeContents(tradeContent)
+                        tradeId = postTradeContents(tradeContent)
                     }
                     _event.emit(TradePostEvent.NavigateToTrade(tradeId = tradeId))
                 }
@@ -119,14 +122,12 @@ class TradePostViewModel @Inject constructor(
     private suspend fun buildImageList(
         originalImageList: List<String>,
         newImageList: List<GalleryImage>
-    )
-            : List<String> {
+    ): List<String> {
         val newS3Links = newImageList.map { image ->
             getPreSignedUrlForImage(image)
         }
         return (originalImageList + newS3Links).filter { it.isNotBlank() }
     }
-
 
     private suspend fun postTradeContents(tradeContents: TradeContents): Long {
         _state.value = TradePostState.Loading
@@ -146,19 +147,15 @@ class TradePostViewModel @Inject constructor(
         return 0
     }
 
-    private suspend fun patchTradeContents(
-        tradeContents: TradeContents
-    ): Long {
+    private suspend fun patchTradeContents(tradeContents: TradeContents) {
         _state.value = TradePostState.Loading
         patchTradeContentsUseCase(
             tradeContents, itemId
         ).onSuccess {
             _state.value = TradePostState.Init
-            return it
         }.onFailure {
             _state.value = TradePostState.Init
         }
-        return 0
     }
 
     private suspend fun getOriginalTradeInfo(itemId: Long) {

@@ -89,12 +89,15 @@ fun TradePostScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     val originalContents = data.originalTradeContents
-    var title by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("0") }
-    var category by remember { mutableStateOf("OTHER") }
-    var description by remember { mutableStateOf("") }
 
-    var originalImageList: List<String> by remember { mutableStateOf(emptyList()) }
+    var title by remember { mutableStateOf(originalContents.title) }
+    var price by remember { mutableStateOf(originalContents.price.toString()) }
+    var category by remember { mutableStateOf(originalContents.category) }
+    var description by remember { mutableStateOf(originalContents.description) }
+    var originalImageList: List<String> by remember {
+        mutableStateOf(
+            (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() })
+    }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
     var hasThumbnails by remember { mutableStateOf(false) }
 

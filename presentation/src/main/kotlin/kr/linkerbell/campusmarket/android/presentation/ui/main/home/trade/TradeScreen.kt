@@ -22,8 +22,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -101,59 +103,60 @@ private fun TradeScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Indigo50)
-    ) {
-        TradeSearchBar {
-            navController.navigate(TradeSearchConstant.ROUTE)
-        }
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
-        ) {
-            itemsIndexed(
-                items = data.summarizedTradeList.itemSnapshotList,
-                key = { _, item -> item?.itemId ?: -1 }
-            ) { _, trade ->
-                trade?.let {
-                    TradeItemCard(
-                        item = it,
-                        onItemCardClicked = {
-                            val tradeInfoRoute = makeRoute(
-                                route = TradeInfoConstant.ROUTE,
-                                arguments = mapOf(
-                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
-                                )
-                            )
-                            navController.navigate(tradeInfoRoute)
-                        }
+    Scaffold(
+        topBar = {
+            TradeSearchBar {
+                navController.navigate(TradeSearchConstant.ROUTE)
+            }
+        },
+        floatingActionButton = {
+            TradeScreenPostButton(
+                onClick = {
+                    val postRoute = makeRoute(
+                        route = TradePostConstant.ROUTE,
+                        arguments = mapOf(
+                            TradePostConstant.ROUTE_ARGUMENT_ITEM_ID to "-1"
+                        )
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    navController.navigate(postRoute)
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.End,
+    ){innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Indigo50)
+                .padding(innerPadding)
+        ) {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
+            ) {
+                itemsIndexed(
+                    items = data.summarizedTradeList.itemSnapshotList,
+                    key = { _, item -> item?.itemId ?: -1 }
+                ) { _, trade ->
+                    trade?.let {
+                        TradeItemCard(
+                            item = it,
+                            onItemCardClicked = {
+                                val tradeInfoRoute = makeRoute(
+                                    route = TradeInfoConstant.ROUTE,
+                                    arguments = mapOf(
+                                        TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+                                    )
+                                )
+                                navController.navigate(tradeInfoRoute)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }
     }
-
-    Box(
-        modifier = Modifier
-            .padding(32.dp)
-            .fillMaxSize(),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        TradeScreenPostButton(
-            onClick = {
-                val postRoute = makeRoute(
-                    route = TradePostConstant.ROUTE,
-                    arguments = mapOf(
-                        TradePostConstant.ROUTE_ARGUMENT_ITEM_ID to "-1"
-                    )
-                )
-                navController.navigate(postRoute)
-            }
-        )
-    }
-
 }
 
 @Composable

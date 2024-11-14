@@ -36,13 +36,14 @@ fun NavGraphBuilder.tradePostDestination(
             )
         }
 
-        val data: TradePostData = let {
+        val data: TradePostData = Unit.let {
             val categoryList = viewModel.categoryList.value
-            val originalTradePostInfo = viewModel.originalTradeContents.value
+            val originalTradePostInfo = viewModel.originalTradeContents.collectAsStateWithLifecycle(
+            )
 
             TradePostData(
                 categoryList = categoryList,
-                originalTradeContents = originalTradePostInfo
+                originalTradeContents = originalTradePostInfo.value
             )
         }
 
