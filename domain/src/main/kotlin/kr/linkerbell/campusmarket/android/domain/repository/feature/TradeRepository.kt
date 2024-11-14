@@ -36,7 +36,7 @@ interface TradeRepository {
         images: List<String>
     ): Result<Long>
 
-    suspend fun patchTradeContents(tradeContents: TradeContents, itemId: Long): Result<Long>
+    suspend fun patchTradeContents(tradeContents: TradeContents, itemId: Long): Result<Unit>
 
     suspend fun getCategoryList(): Result<CategoryList>
 

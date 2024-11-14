@@ -74,10 +74,12 @@ class TradeInfoViewModel @Inject constructor(
                 when (exception) {
                     is ServerException -> {
                         _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        _event.emit(TradeInfoEvent.FailedToFetchData)
                     }
 
                     else -> {
                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        _event.emit(TradeInfoEvent.FailedToFetchData)
                     }
                 }
             }

@@ -14,7 +14,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorM
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.CategoryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.DeletedLikedItemRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostLikedItemRes
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostOrPatchTradeRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.SearchTradeListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.TradeInfoRes
@@ -56,7 +56,7 @@ class TradeApi @Inject constructor(
         category: String,
         thumbnail: String,
         images: List<String>
-    ): Result<PostOrPatchTradeRes> {
+    ): Result<PostTradeRes> {
         return client.post("$baseUrl/api/v1/items") {
             setBody(
                 PostTradeReq(
@@ -74,7 +74,7 @@ class TradeApi @Inject constructor(
     suspend fun patchTradeContents(
         tradeContents: TradeContents,
         itemId: Long
-    ): Result<PostOrPatchTradeRes> {
+    ): Result<Unit> {
         return client.patch("$baseUrl/api/v1/items/$itemId") {
             setBody(
                 PostTradeReq(

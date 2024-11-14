@@ -54,7 +54,7 @@ class TradeSearchResultViewModel @Inject constructor(
             category = savedStateHandle["category"] ?: "",
             minPrice = savedStateHandle["minPrice"] ?: 0,
             maxPrice = savedStateHandle["maxPrice"] ?: Int.MAX_VALUE,
-            sorted = savedStateHandle["sorted"] ?: ""
+            sorted = savedStateHandle["sorted"] ?: "createdDate,desc"
         )
         launch {
             getCategoryList()

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +56,7 @@ import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
@@ -62,7 +66,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
-import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
@@ -120,27 +123,44 @@ fun TradeSearchResultScreen(
                 )
             }
         }
+
+        HorizontalDivider(thickness = (0.4).dp, color = Black)
+        if (data.summarizedTradeList.itemSnapshotList.size == 0) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "표시할 항목이 없습니다.",
+                    style = Headline3,
+                    color = Gray,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
         LazyColumn(
+            modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
-            items(
-                count = data.summarizedTradeList.itemCount,
-                key = { index -> data.summarizedTradeList[index]?.itemId ?: -1 }
-            ) { index ->
-                val trade = data.summarizedTradeList[index] ?: return@items
-                TradeSearchResultItemCard(
-                    item = trade,
-                    onItemCardClicked = {
-                        val tradeInfoRoute = makeRoute(
-                            route = TradeInfoConstant.ROUTE,
-                            arguments = mapOf(
-                                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+            itemsIndexed(
+                items = data.summarizedTradeList.itemSnapshotList,
+                key = { _, item -> item?.itemId ?: -1 }
+            ) { _, trade ->
+                trade?.let {
+                    TradeSearchResultItemCard(
+                        item = it,
+                        onItemCardClicked = {
+                            val tradeInfoRoute = makeRoute(
+                                route = TradeInfoConstant.ROUTE,
+                                arguments = mapOf(
+                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+                                )
                             )
-                        )
-                        navController.safeNavigate(tradeInfoRoute)
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                            navController.navigate(tradeInfoRoute)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }

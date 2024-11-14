@@ -84,6 +84,7 @@ fun TradeInfoScreen(
     val isOwnerOfThisTrade = (data.userInfo.id == authorInfo.id)
 
     var isDeleteConfirmButtonVisible by remember { mutableStateOf(false) }
+    var isFailedToFetchDataDialogVisible by remember { mutableStateOf(false) }
 
     fun navigateToChatRoom(id: Long) {
         val route = makeRoute(
@@ -154,9 +155,11 @@ fun TradeInfoScreen(
         }
 
         if (isDeleteConfirmButtonVisible) {
+
             if (isOwnerOfThisTrade) {
                 DialogScreen(
-                    title = "게시글이 삭제되었습니다!",
+                    title = "정말 삭제하시겠습니까?",
+                    message = "등록된 정보가 사라집니다.",
                     isCancelable = true,
                     onConfirm = {
                         argument.intent(TradeInfoIntent.DeleteThisPost)
@@ -178,11 +181,21 @@ fun TradeInfoScreen(
         }
     }
 
+    if (isFailedToFetchDataDialogVisible) {
+        FailedToFetchDataDialog(
+            onDismissRequest = { isDeleteConfirmButtonVisible = false }
+        )
+    }
+
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is TradeInfoEvent.NavigateToChatRoom -> {
                     navigateToChatRoom(id = event.id)
+                }
+
+                is TradeInfoEvent.FailedToFetchData -> {
+
                 }
             }
         }
@@ -497,6 +510,20 @@ private fun translateToKor(engCategory: String): String {
         "OTHER" -> "기타"
         else -> "기타"
     }
+}
+
+@Composable
+private fun FailedToFetchDataDialog(
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "상품 조회 실패!",
+        message = "데이터를 가져오는데 실패했습니다.",
+        isCancelable = false,
+        onDismissRequest = {
+            onDismissRequest()
+        }
+    )
 }
 
 @Preview

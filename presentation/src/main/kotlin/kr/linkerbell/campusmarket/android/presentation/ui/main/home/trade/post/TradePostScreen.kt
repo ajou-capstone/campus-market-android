@@ -90,6 +90,7 @@ fun TradePostScreen(
 
     val originalContents = data.originalTradeContents
 
+    var tradeId by remember { mutableStateOf(-1L) }
     var title by remember { mutableStateOf(originalContents.title) }
     var price by remember { mutableStateOf(originalContents.price.toString()) }
     var category by remember { mutableStateOf(originalContents.category) }
@@ -102,8 +103,10 @@ fun TradePostScreen(
     var hasThumbnails by remember { mutableStateOf(false) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
-    var isConfirmButtonVisible by remember { mutableStateOf(false) }
+    var isValidationBottomSheetVisible by remember { mutableStateOf(false) }
+    var isSuccessDialogVisible by remember { mutableStateOf(false) }
+    var isFailedToFetchErrorDialogVisible by remember { mutableStateOf(false) }
+    var isFailedToPostOrPatchDialogVisible by remember { mutableStateOf(false) }
 
     var isValidContents by remember { mutableStateOf(true) }
     var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
@@ -117,22 +120,17 @@ fun TradePostScreen(
             (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
     }
 
-    val validateContentAndPost = {
+    val validateContent = {
         when {
             title.isBlank() -> {
                 bottomSheetContent = "제목을 입력해주세요"
-                isBottomSheetVisible = true
                 isValidContents = false
             }
 
             description.isBlank() -> {
                 bottomSheetContent = "상품 상세 정보를 입력해주세요"
-                isBottomSheetVisible = true
                 isValidContents = false
             }
-        }
-        if (isValidContents) {
-            isConfirmButtonVisible = true
         }
     }
 
@@ -221,7 +219,25 @@ fun TradePostScreen(
                 )
             }
             Spacer(Modifier.padding(vertical = 32.dp))
-            TradePostScreenPostButton(onPostButtonClicked = validateContentAndPost)
+            TradePostScreenPostButton(
+                onPostButtonClicked = {
+                    validateContent()
+                    if (isValidContents) {
+                        argument.intent(
+                            TradePostIntent.PostOrPatchTrade(
+                                title = title,
+                                description = description,
+                                price = price.toIntOrNull() ?: 0,
+                                category = category,
+                                originalImageList = originalImageList,
+                                imageList = imageList
+                            )
+                        )
+                    } else {
+                        isValidationBottomSheetVisible = true
+                    }
+                }
+            )
         }
     }
 
@@ -239,59 +255,29 @@ fun TradePostScreen(
         )
     }
 
-    if (isBottomSheetVisible) {
-        BottomSheetScreen(
-            onDismissRequest = { isBottomSheetVisible = false },
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = bottomSheetContent,
-                    style = Body0
-                )
-                Spacer(
-                    modifier = Modifier.height(60.dp)
-                )
-                ConfirmButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    properties = ConfirmButtonProperties(
-                        size = ConfirmButtonSize.Large,
-                        type = ConfirmButtonType.Primary
-                    ),
-                    onClick = {
-                        isBottomSheetVisible = false
-                    }
-                ) { style ->
-                    Text(
-                        text = "확인",
-                        style = style
-                    )
-                }
-            }
-        }
+    if (isValidationBottomSheetVisible) {
+        ContentValidationWarningBottomSheet(
+            bottomSheetContent = bottomSheetContent,
+            onDismissRequest = { isValidationBottomSheetVisible = false }
+        )
     }
 
-    if (isConfirmButtonVisible) {
-        DialogScreen(
-            title = "등록되었습니다!",
-            isCancelable = false,
-            onConfirm = {
-                argument.intent(
-                    TradePostIntent.PostOrPatchTrade(
-                        title = title,
-                        description = description,
-                        price = price.toIntOrNull() ?: 0,
-                        category = category,
-                        originalImageList = originalImageList,
-                        imageList = imageList
-                    )
-                )
-            },
-            onDismissRequest = {
-                isConfirmButtonVisible = false
-            }
+    if (isSuccessDialogVisible) {
+        SuccessToPostOrPatchDialog(
+            onConfirmButtonClicked = { navigateToTrade(tradeId) },
+            onDismissRequest = { isSuccessDialogVisible = false }
+        )
+    }
+
+    if (isFailedToFetchErrorDialogVisible) {
+        FailedToFetchOriginalContentsDialog(
+            onDismissRequest = { isFailedToFetchErrorDialogVisible = false }
+        )
+    }
+
+    if (isFailedToPostOrPatchDialogVisible) {
+        FailedToPostOrPatchDialog(
+            onDismissRequest = { isFailedToPostOrPatchDialogVisible = false }
         )
     }
 
@@ -299,7 +285,17 @@ fun TradePostScreen(
         event.eventObserve { event ->
             when (event) {
                 is TradePostEvent.NavigateToTrade -> {
-                    navigateToTrade(itemId = event.tradeId)
+                    tradeId = event.tradeId
+                    isSuccessDialogVisible = true
+                    //navigateToTrade(itemId = event.tradeId)
+                }
+
+                is TradePostEvent.FailedToFetchOriginalContents -> {
+                    isFailedToFetchErrorDialogVisible = true
+                }
+
+                is TradePostEvent.FailedToPostOrPatch -> {
+                    isFailedToPostOrPatchDialogVisible = true
                 }
             }
         }
@@ -639,6 +635,82 @@ private fun TradePostScreenPostButton(onPostButtonClicked: () -> Unit) {
             style = Headline3,
             color = Color.White
         )
+    }
+}
+
+@Composable
+private fun FailedToFetchOriginalContentsDialog(
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "오류 발생!",
+        message = "기존 게시글 정보를 불러오지 못했습니다.",
+        isCancelable = false,
+        onDismissRequest = { onDismissRequest() }
+    )
+}
+
+@Composable
+private fun FailedToPostOrPatchDialog(
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "오류 발생!",
+        message = "게시글 등록에 실패했습니다.\n잠시 후 다시 시도해주세요.",
+        isCancelable = false,
+        onDismissRequest = { onDismissRequest() }
+    )
+}
+
+@Composable
+private fun SuccessToPostOrPatchDialog(
+    onConfirmButtonClicked: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "등록 완료!",
+        message = "게시글이 성공적으로 등록되었습니다.",
+        isCancelable = false,
+        onConfirm = onConfirmButtonClicked,
+        onDismissRequest = { onDismissRequest() }
+    )
+}
+
+@Composable
+private fun ContentValidationWarningBottomSheet(
+    bottomSheetContent: String,
+    onDismissRequest: () -> Unit
+) {
+    BottomSheetScreen(
+        onDismissRequest = { onDismissRequest() },
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = bottomSheetContent,
+                style = Body0
+            )
+            Spacer(
+                modifier = Modifier.height(60.dp)
+            )
+            ConfirmButton(
+                modifier = Modifier.fillMaxWidth(),
+                properties = ConfirmButtonProperties(
+                    size = ConfirmButtonSize.Large,
+                    type = ConfirmButtonType.Primary
+                ),
+                onClick = {
+                    onDismissRequest()
+                }
+            ) { style ->
+                Text(
+                    text = "확인",
+                    style = style
+                )
+            }
+        }
     }
 }
 

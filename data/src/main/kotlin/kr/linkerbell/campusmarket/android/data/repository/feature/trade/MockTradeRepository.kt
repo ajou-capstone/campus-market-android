@@ -96,7 +96,7 @@ class MockTradeRepository @Inject constructor(
     override suspend fun patchTradeContents(
         tradeContents: TradeContents,
         itemId: Long
-    ): Result<Long> {
+    ): Result<Unit> {
         val newPostContent = "title = ${tradeContents.title}" +
                 "description = ${tradeContents.description}" +
                 "price = ${tradeContents.price}" +
@@ -104,7 +104,7 @@ class MockTradeRepository @Inject constructor(
                 "thumbnail = ${tradeContents.thumbnail}" +
                 "images = ${tradeContents.images}"
         Timber.tag("MockSearchHistoryRepository").d("call patchTradeContents(${newPostContent})")
-        return Result.success(0L)
+        return Result.success(Unit)
     }
 
     override suspend fun getCategoryList(): Result<CategoryList> {

@@ -10,7 +10,7 @@ class PatchTradeContentsUseCase @Inject constructor(
     suspend operator fun invoke(
         tradeContents: TradeContents,
         itemId: Long
-    ): Result<Long> {
+    ): Result<Unit> {
         return tradeRepository.patchTradeContents(tradeContents, itemId)
     }
 }

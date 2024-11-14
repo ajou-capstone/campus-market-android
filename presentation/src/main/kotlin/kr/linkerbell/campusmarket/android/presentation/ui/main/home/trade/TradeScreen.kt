@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
@@ -123,7 +124,7 @@ private fun TradeScreen(
             )
         },
         floatingActionButtonPosition = FabPosition.End,
-    ){innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -200,6 +201,7 @@ private fun TradeItemCard(
                         Text(
                             text = item.title,
                             style = Headline3,
+                            color = Black,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             modifier = Modifier.weight(1f),
@@ -207,26 +209,37 @@ private fun TradeItemCard(
                         Spacer(modifier = Modifier.padding(4.dp))
                         TradeItemStatus(isSold = item.itemStatus === "FORSALE")
                     }
-                    Text("${item.price} 원", modifier = Modifier.padding(start = 8.dp))
+                    Text(
+                        "${item.price} 원",
+                        color = Black,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 }
                 Text(
                     text = item.nickname,
                     style = Caption2,
+                    color = Black,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
                     text = "${item.chatCount} 명이 대화중",
                     style = Caption2,
+                    color = Black,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
                         contentDescription = "Home",
+                        tint = Black,
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.padding(2.dp))
-                    Text(item.likeCount.toString())
+                    Text(
+                        item.likeCount.toString(),
+                        color = Black,
+                        style = Caption2
+                    )
                 }
             }
         }
@@ -275,6 +288,7 @@ private fun TradeSearchBar(
             ) {
                 Text(
                     text = "검색어를 입력하세요",
+                    color = Black,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Icon(

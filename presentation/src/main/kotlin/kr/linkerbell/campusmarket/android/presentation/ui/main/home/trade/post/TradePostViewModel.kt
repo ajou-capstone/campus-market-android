@@ -2,7 +2,6 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +20,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadI
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
+import javax.inject.Inject
 
 @HiltViewModel
 class TradePostViewModel @Inject constructor(
@@ -47,14 +47,14 @@ class TradePostViewModel @Inject constructor(
         MutableStateFlow(TradeContents.empty)
     val originalTradeContents: StateFlow<TradeContents> = _originalTradeContents.asStateFlow()
 
-    private val itemId: Long by lazy {
+    private val tradeId: Long by lazy {
         savedStateHandle.get<Long>("itemId") ?: -1L
     }
 
     init {
         launch {
-            if (itemId != -1L) {
-                getOriginalTradeInfo(itemId)
+            if (tradeId != -1L) {
+                getOriginalTradeInfo(tradeId)
             }
             getCategoryList()
         }
@@ -75,14 +75,11 @@ class TradePostViewModel @Inject constructor(
                         images = s3UrlsForImages.drop(1)
                     )
 
-                    var tradeId: Long
-                    if (itemId != -1L) {
-                        tradeId = itemId
+                    if (tradeId != -1L) {
                         patchTradeContents(tradeContent)
                     } else {
-                        tradeId = postTradeContents(tradeContent)
+                        postTradeContents(tradeContent)
                     }
-                    _event.emit(TradePostEvent.NavigateToTrade(tradeId = tradeId))
                 }
             }
         }
@@ -129,7 +126,7 @@ class TradePostViewModel @Inject constructor(
         return (originalImageList + newS3Links).filter { it.isNotBlank() }
     }
 
-    private suspend fun postTradeContents(tradeContents: TradeContents): Long {
+    private suspend fun postTradeContents(tradeContents: TradeContents) {
         _state.value = TradePostState.Loading
         postTradeContentsUseCase(
             title = tradeContents.title,
@@ -140,21 +137,23 @@ class TradePostViewModel @Inject constructor(
             images = tradeContents.images
         ).onSuccess {
             _state.value = TradePostState.Init
-            return it
+            _event.emit(TradePostEvent.NavigateToTrade(tradeId = it))
         }.onFailure {
             _state.value = TradePostState.Init
+            _event.emit(TradePostEvent.FailedToPostOrPatch)
         }
-        return 0
     }
 
     private suspend fun patchTradeContents(tradeContents: TradeContents) {
         _state.value = TradePostState.Loading
         patchTradeContentsUseCase(
-            tradeContents, itemId
+            tradeContents, tradeId
         ).onSuccess {
             _state.value = TradePostState.Init
+            _event.emit(TradePostEvent.NavigateToTrade(tradeId = tradeId))
         }.onFailure {
             _state.value = TradePostState.Init
+            _event.emit(TradePostEvent.FailedToPostOrPatch)
         }
     }
 
@@ -173,6 +172,7 @@ class TradePostViewModel @Inject constructor(
         }.onFailure {
             _state.value = TradePostState.Init
             _originalTradeContents.value = TradeContents.empty
+            _event.emit(TradePostEvent.FailedToFetchOriginalContents)
         }
     }
 
