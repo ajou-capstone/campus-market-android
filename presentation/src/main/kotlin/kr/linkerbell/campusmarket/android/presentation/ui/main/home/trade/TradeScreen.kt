@@ -13,32 +13,38 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.FabPosition
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -51,15 +57,16 @@ import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.R
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space32
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
@@ -104,6 +111,7 @@ fun TradeScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TradeScreen(
     navController: NavController,
@@ -113,36 +121,42 @@ private fun TradeScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    Scaffold(
-        topBar = {
-            TradeSearchBar {
-                navController.navigate(TradeSearchConstant.ROUTE)
-            }
-        },
-        floatingActionButton = {
-            TradeScreenPostButton(
-                onClick = {
-                    val postRoute = makeRoute(
-                        route = TradePostConstant.ROUTE,
-                        arguments = mapOf(
-                            TradePostConstant.ROUTE_ARGUMENT_ITEM_ID to "-1"
-                        )
-                    )
-                    navController.navigate(postRoute)
+    val refreshState = rememberPullToRefreshState()
+
+    ConstraintLayout(
+        modifier = Modifier
+            .background(White)
+            .fillMaxSize()
+    ) {
+        val (topBar, contents, button) = createRefs()
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
                 }
-            )
-        },
-        floatingActionButtonPosition = FabPosition.End,
-    ) { innerPadding ->
-        Column(
+        ) {
+            TradeSearchBar { navController.navigate(TradeSearchConstant.ROUTE) }
+        }
+
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Indigo50)
-                .padding(innerPadding)
+                .nestedScroll(refreshState.nestedScrollConnection)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
         ) {
-
             LazyColumn(
-                modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
             ) {
                 items(
@@ -165,8 +179,53 @@ private fun TradeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
+
+            if (refreshState.isRefreshing) {
+                argument.intent(TradeScreenIntent.RefreshNewTrades)
+                refreshState.endRefresh()
+            }
+            if (refreshState.progress > 0 || refreshState.isRefreshing) {
+                PullToRefreshContainer(
+                    state = refreshState,
+                    containerColor = White,
+                    contentColor = Blue200,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .padding(Space20)
+                .constrainAs(button) {
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            FloatingActionButton(
+                modifier = Modifier.size(Space56),
+                shape = CircleShape,
+                containerColor = Blue400,
+                onClick = {
+                    val postRoute = makeRoute(
+                        route = TradePostConstant.ROUTE,
+                        arguments = mapOf(
+                            TradePostConstant.ROUTE_ARGUMENT_ITEM_ID to "-1"
+                        )
+                    )
+                    navController.navigate(postRoute)
+                }
+            ) {
+                Icon(
+                    modifier = Modifier.size(Space32),
+                    painter = painterResource(id = R.drawable.ic_plus),
+                    contentDescription = null,
+                    tint = White
+                )
+            }
         }
     }
+
 }
 
 @Composable
@@ -190,50 +249,31 @@ private fun TradeItemCard(
         ) {
             PostImage(
                 data = item.thumbnail,
-                modifier = Modifier.size(85.dp)
+                modifier = Modifier
+                    .size(85.dp)
+                    .clip(RoundedCornerShape(8.dp))
             )
             Column(
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .weight(4f)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(
-                            text = item.title,
-                            style = Headline3,
-                            color = Black,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        TradeItemStatus(isSold = item.itemStatus === "FORSALE")
-                    }
-                    Text(
-                        "${item.price} 원",
-                        color = Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
+                Text(
+                    text = item.title,
+                    style = Headline3,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
+
                 Text(
                     text = item.nickname,
                     style = Caption2,
-                    color = Black,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
                     text = "${item.chatCount} 명이 대화중",
                     style = Caption2,
-                    color = Black,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -241,17 +281,28 @@ private fun TradeItemCard(
                         if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
                     Icon(
                         imageVector = favIcon,
+                        tint = Gray900,
                         contentDescription = "isLike",
-                        tint = Black,
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.padding(2.dp))
-                    Text(
-                        item.likeCount.toString(),
-                        color = Black,
-                        style = Caption2
-                    )
+                    Text(item.likeCount.toString())
                 }
+            }
+            Column(
+                modifier = Modifier
+                    .weight(2f)
+                    .wrapContentWidth(Alignment.End)
+                    .widthIn(min = 100.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                TradeItemStatus(
+                    isSold = item.itemStatus === "Available"
+                )
+                Text(
+                    text = "${item.price} 원",
+                    modifier = Modifier.padding(4.dp)
+                )
             }
         }
     }
@@ -259,13 +310,23 @@ private fun TradeItemCard(
 
 @Composable
 private fun TradeSearchBar(
-    navigateToTradeSearchScreen: () -> Unit
+    onClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .height(Space56)
             .background(White)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .drawBehind {
+                val strokeWidth = 1.dp.toPx()
+                val y = size.height - strokeWidth / 2
+                drawLine(
+                    color = Gray900,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = strokeWidth
+                )
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -278,7 +339,7 @@ private fun TradeSearchBar(
                 .weight(1f),
             onTextFieldFocusChange = { isFocused ->
                 if (isFocused) {
-                    navigateToTradeSearchScreen()
+                    onClicked()
                 }
             }
         )
@@ -301,42 +362,22 @@ private fun TradeSearchBar(
 }
 
 @Composable
-private fun TradeItemStatus(
-    isSold: Boolean
-) {
-    if (isSold) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .background(LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("거래 완료", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .background(Blue100)
-        ) {
-            Text(
-                text = "거래중",
-                color = Black,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
-            )
-        }
-    }
-}
+private fun TradeItemStatus(isSold: Boolean) {
+    val backgroundColor = if (isSold) LightGray else Blue100
+    val text = if (isSold) "거래 완료" else "거래 가능"
 
-@Composable
-private fun TradeScreenPostButton(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = { onClick() },
-        modifier = Modifier.size(Space56),
-        shape = CircleShape,
-        containerColor = Blue400,
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(5.dp))
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
     ) {
-        Icon(Icons.Filled.Add, "Add Post Button")
+        Text(
+            text = text,
+            style = Body1,
+            color = White,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
     }
 }
 

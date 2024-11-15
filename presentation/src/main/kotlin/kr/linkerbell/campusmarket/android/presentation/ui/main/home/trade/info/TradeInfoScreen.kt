@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -39,10 +38,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -54,12 +59,14 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.BlueGray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
@@ -130,7 +137,7 @@ fun TradeInfoScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .background(Indigo50)
+                .background(Gray50)
         ) {
             TradeInfoImageViewer(
                 thumbUrl = tradeInfo.thumbnail,
@@ -148,37 +155,22 @@ fun TradeInfoScreen(
                 chatCount = tradeInfo.chatCount
             )
         }
+    }
 
-        if (isDeleteConfirmButtonVisible) {
-
-            if (isOwnerOfThisTrade) {
-                DialogScreen(
-                    title = "정말 삭제하시겠습니까?",
-                    message = "등록된 정보가 사라집니다.",
-                    isCancelable = true,
-                    onConfirm = {
-                        argument.intent(TradeInfoIntent.DeleteThisPost)
-                        navController.safeNavigateUp()
-                    },
-                    onDismissRequest = {
-                        isDeleteConfirmButtonVisible = false
-                    }
-                )
-            } else {
-                DialogScreen(
-                    title = "삭제 권한이 없습니다",
-                    isCancelable = false,
-                    onDismissRequest = {
-                        isDeleteConfirmButtonVisible = false
-                    }
-                )
-            }
-        }
+    if (isDeleteConfirmButtonVisible) {
+        DeleteConfirmDialog(
+            isOwnerOfThisTrade = isOwnerOfThisTrade,
+            onConfirm = {
+                argument.intent(TradeInfoIntent.DeleteThisPost)
+                navController.safeNavigateUp()
+            },
+            onDismissRequest = { isDeleteConfirmButtonVisible = false }
+        )
     }
 
     if (isFailedToFetchDataDialogVisible) {
         FailedToFetchDataDialog(
-            onDismissRequest = { isDeleteConfirmButtonVisible = false }
+            onDismissRequest = { isFailedToFetchDataDialogVisible = false }
         )
     }
 
@@ -210,9 +202,18 @@ private fun TradeInfoTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, Color.Gray)
             .background(White)
-            .height(56.dp),
+            .height(56.dp)
+            .drawBehind {
+                val strokeWidth = 1.dp.toPx()
+                val y = size.height - strokeWidth / 2
+                drawLine(
+                    color = Gray900,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = strokeWidth
+                )
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -220,7 +221,7 @@ private fun TradeInfoTopBar(
             Icon(
                 painter = painterResource(id = R.drawable.ic_chevron_left),
                 contentDescription = "Navigate Up Button",
-                tint = Black,
+                tint = Gray900,
                 modifier = Modifier
                     .size(48.dp)
                     .clickable {
@@ -237,7 +238,7 @@ private fun TradeInfoTopBar(
         Box {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                tint = Black,
+                tint = Gray900,
                 contentDescription = "More Option Button",
                 modifier = Modifier
                     .size(48.dp)
@@ -247,7 +248,7 @@ private fun TradeInfoTopBar(
                     .padding(horizontal = 8.dp)
             )
             val userOption = if (isOwnerOfThisTrade) {
-                listOf("신고", "삭제", "수정")
+                listOf("삭제", "수정")
             } else {
                 listOf("신고")
             }
@@ -288,6 +289,9 @@ private fun TradeInfoTopBar(
 @Composable
 private fun TradeInfoImageViewer(thumbUrl: String, imageUrls: List<String>) {
 
+    var isZoomed by remember { mutableStateOf(false) }
+    var selectedImage by remember { mutableStateOf<String?>(null) }
+
     val pagerState = rememberPagerState(pageCount = { imageUrls.size + 1 })
     val thumbnailAndImage = listOf(thumbUrl) + imageUrls
 
@@ -295,13 +299,54 @@ private fun TradeInfoImageViewer(thumbUrl: String, imageUrls: List<String>) {
         state = pagerState,
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 200.dp)
+            .height(400.dp)
     ) { page ->
         thumbnailAndImage.getOrNull(page).let {
             PostImage(
                 data = thumbnailAndImage[page],
-                modifier = Modifier.clip(shape = RoundedCornerShape(0))
+                modifier = Modifier
+                    .clickable {
+                        selectedImage = thumbnailAndImage[page]
+                        isZoomed = true
+                    },
+                contentScale = ContentScale.Fit
             )
+        }
+    }
+
+    if (isZoomed) {
+        Dialog(
+            onDismissRequest = { isZoomed = false },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false,
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.8f))
+                    .clickable { isZoomed = false }
+            ) {
+                selectedImage?.let { image ->
+                    PostImage(
+                        data = image,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Transparent),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                Text(
+                    text = "${pagerState.currentPage + 1} / ${thumbnailAndImage.size}",
+                    color = Color.White,
+                    style = Body1,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                )
+            }
         }
     }
 }
@@ -313,7 +358,17 @@ private fun TradeInfoAuthor(
 ) {
     Row(
         modifier = Modifier
-            .border(2.dp, Color.Gray)
+            .background(White)
+            .drawBehind {
+                val strokeWidth = 1.dp.toPx()
+                val y = size.height - strokeWidth / 2
+                drawLine(
+                    color = Gray900,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = strokeWidth
+                )
+            }
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -372,7 +427,10 @@ private fun TradeInfoContent(
         Text(text = "$chatCount 명이 관심 있어함", color = Black, style = Body1)
         Spacer(Modifier.padding(spacerPadding))
 
-        HorizontalDivider(thickness = (0.4).dp, color = Black)
+        HorizontalDivider(
+            thickness = (0.4).dp,
+            color = Black
+        )
 
         Spacer(Modifier.padding(spacerPadding))
         Text(text = description, color = Black, style = Body1)
@@ -393,13 +451,21 @@ private fun TradeInfoBottomBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, Color.Gray)
+            .drawBehind {
+                val strokeWidth = 1.dp.toPx()
+                drawLine(
+                    color = Gray900, // 테두리 색상
+                    start = Offset(0f, 0f),
+                    end = Offset(size.width, 0f),
+                    strokeWidth = strokeWidth
+                )
+            }
             .background(White),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -416,7 +482,7 @@ private fun TradeInfoBottomBar(
             Text(text = "$price 원", color = Black, style = Headline3)
         }
         Row(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TradeItemStatus(isSold)
@@ -427,26 +493,22 @@ private fun TradeInfoBottomBar(
 }
 
 @Composable
-private fun TradeItemStatus(
-    isSold: Boolean
-) {
-    if (isSold) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .background(Color.Gray),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("거래 완료", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .background(Color.LightGray)
-        ) {
-            Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
-        }
+private fun TradeItemStatus(isSold: Boolean) {
+    val backgroundColor = if (isSold) LightGray else Blue100
+    val text = if (isSold) "거래 완료" else "거래 가능"
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(5.dp))
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = Body1,
+            color = White,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
     }
 }
 
@@ -471,37 +533,26 @@ private fun TradeStartButton(
             )
         }
     } else {
-        if (isSold) {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(BlueGray200),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "거래 완료",
-                    modifier = Modifier.padding(8.dp),
-                    style = Headline2,
-                    color = Color.White
-                )
-            }
-        } else {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Blue400)
-                    .clickable {
+        val backgroundColor = if (isSold) BlueGray200 else Blue400
+        val text = if (isSold) "거래 완료" else "거래 가능"
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .background(backgroundColor)
+                .clickable {
+                    if (!isSold) {
                         onChatButtonClick()
-                    },
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "거래하기",
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 28.dp),
-                    style = Headline2,
-                    color = Color.White
-                )
-            }
+                    }
+                },
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier.padding(8.dp),
+                style = Headline2,
+                color = Color.White
+            )
         }
     }
 }
@@ -521,6 +572,33 @@ private fun translateToKor(engCategory: String): String {
         "ENTERTAINMENT_HOBBIES" -> "엔터테인먼트/취미"
         "OTHER" -> "기타"
         else -> "기타"
+    }
+}
+
+@Composable
+private fun DeleteConfirmDialog(
+    isOwnerOfThisTrade: Boolean,
+    onConfirm: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    if (isOwnerOfThisTrade) {
+        DialogScreen(
+            title = "정말 삭제하시겠습니까?",
+            message = "등록된 정보가 사라집니다.",
+            isCancelable = true,
+            onConfirm = { onConfirm() },
+            onDismissRequest = {
+                onDismissRequest()
+            }
+        )
+    } else {
+        DialogScreen(
+            title = "삭제 권한이 없습니다!",
+            isCancelable = false,
+            onDismissRequest = {
+                onDismissRequest()
+            }
+        )
     }
 }
 

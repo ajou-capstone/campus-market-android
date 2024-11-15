@@ -39,6 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,26 +55,19 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObser
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo100
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
-import kr.linkerbell.campusmarket.android.presentation.common.view.BottomSheetScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButton
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonProperties
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
@@ -104,22 +99,23 @@ fun TradePostScreen(
     var hasThumbnails by remember { mutableStateOf(false) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
-    var isValidationBottomSheetVisible by remember { mutableStateOf(false) }
+    var isValidationDialogVisible by remember { mutableStateOf(false) }
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
+    var isPatchOrPostAvailable by remember { mutableStateOf(true) }
 
     var isValidContents by remember { mutableStateOf(true) }
-    var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
+    var validationDialogContent by remember { mutableStateOf("Validation Dialog Content") }
 
     val validateContent = {
         isValidContents = true
         when {
             title.isBlank() -> {
-                bottomSheetContent = "제목을 입력해주세요"
+                validationDialogContent = "제목을 입력해주세요"
                 isValidContents = false
             }
 
             description.isBlank() -> {
-                bottomSheetContent = "상품 상세 정보를 입력해주세요"
+                validationDialogContent = "상품 상세 정보를 입력해주세요"
                 isValidContents = false
             }
         }
@@ -211,9 +207,11 @@ fun TradePostScreen(
             }
             Spacer(Modifier.padding(vertical = 32.dp))
             TradePostScreenPostButton(
+                isPostAvailable = isPatchOrPostAvailable,
                 onPostButtonClicked = {
                     validateContent()
-                    if (isValidContents) {
+                    if (isValidContents && isPatchOrPostAvailable) {
+                        isPatchOrPostAvailable = false
                         argument.intent(
                             TradePostIntent.PostOrPatchTrade(
                                 title = title,
@@ -224,8 +222,10 @@ fun TradePostScreen(
                                 imageList = imageList
                             )
                         )
-                    } else {
-                        isValidationBottomSheetVisible = true
+                    }
+                    if (!isValidContents && isPatchOrPostAvailable) {
+                        isPatchOrPostAvailable = false
+                        isValidationDialogVisible = true
                     }
                 }
             )
@@ -245,16 +245,22 @@ fun TradePostScreen(
         )
     }
 
-    if (isValidationBottomSheetVisible) {
-        ContentValidationWarningBottomSheet(
-            bottomSheetContent = bottomSheetContent,
-            onDismissRequest = { isValidationBottomSheetVisible = false }
+    if (isValidationDialogVisible) {
+        ContentValidationWarningDialog(
+            validationDialogContent = validationDialogContent,
+            onDismissRequest = {
+                isValidationDialogVisible = false
+                isPatchOrPostAvailable = true
+            }
         )
     }
 
     if (isSuccessDialogVisible) {
         SuccessToPostOrPatchDialog(
-            onConfirmButtonClicked = { navigateToTrade(tradeId) },
+            onConfirmButtonClicked = {
+                navController.popBackStack()
+                navigateToTrade(tradeId)
+            },
             onDismissRequest = { isSuccessDialogVisible = false }
         )
     }
@@ -275,6 +281,10 @@ fun TradePostScreen(
                     originalImageList =
                         (listOf(event.tradeContents.thumbnail) + event.tradeContents.images).filter { it.isNotBlank() }
                 }
+
+                is TradePostEvent.PatchOrPostFailed -> {
+                    isPatchOrPostAvailable = true
+                }
             }
         }
     }
@@ -284,12 +294,11 @@ fun TradePostScreen(
 private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
     Card(
         modifier = Modifier.size(100.dp),
-        colors = CardDefaults.cardColors(White),
-        border = BorderStroke(2.dp, Color.Gray)
+        colors = CardDefaults.cardColors(Blue200),
+        border = BorderStroke(1.dp, Blue400)
     ) {
         Box(modifier = Modifier
             .fillMaxSize()
-            .background(Indigo100)
             .clickable {
                 onAddImageClicked()
             }
@@ -300,6 +309,7 @@ private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
                     .align(Alignment.Center)
                     .padding(4.dp),
                 painter = painterResource(id = R.drawable.ic_plus),
+                tint = White,
                 contentDescription = null,
             )
         }
@@ -371,9 +381,19 @@ private fun TradePostScreenImageBox(
 private fun TradePostScreenTopBar(navigateUp: () -> Unit) {
     Row(
         modifier = Modifier
-            .background(Indigo50)
+            .background(White)
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .drawBehind {
+                val strokeWidth = 1.dp.toPx()
+                val y = size.height - strokeWidth / 2
+                drawLine(
+                    color = Color.Gray,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = strokeWidth
+                )
+            },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -464,7 +484,7 @@ private fun TradePostScreenTradeInfo(
                             modifier = Modifier
                                 .size(20.dp)
                                 .clickable {
-                                    changePrice(price)
+                                    changePrice("0")
                                 }
                         )
                     },
@@ -596,21 +616,29 @@ private fun translateToKor(engCategory: String): String {
 }
 
 @Composable
-private fun TradePostScreenPostButton(onPostButtonClicked: () -> Unit) {
+private fun TradePostScreenPostButton(
+    isPostAvailable: Boolean,
+    onPostButtonClicked: () -> Unit
+) {
+    val backgroundColor = if (isPostAvailable) Blue400 else Gray200
+    val buttonText = if (isPostAvailable) "등록하기" else "등록중입니다"
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(Blue400)
+            .background(backgroundColor)
             .clickable {
-                onPostButtonClicked()
+                if (isPostAvailable) {
+                    onPostButtonClicked()
+                }
             },
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "등록하기",
+            text = buttonText,
             modifier = Modifier.padding(16.dp),
-            style = Headline3,
+            style = Headline2,
             color = Color.White
         )
     }
@@ -631,41 +659,16 @@ private fun SuccessToPostOrPatchDialog(
 }
 
 @Composable
-private fun ContentValidationWarningBottomSheet(
-    bottomSheetContent: String,
+private fun ContentValidationWarningDialog(
+    validationDialogContent: String,
     onDismissRequest: () -> Unit
 ) {
-    BottomSheetScreen(
-        onDismissRequest = { onDismissRequest() },
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = bottomSheetContent,
-                style = Body0
-            )
-            Spacer(
-                modifier = Modifier.height(60.dp)
-            )
-            ConfirmButton(
-                modifier = Modifier.fillMaxWidth(),
-                properties = ConfirmButtonProperties(
-                    size = ConfirmButtonSize.Large,
-                    type = ConfirmButtonType.Primary
-                ),
-                onClick = {
-                    onDismissRequest()
-                }
-            ) { style ->
-                Text(
-                    text = "확인",
-                    style = style
-                )
-            }
-        }
-    }
+    DialogScreen(
+        title = "필수 항목 누락됨",
+        message = validationDialogContent,
+        isCancelable = false,
+        onDismissRequest = { onDismissRequest() }
+    )
 }
 
 @Preview
