@@ -21,7 +21,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Session
 import kr.linkerbell.campusmarket.android.domain.repository.feature.ChatRepository
 import org.hildan.krossbow.stomp.sendText
 import org.hildan.krossbow.stomp.subscribe
-import timber.log.Timber
 
 class RealChatRepository @Inject constructor(
     private val chatApi: ChatApi,
