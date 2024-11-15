@@ -574,7 +574,7 @@ fun ChatScreen(
                 intent(ChatIntent.Refresh)
             }
 
-            Lifecycle.Event.ON_PAUSE -> {
+            Lifecycle.Event.ON_STOP -> {
                 intent(ChatIntent.Session.Disconnect)
             }
 
