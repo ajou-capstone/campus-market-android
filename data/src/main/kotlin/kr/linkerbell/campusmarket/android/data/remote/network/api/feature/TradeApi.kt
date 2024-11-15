@@ -44,8 +44,8 @@ class TradeApi @Inject constructor(
             parameter("minPrice", minPrice.toString())
             parameter("maxPrice", maxPrice.toString())
             parameter("sort", sorted)
-            parameter("pageNum", pageNum.toString())
-            parameter("pageSize", pageSize.toString())
+            parameter("page", pageNum.toString())
+            parameter("size", pageSize.toString())
         }.convert(errorMessageMapper::map)
     }
 
