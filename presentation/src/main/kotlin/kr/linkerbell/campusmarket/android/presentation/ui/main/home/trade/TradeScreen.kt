@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,8 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,16 +49,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
+import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
@@ -255,63 +259,40 @@ private fun TradeItemCard(
 private fun TradeSearchBar(
     navigateToTradeSearchScreen: () -> Unit
 ) {
-    Box(
+    Row(
         modifier = Modifier
-            .background(Color.White)
+            .height(Space56)
+            .background(White)
             .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+        TypingTextField(
+            text = "",
+            onValueChange = { },
+            hintText = "검색어를 입력하세요",
             modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(horizontal = Space20)
+                .weight(1f),
+            onTextFieldFocusChange = { isFocused ->
+                if (isFocused) {
+                    navigateToTradeSearchScreen()
+                }
+            }
         )
-        {
-            Box(
-                modifier = Modifier
-                    .width(76.dp)
-                    .height(36.dp)
-                    .background(Gray)
-                    .weight(3f)
-            ) {
-                Text("Logo Here")
-            }
 
-            Spacer(Modifier.padding(8.dp))
-            Row(
-                modifier = Modifier
-                    .weight(8f)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(Gray50)
-                    .clickable {
-                        navigateToTradeSearchScreen()
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "검색어를 입력하세요",
-                    color = Gray,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search button",
-                    tint = Black,
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(20.dp)
-                )
+        RippleBox(
+            modifier = Modifier.padding(end = Space20),
+            onClick = {
+//                navigateToNotificationScreen()
             }
-            Spacer(Modifier.padding(4.dp))
+        ) {
             Icon(
-                imageVector = Icons.Default.Notifications,
-                contentDescription = "Notification Button",
-                tint = Black,
                 modifier = Modifier
-                    .size(24.dp)
-                    .weight(1f)
+                    .size(Space24),
+                painter = painterResource(R.drawable.ic_notification),
+                contentDescription = null,
+                tint = Gray900
             )
         }
     }
