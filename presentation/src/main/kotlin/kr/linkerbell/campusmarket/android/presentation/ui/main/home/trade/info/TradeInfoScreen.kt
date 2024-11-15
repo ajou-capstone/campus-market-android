@@ -587,6 +587,7 @@ private fun DeleteConfirmDialog(
             message = "등록된 정보가 사라집니다.",
             isCancelable = true,
             onConfirm = { onConfirm() },
+            onCancel = {},
             onDismissRequest = {
                 onDismissRequest()
             }

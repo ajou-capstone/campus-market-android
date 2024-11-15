@@ -685,28 +685,6 @@ private fun TradeSearchResultItemStatus(isSold: Boolean) {
     }
 }
 
-@Composable
-private fun SortOptionButton(
-    optionName: String,
-    isSelected: Boolean,
-    onSelect: () -> Unit
-) {
-    val buttonColor = if (isSelected) Blue400 else Blue100
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(buttonColor)
-            .clickable { onSelect() }
-    ) {
-        Text(
-            text = optionName,
-            style = Body1,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
-        )
-    }
-}
-
 private fun translateToKor(engCategory: String): String {
     return when (engCategory) {
         "ELECTRONICS_IT" -> "전자기기/IT"
