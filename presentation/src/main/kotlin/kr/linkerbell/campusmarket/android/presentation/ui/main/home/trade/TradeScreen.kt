@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +52,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
@@ -236,7 +238,7 @@ private fun TradeItemCard(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val favIcon =
-                        if (item.isLiked) Icons.Default.FavoriteBorder else Icons.Default.Favorite
+                        if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
                     Icon(
                         imageVector = favIcon,
                         contentDescription = "isLike",
@@ -306,7 +308,7 @@ private fun TradeItemStatus(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .background(Gray),
+                .background(LightGray),
             contentAlignment = Alignment.Center
         ) {
             Text("거래 완료", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
@@ -315,7 +317,7 @@ private fun TradeItemStatus(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .background(Color.LightGray)
+                .background(Blue100)
         ) {
             Text(
                 text = "거래중",

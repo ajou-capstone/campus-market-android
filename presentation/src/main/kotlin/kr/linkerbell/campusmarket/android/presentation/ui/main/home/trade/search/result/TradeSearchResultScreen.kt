@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -320,25 +321,31 @@ private fun TradeSearchResultPriceFilter(
                     keyboardType = KeyboardType.Number
                 )
             )
-            Icon(imageVector = Icons.Default.Search,
-                contentDescription = "Search Button",
+            RippleBox(
                 modifier = Modifier
-                    .size(24.dp)
-                    .weight(1f)
-                    .clickable {
-                        if (minPrice > maxPrice) {
-                            maxPrice = minPrice
-                        }
-                        updateQuery(
-                            currentQuery.copy(
-                                minPrice = minPrice,
-                                maxPrice = maxPrice,
-                                category = currentQuery.category,
-                                sorted = currentQuery.sorted
+                    .padding(end = Space20)
+                    .weight(1f),
+            ) {
+                Icon(imageVector = Icons.Default.Search,
+                    contentDescription = "Search Button",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            if (minPrice > maxPrice) {
+                                maxPrice = minPrice
+                            }
+                            updateQuery(
+                                currentQuery.copy(
+                                    name = currentQuery.name,
+                                    minPrice = minPrice,
+                                    maxPrice = maxPrice,
+                                    category = currentQuery.category,
+                                    sorted = currentQuery.sorted
+                                )
                             )
-                        )
-                    }
-            )
+                        }
+                )
+            }
         }
     }
 }
@@ -374,16 +381,17 @@ private fun TradeSearchResultCategoryFilter(
                 maxLines = 1,
                 style = Body2,
                 color = Color.White,
-                modifier = Modifier.padding(start = 8.dp, end = 4.dp)
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 4.dp)
+                    .clickable {
+                        isDropDownExpanded.value = !isDropDownExpanded.value
+                    }
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = "Search Button",
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable {
-                        isDropDownExpanded.value = !isDropDownExpanded.value
-                    }
             )
         }
         DropdownMenu(
@@ -544,7 +552,7 @@ private fun TradeSearchResultItemCard(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val favIcon =
-                        if (item.isLiked) Icons.Default.FavoriteBorder else Icons.Default.Favorite
+                        if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
                     Icon(
                         imageVector = favIcon,
                         contentDescription = "isLike",
@@ -564,7 +572,7 @@ private fun TradeSearchResultItemStatus(isSold: Boolean) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .background(Gray),
+                .background(LightGray),
             contentAlignment = Alignment.Center
         ) {
             Text("거래 완료", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
@@ -573,7 +581,7 @@ private fun TradeSearchResultItemStatus(isSold: Boolean) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .background(Color.LightGray)
+                .background(Blue100)
         ) {
             Text("거래중", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
         }
