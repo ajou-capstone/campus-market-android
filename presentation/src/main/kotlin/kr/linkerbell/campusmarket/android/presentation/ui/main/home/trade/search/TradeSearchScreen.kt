@@ -45,6 +45,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space4
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
@@ -99,13 +100,12 @@ fun TradeSearchScreen(
             }
         )
 
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
+        Column {
+            Spacer(modifier = Modifier.height(Space4))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
+                    .padding(horizontal = Space20),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -128,10 +128,11 @@ fun TradeSearchScreen(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(Space4))
 
             data.searchHistory.reversed().forEach { searchHistory ->
                 TradeSearchScreenSearchHistoryCard(
-                    searchHistory,
+                    history = searchHistory,
                     onClearIconClick = {
                         argument.intent(TradeSearchIntent.DeleteByText(searchHistory))
                     },
@@ -247,7 +248,7 @@ private fun TradeSearchScreenSearchHistoryCard(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(Space8))
+            Spacer(modifier = Modifier.width(Space20))
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -270,14 +271,13 @@ private fun TradeSearchScreenSearchHistoryCard(
                 }
             ) {
                 Icon(
-                    modifier = Modifier
-                        .size(Space24),
+                    modifier = Modifier.size(Space24),
                     painter = painterResource(R.drawable.ic_close),
                     contentDescription = null,
                     tint = Gray900
                 )
             }
-            Spacer(modifier = Modifier.width(Space8))
+            Spacer(modifier = Modifier.width(Space20))
         }
         Spacer(modifier = Modifier.height(Space8))
     }
