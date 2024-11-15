@@ -498,6 +498,7 @@ fun ChatScreen(
                         RippleBox(
                             onClick = {
                                 isGalleryShowing = true
+                                isMessageMenuOpen = false
                             }
                         ) {
                             Column(
@@ -532,6 +533,7 @@ fun ChatScreen(
                         RippleBox(
                             onClick = {
                                 intent(ChatIntent.Session.SendSchedule)
+                                isMessageMenuOpen = false
                             }
                         ) {
                             Column(
