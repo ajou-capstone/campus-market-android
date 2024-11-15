@@ -19,4 +19,27 @@
     <string name="error_invalid_price">잘못된 가격입니다.</string>
     <string name="error_invalid_sort">잘못된 정렬방식입니다.</string>
     <string name="error_invalid_verification_code">인증 코드가 일치하지 않습니다.</string>
+    <string name="error_invalid_item_photos_count">아이템 사진 개수가 5개를 초과했습니다.</string>
+    <string name="error_invalid_title">잘못된 제목입니다.</string>
+    <string name="error_invalid_description">잘못된 내용입니다.</string>
+    <string name="error_invalid_thumbnail">잘못된 썸네일 입니다.</string>
+    <string name="error_invalid_item_photos">잘못된 이미지 입니다.</string>
+    <string name="error_duplicate_item_photos">중복된 이미지가 있습니다.</string>
+    <string name="error_invalid_item_id">잘못된 아이템 값입니다.</string>
+    <string name="error_deleted_item_id">삭제된 아이템입니다.</string>
+    <string name="error_not_match_user_campus_with_item_campus">캠퍼스가 일치하지 않습니다.</string>
+    <string name="error_user_terms_info_not_found">존재하지 않는 약관입니다.</string>
+    <string name="error_duplicate_school_email">중복된 학교 이메일입니다.</string>
+    <string name="error_not_match_user_id_with_item_user_id">해당 아이템 게시글의 작성자가 아닙니다.</string>
+    <string name="error_invalid_file_name">파일 이름을 비우거나 공백으로 할 수 없습니다.</string>
+    <string name="error_chatroom_not_found">채팅방이 존재하지 않습니다.</string>
+    <string name="error_message_not_found">채팅 메시지가 존재하지 않습니다.</string>
+    <string name="error_invalid_item_status">잘못된 아이템 거래 상태입니다.</string>
+    <string name="error_invalid_item_buyer">잘못된 아이템 구매자입니다.</string>
+    <string name="error_do_not_roll_back_item_status_for_sale">아이템을 판매중인 상태로 바꿀 수 없습니다.</string>
+    <string name="error_already_sold_out_item">이미 거래 완료된 아이템 입니다.</string>
+    <string name="error_not_match_user_campus">캠퍼스가 일치하지 않는 사용자입니다.</string>
+    <string name="error_invalid_contenttype">잘못된 메시지입니다.</string>
+    <string name="error_fcm_invalid_argument">유효하지 않은 FCM 토큰입니다.</string>
+    <string name="error_fcm_unregistered">만료된 FCM 토큰입니다.</string>
 </resources>
