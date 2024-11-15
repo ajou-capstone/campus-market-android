@@ -246,7 +246,7 @@ private fun ChatRoomScreen(
                 intent(ChatRoomIntent.Refresh)
             }
 
-            Lifecycle.Event.ON_PAUSE -> {
+            Lifecycle.Event.ON_STOP -> {
                 intent(ChatRoomIntent.Session.Disconnect)
             }
 

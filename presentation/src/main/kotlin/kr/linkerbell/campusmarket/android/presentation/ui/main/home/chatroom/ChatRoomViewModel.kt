@@ -26,6 +26,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.SetRoomNot
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import timber.log.Timber
 
 @HiltViewModel
 class ChatRoomViewModel @Inject constructor(
@@ -58,6 +59,7 @@ class ChatRoomViewModel @Inject constructor(
         var session: Session? = null
 
         suspend fun connect() {
+            Timber.d("asdfasdf connect")
             if (session != null) throw IllegalStateException("Session is already connected")
 
             connectRoomUseCase()
@@ -79,6 +81,7 @@ class ChatRoomViewModel @Inject constructor(
         suspend fun subscribe(
             id: Long
         ) {
+            Timber.d("asdfasdf subscribe")
             session?.let {
                 it.subscribe(id).catch { exception ->
                     when (exception) {
@@ -95,6 +98,7 @@ class ChatRoomViewModel @Inject constructor(
         }
 
         suspend fun disconnect() {
+            Timber.d("asdfasdf disconnect")
             session?.let {
                 it.disconnect()
                 session = null
@@ -181,7 +185,7 @@ class ChatRoomViewModel @Inject constructor(
                 }.collect { roomList ->
                     _state.value = ChatRoomState.Init
                     val newRoomId: Set<Long> =
-                        _roomList.value.map { it.id }.toSet() - roomList.map { it.id }.toSet()
+                        roomList.map { it.id }.toSet() - _roomList.value.map { it.id }.toSet()
                     newRoomId.forEach { id ->
                         onIntent(ChatRoomIntent.Session.Subscribe(id))
                     }
