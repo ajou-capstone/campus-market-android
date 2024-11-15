@@ -9,7 +9,8 @@ data class SummarizedTrade(
     val price: Int,
     val chatCount: Int,
     val likeCount: Int,
-    val itemStatus: String
+    val itemStatus: String,
+    val isLiked: Boolean
 ) {
     companion object {
         val empty = SummarizedTrade(
@@ -21,7 +22,8 @@ data class SummarizedTrade(
             price = 0,
             chatCount = 0,
             likeCount = 0,
-            itemStatus = ""
+            itemStatus = "",
+            isLiked = false
         )
     }
 }

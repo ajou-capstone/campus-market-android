@@ -8,10 +8,10 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 @Serializable
 @SerialName("TEXT")
 data class GetMessageListByIdRes(
-    @SerialName("data")
-    val data: List<MessageRes>
+    @SerialName("messageList")
+    val messageList: List<MessageRes>
 ) : DataMapper<List<Message>> {
     override fun toDomain(): List<Message> {
-        return data.map { it.toDomain() }
+        return messageList.map { it.toDomain() }
     }
 }

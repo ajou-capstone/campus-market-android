@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 
 @Serializable
-data class PostTradeRes (
+data class PostTradeRes(
     @SerialName("itemId")
     val itemId: Long
 ) : DataMapper<Long> {

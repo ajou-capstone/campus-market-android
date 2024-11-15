@@ -113,7 +113,8 @@ class RealChatRepository @Inject constructor(
             }
         }.onStart {
             val messageIdList = chatApi.getRecentMessageIdList().toDomain().getOrThrow()
-            val missingIdList = messageDao.findMissingIdList(idList = messageIdList)
+            val existingIdList = messageDao.findExistingIdList(idList = messageIdList)
+            val missingIdList = messageIdList - existingIdList
             val messageList = chatApi.getMessageListById(idList = missingIdList)
                 .toDomain()
                 .getOrThrow()
@@ -161,16 +162,16 @@ class RealChatRepository @Inject constructor(
                         val message = if (contentType == "TEXT") {
                             MessageReq.Text(
                                 content = (content as? String).orEmpty(),
-                                contentType = contentType
+                                contentType = "TEXT"
                             )
                         } else if (contentType == "IMAGE") {
                             MessageReq.Image(
                                 content = (content as? String).orEmpty(),
-                                contentType = contentType
+                                contentType = "IMAGE"
                             )
                         } else {
                             MessageReq.Schedule(
-                                contentType = contentType
+                                contentType = "TIMETABLE"
                             )
                         }
                         stompSession.sendText(

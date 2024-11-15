@@ -14,7 +14,6 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.schedule.GetSch
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.ScheduleState
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(

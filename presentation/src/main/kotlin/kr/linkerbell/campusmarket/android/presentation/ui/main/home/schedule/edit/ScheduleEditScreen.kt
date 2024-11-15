@@ -47,13 +47,12 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObser
 import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Space32
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space40
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
@@ -125,6 +124,17 @@ private fun ScheduleEditScreen(
     var scheduleEndTimeMinute: String by remember { mutableStateOf(initialSchedule.endTime.minute.toString()) }
 
     var isDayOfWeekExpanded by remember { mutableStateOf(false) }
+
+    val startTimeHour: Int = scheduleStartTimeHour.toIntOrNull()?.takeIf { it in 9..22 } ?: -1
+    val startTimeMinute: Int = scheduleStartTimeMinute.toIntOrNull()?.takeIf { it in 0..59 } ?: -1
+    val endTimeHour: Int = scheduleEndTimeHour.toIntOrNull()?.takeIf { it in 9..22 } ?: -1
+    val endTimeMinute: Int = scheduleEndTimeMinute.toIntOrNull()?.takeIf { it in 0..59 } ?: -1
+
+    val isConfirmEnabled: Boolean = startTimeHour != -1
+            && startTimeMinute != -1
+            && endTimeHour != -1
+            && endTimeMinute != -1
+            && LocalTime(startTimeHour, startTimeMinute) < LocalTime(endTimeHour, endTimeMinute)
 
     fun getDayOfWeekText(dayOfWeek: Int): String {
         return when (dayOfWeek) {
@@ -205,7 +215,7 @@ private fun ScheduleEditScreen(
                         BasicTextField(
                             value = scheduleStartTimeHour,
                             modifier = Modifier
-                                .width(Space32)
+                                .width(Space40)
                                 .background(
                                     color = Gray200,
                                     shape = RoundedCornerShape(8.dp)
@@ -214,16 +224,18 @@ private fun ScheduleEditScreen(
                             onValueChange = {
                                 scheduleStartTimeHour = it.filter { it.isDigit() }
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            textStyle = Body0.merge(Gray900),
+                            singleLine = true
                         )
                         Text(
                             text = " : ",
-                            style = Body1.merge(Gray900)
+                            style = Body0.merge(Gray900)
                         )
                         BasicTextField(
                             value = scheduleStartTimeMinute,
                             modifier = Modifier
-                                .width(Space32)
+                                .width(Space40)
                                 .background(
                                     color = Gray200,
                                     shape = RoundedCornerShape(8.dp)
@@ -232,16 +244,18 @@ private fun ScheduleEditScreen(
                             onValueChange = {
                                 scheduleStartTimeMinute = it.filter { it.isDigit() }
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            textStyle = Body0.merge(Gray900),
+                            singleLine = true
                         )
                         Text(
                             text = " ~ ",
-                            style = Body1.merge(Gray900)
+                            style = Body0.merge(Gray900)
                         )
                         BasicTextField(
                             value = scheduleEndTimeHour,
                             modifier = Modifier
-                                .width(Space32)
+                                .width(Space40)
                                 .background(
                                     color = Gray200,
                                     shape = RoundedCornerShape(8.dp)
@@ -250,16 +264,18 @@ private fun ScheduleEditScreen(
                             onValueChange = {
                                 scheduleEndTimeHour = it.filter { it.isDigit() }
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            textStyle = Body0.merge(Gray900),
+                            singleLine = true
                         )
                         Text(
                             text = " : ",
-                            style = Body1.merge(Gray900)
+                            style = Body0.merge(Gray900)
                         )
                         BasicTextField(
                             value = scheduleEndTimeMinute,
                             modifier = Modifier
-                                .width(Space32)
+                                .width(Space40)
                                 .background(
                                     color = Gray200,
                                     shape = RoundedCornerShape(8.dp)
@@ -268,7 +284,9 @@ private fun ScheduleEditScreen(
                             onValueChange = {
                                 scheduleEndTimeMinute = it.filter { it.isDigit() }
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            textStyle = Body0.merge(Gray900),
+                            singleLine = true
                         )
                     }
                 }
@@ -306,17 +324,18 @@ private fun ScheduleEditScreen(
                                 Schedule(
                                     dayOfWeek = scheduleDayOfWeek,
                                     startTime = LocalTime(
-                                        scheduleStartTimeHour.toIntOrNull() ?: 0,
-                                        scheduleStartTimeMinute.toIntOrNull() ?: 0
+                                        startTimeHour,
+                                        startTimeMinute
                                     ),
                                     endTime = LocalTime(
-                                        scheduleEndTimeHour.toIntOrNull() ?: 0,
-                                        scheduleEndTimeMinute.toIntOrNull() ?: 0
+                                        endTimeHour,
+                                        endTimeMinute
                                     )
                                 )
                             )
                             onDismissRequest()
-                        }
+                        },
+                        isEnabled = isConfirmEnabled
                     ) { style ->
                         Text(
                             text = if (data.initialSchedule == null) "추가" else "수정",

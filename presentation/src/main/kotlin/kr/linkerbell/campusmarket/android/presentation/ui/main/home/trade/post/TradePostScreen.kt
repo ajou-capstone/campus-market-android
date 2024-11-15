@@ -111,6 +111,7 @@ fun TradePostScreen(
     var bottomSheetContent by remember { mutableStateOf("Bottom Sheet Content") }
 
     val validateContent = {
+        isValidContents = true
         when {
             title.isBlank() -> {
                 bottomSheetContent = "제목을 입력해주세요"
@@ -267,12 +268,12 @@ fun TradePostScreen(
                 }
 
                 is TradePostEvent.FetchOriginalContents -> {
-                    title = originalContents.title
-                    price = originalContents.price.toString()
-                    category = originalContents.category
-                    description = originalContents.description
+                    title = event.tradeContents.title
+                    price = event.tradeContents.price.toString()
+                    category = event.tradeContents.category
+                    description = event.tradeContents.description
                     originalImageList =
-                        (listOf(originalContents.thumbnail) + originalContents.images).filter { it.isNotBlank() }
+                        (listOf(event.tradeContents.thumbnail) + event.tradeContents.images).filter { it.isNotBlank() }
                 }
             }
         }

@@ -4,7 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.DeletedLikedItemInfo
-import kr.linkerbell.campusmarket.android.domain.model.feature.trade.LikedItemInfo
 
 @Serializable
 data class DeletedLikedItemRes(

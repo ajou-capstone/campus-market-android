@@ -43,13 +43,21 @@ fun ScheduleTable(
 
     val cellCount = endTime.hour - startTime.hour + 1
 
+    val dayOfWeekList: List<String> = listOf("월", "화", "수", "목", "금", "토", "일")
+
     fun getTimeText(time: LocalTime): String {
         return runCatching {
             String.format(Locale.KOREA, "%02d:%02d", time.hour, time.minute)
         }.getOrDefault("00:00")
     }
 
-    val textSizeList: List<Pair<Dp, Dp>> = List(cellCount) { index ->
+    val dayOfWeekSizeList: List<Pair<Dp, Dp>> = dayOfWeekList.map { text ->
+        val textWidth = measureTextWidth(text = text, style = Body2)
+        val textHeight = measureTextHeight(text = text, style = Body2)
+        Pair(textWidth, textHeight)
+    }
+
+    val timeSizeList: List<Pair<Dp, Dp>> = List(cellCount) { index ->
         val time = LocalTime(startTime.hour + index, 0)
         val text = getTimeText(time)
         val textWidth = measureTextWidth(text = text, style = Body2)
@@ -61,10 +69,12 @@ fun ScheduleTable(
         modifier = modifier.pointerInput(dataList) {
             detectTapGestures(
                 onTap = { offset ->
-                    val top = textSizeList.firstOrNull()?.second?.div(2)?.toPx() ?: 0f
+                    val top = (timeSizeList.firstOrNull()?.second?.div(2)?.toPx() ?: 0f) +
+                            (dayOfWeekSizeList.maxOfOrNull { it.second }?.toPx()
+                                ?: 0f) + 8.dp.toPx()
                     val bottom =
-                        size.height - (textSizeList.lastOrNull()?.second?.div(2)?.toPx() ?: 0f)
-                    val start = (textSizeList.maxOfOrNull { it.first }?.toPx() ?: 0f) + 8.dp.toPx()
+                        size.height - (timeSizeList.lastOrNull()?.second?.div(2)?.toPx() ?: 0f)
+                    val start = (timeSizeList.maxOfOrNull { it.first }?.toPx() ?: 0f) + 8.dp.toPx()
                     val heightPerHour = (bottom - top) / (cellCount - 1)
                     val widthPerDayOfWeek = (size.width - start) / 7
 
@@ -99,9 +109,10 @@ fun ScheduleTable(
             )
         }
     ) {
-        val top = textSizeList.firstOrNull()?.second?.div(2)?.toPx() ?: 0f
-        val bottom = size.height - (textSizeList.lastOrNull()?.second?.div(2)?.toPx() ?: 0f)
-        val start = (textSizeList.maxOfOrNull { it.first }?.toPx() ?: 0f) + 8.dp.toPx()
+        val top = (timeSizeList.firstOrNull()?.second?.div(2)?.toPx() ?: 0f) +
+                (dayOfWeekSizeList.maxOfOrNull { it.second }?.toPx() ?: 0f) + 8.dp.toPx()
+        val bottom = size.height - (timeSizeList.lastOrNull()?.second?.div(2)?.toPx() ?: 0f)
+        val start = (timeSizeList.maxOfOrNull { it.first }?.toPx() ?: 0f) + 8.dp.toPx()
         val heightPerHour = (bottom - top) / (cellCount - 1)
         val widthPerDayOfWeek = (size.width - start) / 7
 
@@ -109,7 +120,7 @@ fun ScheduleTable(
             color = Gray400,
             start = Offset(
                 x = start,
-                y = 0f
+                y = top - 8.dp.toPx()
             ),
             end = Offset(
                 x = start,
@@ -118,6 +129,18 @@ fun ScheduleTable(
             strokeWidth = 1f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
+        dayOfWeekList.forEachIndexed { index, text ->
+            drawText(
+                textMeasurer = textMeasurer,
+                text = text,
+                topLeft = Offset(
+                    x = start + (size.width - start) * (index + 0.5f) / dayOfWeekList.size -
+                            (dayOfWeekSizeList.getOrNull(index)?.first?.toPx()?.div(2) ?: 0f),
+                    y = 0f
+                ),
+                style = Body2.merge(Gray900)
+            )
+        }
 
         repeat(cellCount) { index ->
             val text = getTimeText(LocalTime(startTime.hour + index, 0))
@@ -127,7 +150,7 @@ fun ScheduleTable(
                 text = text,
                 topLeft = Offset(
                     x = 0f,
-                    y = cellY - (textSizeList.getOrNull(index)?.second?.toPx()?.div(2) ?: 1f)
+                    y = cellY - (timeSizeList.getOrNull(index)?.second?.toPx()?.div(2) ?: 1f)
                 ),
                 style = Body2.merge(Gray900)
             )

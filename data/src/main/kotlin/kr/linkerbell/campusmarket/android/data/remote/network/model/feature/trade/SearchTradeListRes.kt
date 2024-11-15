@@ -50,7 +50,9 @@ data class SearchTradeListItemRes(
     @SerialName("likeCount")
     val likeCount: Int,
     @SerialName("itemStatus")
-    val itemStatus: String
+    val itemStatus: String,
+    @SerialName("isLiked")
+    val isLiked: Boolean
 ) : DataMapper<SummarizedTrade> {
     override fun toDomain(): SummarizedTrade {
         return SummarizedTrade(
@@ -62,7 +64,8 @@ data class SearchTradeListItemRes(
             price = price,
             chatCount = chatCount,
             likeCount = likeCount,
-            itemStatus = itemStatus
+            itemStatus = itemStatus,
+            isLiked = isLiked
         )
     }
 }
