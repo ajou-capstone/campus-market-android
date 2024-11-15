@@ -14,15 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -42,6 +42,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +58,7 @@ import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
+import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
@@ -63,15 +66,20 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
+import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.isEmpty
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
+import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
 
 @Composable
 fun TradeSearchResultScreen(
@@ -95,9 +103,13 @@ fun TradeSearchResultScreen(
             .fillMaxSize()
             .background(Indigo50)
     ) {
-        TradeSearchResultSearchBar(currentQuery.name) {
-            navController.navigate(TradeSearchConstant.ROUTE + "?name=${currentQuery.name}")
-        }
+        TradeSearchResultSearchBar(
+            navController = navController,
+            initialQuery = data.currentQuery.name,
+            onQueryChanged = {
+                updateCurrentQuery(currentQuery.copy(name = it))
+            },
+        )
         Box(modifier = Modifier.padding(20.dp)) {
             Column {
                 Row(
@@ -171,62 +183,74 @@ fun TradeSearchResultScreen(
 
 @Composable
 private fun TradeSearchResultSearchBar(
-    currentQuery: String, onSearchBarClicked: () -> Unit
+    navController: NavController,
+    initialQuery: String,
+    onQueryChanged: (String) -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .background(Color.White)
-            .fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        )
-        {
-            Box(
-                modifier = Modifier
-                    .width(76.dp)
-                    .height(36.dp)
-                    .background(Gray)
-                    .weight(3f)
-            ) {
-                Text("Logo Here")
-            }
+    var text by remember { mutableStateOf(initialQuery) }
 
-            Spacer(Modifier.padding(8.dp))
-            Row(
-                modifier = Modifier
-                    .weight(8f)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(Gray50)
-                    .clickable {
-                        onSearchBarClicked()
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = currentQuery,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search button",
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(20.dp)
-                )
+    Row(
+        modifier = Modifier
+            .height(Space56)
+            .background(White)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RippleBox(
+            modifier = Modifier.padding(start = Space20),
+            onClick = {
+                navController.safeNavigateUp()
             }
-            Spacer(Modifier.padding(4.dp))
+        ) {
             Icon(
-                imageVector = Icons.Default.Notifications,
-                contentDescription = "Notification Button",
-                modifier = Modifier
-                    .size(24.dp)
-                    .weight(1f)
+                modifier = Modifier.size(Space24),
+                painter = painterResource(R.drawable.ic_chevron_left),
+                contentDescription = null,
+                tint = Gray900
+            )
+        }
+        TypingTextField(
+            text = text,
+            onValueChange = { text = it },
+            hintText = "검색어를 입력하세요",
+            maxLines = 1,
+            maxTextLength = 100,
+            trailingIconContent = {
+                if (text.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear button",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable {
+                                text = ""
+                            }
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onQueryChanged(text)
+                }
+            ),
+            modifier = Modifier
+                .padding(horizontal = Space20)
+                .weight(1f)
+        )
+
+        RippleBox(
+            modifier = Modifier.padding(end = Space20),
+            onClick = {
+                onQueryChanged(text)
+            }
+        ) {
+            Icon(
+                modifier = Modifier.size(Space24),
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = null,
+                tint = Gray900
             )
         }
     }
