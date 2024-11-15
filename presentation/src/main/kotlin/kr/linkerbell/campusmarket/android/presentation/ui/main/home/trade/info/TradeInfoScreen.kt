@@ -454,7 +454,7 @@ private fun TradeInfoBottomBar(
             .drawBehind {
                 val strokeWidth = 1.dp.toPx()
                 drawLine(
-                    color = Gray900, // 테두리 색상
+                    color = Gray900,
                     start = Offset(0f, 0f),
                     end = Offset(size.width, 0f),
                     strokeWidth = strokeWidth
