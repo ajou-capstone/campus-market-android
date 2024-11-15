@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -67,6 +66,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Indigo50
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.isEmpty
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
@@ -126,7 +126,7 @@ fun TradeSearchResultScreen(
             }
         }
         HorizontalDivider(thickness = (0.4).dp, color = Black)
-        if (data.summarizedTradeList.itemSnapshotList.size == 0) {
+        if (data.summarizedTradeList.isEmpty()) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -145,25 +145,25 @@ fun TradeSearchResultScreen(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
         ) {
-            itemsIndexed(
-                items = data.summarizedTradeList.itemSnapshotList,
-                key = { _, item -> item?.itemId ?: -1 }
-            ) { _, trade ->
-                trade?.let {
-                    TradeSearchResultItemCard(
-                        item = it,
-                        onItemCardClicked = {
-                            val tradeInfoRoute = makeRoute(
-                                route = TradeInfoConstant.ROUTE,
-                                arguments = mapOf(
-                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
-                                )
+
+            items(
+                count = data.summarizedTradeList.itemCount,
+                key = { index -> data.summarizedTradeList[index]?.itemId ?: -1 }
+            ) { index ->
+                val trade = data.summarizedTradeList[index] ?: return@items
+                TradeSearchResultItemCard(
+                    item = trade,
+                    onItemCardClicked = {
+                        val tradeInfoRoute = makeRoute(
+                            route = TradeInfoConstant.ROUTE,
+                            arguments = mapOf(
+                                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
                             )
-                            navController.navigate(tradeInfoRoute)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                        )
+                        navController.navigate(tradeInfoRoute)
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
