@@ -273,7 +273,7 @@ private fun TradeSearchBar(
                 modifier = Modifier
                     .width(76.dp)
                     .height(36.dp)
-                    .background(Color.Gray)
+                    .background(Gray)
                     .weight(3f)
             ) {
                 Text("Logo Here")

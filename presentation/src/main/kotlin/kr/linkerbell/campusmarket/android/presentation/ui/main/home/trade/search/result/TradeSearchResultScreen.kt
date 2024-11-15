@@ -189,7 +189,7 @@ private fun TradeSearchResultSearchBar(
                 modifier = Modifier
                     .width(76.dp)
                     .height(36.dp)
-                    .background(Color.Gray)
+                    .background(Gray)
                     .weight(3f)
             ) {
                 Text("Logo Here")
@@ -540,7 +540,7 @@ private fun TradeSearchResultItemStatus(isSold: Boolean) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .background(Color.Gray),
+                .background(Gray),
             contentAlignment = Alignment.Center
         ) {
             Text("거래 완료", modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))

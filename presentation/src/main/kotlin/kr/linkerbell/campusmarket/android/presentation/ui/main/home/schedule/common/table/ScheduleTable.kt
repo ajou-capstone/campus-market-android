@@ -18,6 +18,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import java.util.Locale
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.datetime.LocalTime
 import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -27,9 +30,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Green400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.measureTextHeight
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.measureTextWidth
-import java.util.Locale
-import kotlin.math.max
-import kotlin.math.min
 
 @Composable
 fun ScheduleTable(
