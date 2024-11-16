@@ -55,19 +55,21 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObser
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
+import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
@@ -328,43 +330,46 @@ private fun TradePostScreenImageBox(
             data = imagePath,
             modifier = Modifier
                 .size(100.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(
                     Color.White,
                     shape = RoundedCornerShape(4.dp)
                 )
                 .border(
                     1.dp,
-                    Color.Gray,
+                    Gray900,
                     shape = RoundedCornerShape(12.dp)
                 )
         )
-        Icon(
+        RippleBox(
             modifier = Modifier
-                .size(28.dp)
                 .align(Alignment.TopEnd)
-                .padding(4.dp)
-                .border(
-                    1.dp,
-                    Color.Gray,
-                    shape = RoundedCornerShape(32.dp)
-                )
-                .clickable {
-                    onDeleteImageClicked(imagePath)
-                },
-            painter = painterResource(id = R.drawable.ic_close),
-            contentDescription = null,
-            tint = Red400,
-        )
+                .padding(4.dp),
+            onClick = {
+                onDeleteImageClicked(imagePath)
+            }
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(32.dp))
+                    .background(Blue200),
+                painter = painterResource(id = R.drawable.ic_close),
+                contentDescription = null,
+                tint = White,
+            )
+        }
         if (isThumbnail) {
             Text(
                 text = "대표",
                 style = Body2,
+                color = Black,
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.BottomStart)
                     .border(
                         1.dp,
-                        Color.LightGray,
+                        Gray900,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .background(
