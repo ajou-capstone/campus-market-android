@@ -59,7 +59,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.Confi
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.TradeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultConstant
 
 @Composable
@@ -80,9 +79,8 @@ fun TradeSearchScreen(
                 TradeSearchResultConstant.ROUTE_ARGUMENT_NAME to queryName
             )
         )
-        navController.navigate(newRoute) {
-            popUpTo(TradeConstant.ROUTE) { inclusive = false }
-        }
+        navController.popBackStack()
+        navController.navigate(newRoute)
     }
 
     Column(

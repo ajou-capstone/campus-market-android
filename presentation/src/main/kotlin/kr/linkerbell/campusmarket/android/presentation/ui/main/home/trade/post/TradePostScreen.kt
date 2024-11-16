@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -75,6 +76,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.Typ
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
+import timber.log.Timber
 
 @Composable
 fun TradePostScreen(
@@ -99,11 +101,13 @@ fun TradePostScreen(
     }
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
     var hasThumbnails by remember { mutableStateOf(false) }
+    var isContentsChanged by remember { mutableStateOf(false) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isValidationDialogVisible by remember { mutableStateOf(false) }
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
     var isPatchOrPostAvailable by remember { mutableStateOf(true) }
+    var isBackButtonConfirmDialogVisible by remember { mutableStateOf(false) }
 
     var isValidContents by remember { mutableStateOf(true) }
     var validationDialogContent by remember { mutableStateOf("Validation Dialog Content") }
@@ -130,7 +134,9 @@ fun TradePostScreen(
                 TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
             )
         )
-        navController.navigate(tradeInfoRoute)
+        navController.navigate(tradeInfoRoute) {
+            launchSingleTop = true
+        }
     }
 
     Column(
@@ -181,6 +187,7 @@ fun TradePostScreen(
                                 isThumbnail = (index == 0 && !hasThumbnails),
                                 onDeleteImageClicked = { imageToBeDeleted ->
                                     imageList = imageList.filter { imageToBeDeleted != it.filePath }
+                                    isContentsChanged = true
                                 }
                             )
                             hasThumbnails = true
@@ -195,15 +202,19 @@ fun TradePostScreen(
                     categoryList = data.categoryList,
                     changeTitle = { changedValue ->
                         title = changedValue
+                        isContentsChanged = true
                     },
                     changeDescription = { changedValue ->
                         description = changedValue
+                        isContentsChanged = true
                     },
                     changeCategory = { changedValue ->
                         category = changedValue
+                        isContentsChanged = true
                     },
                     changePrice = { changedValue ->
                         price = changedValue
+                        isContentsChanged = true
                     }
                 )
             }
@@ -234,13 +245,26 @@ fun TradePostScreen(
         }
     }
 
+    BackHandler(enabled = true) {
+        if (isContentsChanged) {
+            isBackButtonConfirmDialogVisible = true
+        }
+        else{
+            navController.popBackStack()
+        }
+    }
+
     if (isGalleryShowing) {
         GalleryScreen(
             navController = navController,
             selectedImageList = imageList,
             onDismissRequest = { isGalleryShowing = false },
             onResult = { addedImage ->
+                val previousImageList = imageList
                 imageList = addedImage
+                if (previousImageList != imageList) {
+                    isContentsChanged = true
+                }
             },
             minSelectCount = 1,
             maxSelectCount = 5 - originalImageList.size
@@ -264,6 +288,13 @@ fun TradePostScreen(
                 navigateToTrade(tradeId)
             },
             onDismissRequest = { isSuccessDialogVisible = false }
+        )
+    }
+
+    if (isBackButtonConfirmDialogVisible) {
+        BackButtonConfirmDialog(
+            onConfirmButtonClicked = { navController.popBackStack() },
+            onDismissRequest = { isBackButtonConfirmDialogVisible = false }
         )
     }
 
@@ -473,8 +504,12 @@ private fun TradePostScreenTradeInfo(
                 TypingTextField(
                     text = price,
                     onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() })
-                            changePrice(newValue)
+                        if (newValue.all { it.isDigit() }) {
+                            val sanitizedValue = newValue
+                                .trimStart('0')
+                                .ifEmpty { "0" }
+                            changePrice(sanitizedValue)
+                        }
                     },
                     hintText = "가격을 입력하세요",
                     maxLines = 1,
@@ -503,7 +538,8 @@ private fun TradePostScreenTradeInfo(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 TradePostScreenCategorySelector(
-                    categoryList, category,
+                    categoryList,
+                    category,
                     changeCategory = changeCategory
                 )
             }
@@ -551,11 +587,14 @@ private fun TradePostScreenCategorySelector(
     changeCategory: (String) -> Unit
 ) {
     var isDropDownExpanded by remember { mutableStateOf(false) }
+    var currentCategory by remember { mutableStateOf(category) }
     var itemIndex by remember {
         mutableIntStateOf(
-            categoryList.indexOf(category).takeIf { it >= 0 } ?: 0
+            categoryList.indexOf(category).takeIf { it >= 0 } ?: 8
         )
     }
+    Timber.tag("siri22").d("$categoryList")
+    Timber.tag("siri22").d("$itemIndex, ${categoryList[itemIndex]}, ${translateToKor(categoryList[itemIndex])}")
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
@@ -669,10 +708,25 @@ private fun ContentValidationWarningDialog(
     onDismissRequest: () -> Unit
 ) {
     DialogScreen(
-        title = "필수 항목 누락됨",
+        title = "필수 항목 누락",
         message = validationDialogContent,
         isCancelable = false,
         onDismissRequest = { onDismissRequest() }
+    )
+}
+
+@Composable
+private fun BackButtonConfirmDialog(
+    onConfirmButtonClicked: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "페이지를 벗어날까요?",
+        message = "변경 사항이 사라집니다.",
+        isCancelable = true,
+        onConfirm = onConfirmButtonClicked,
+        onCancel = {},
+        onDismissRequest = onDismissRequest
     )
 }
 
