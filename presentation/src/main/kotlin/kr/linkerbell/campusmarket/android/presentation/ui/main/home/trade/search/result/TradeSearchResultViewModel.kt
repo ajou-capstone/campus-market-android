@@ -71,12 +71,17 @@ class TradeSearchResultViewModel @Inject constructor(
                     onUpdateQuery()
                 }
             }
+
+            is TradeSearchResultIntent.RefreshNewTrades -> {
+                launch {
+                    onUpdateQuery()
+                }
+            }
         }
     }
 
     private suspend fun onUpdateQuery() {
         _state.value = TradeSearchResultState.Loading
-
         searchTradeListUseCase(
             name = _tradeSearchQuery.value.name,
             category = _tradeSearchQuery.value.category,

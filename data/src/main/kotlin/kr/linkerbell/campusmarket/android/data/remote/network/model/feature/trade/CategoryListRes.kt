@@ -12,7 +12,7 @@ data class CategoryListRes(
 ) : DataMapper<CategoryList> {
     override fun toDomain(): CategoryList {
         return CategoryList(
-            categoryList = categoryList.sorted()
+            categoryList = categoryList
         )
     }
 }

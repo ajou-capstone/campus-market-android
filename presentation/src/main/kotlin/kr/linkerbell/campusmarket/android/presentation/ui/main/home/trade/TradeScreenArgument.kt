@@ -19,4 +19,6 @@ sealed interface TradeScreenState {
 
 sealed interface TradeScreenEvent
 
-sealed interface TradeScreenIntent
+sealed interface TradeScreenIntent{
+    data object RefreshNewTrades : TradeScreenIntent
+}

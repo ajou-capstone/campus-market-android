@@ -22,5 +22,6 @@ sealed interface TradeSearchResultEvent
 
 sealed interface TradeSearchResultIntent {
     data class ApplyNewQuery(val newQuery: TradeSearchQuery) : TradeSearchResultIntent
+    data object RefreshNewTrades : TradeSearchResultIntent
 }
 

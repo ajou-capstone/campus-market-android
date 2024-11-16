@@ -35,6 +35,7 @@ object KtorModule {
         return Json {
             ignoreUnknownKeys = true
             coerceInputValues = true
+            isLenient = true
         }
     }
 

@@ -4,13 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -20,7 +18,6 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Radius12
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red700
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
@@ -34,9 +31,7 @@ fun PostImage(
     val context = LocalContext.current
 
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(Radius12))
-            .background(Gray200)
+        modifier = modifier.background(Gray200)
     ) {
         SubcomposeAsyncImage(
             model = ImageRequest.Builder(context)

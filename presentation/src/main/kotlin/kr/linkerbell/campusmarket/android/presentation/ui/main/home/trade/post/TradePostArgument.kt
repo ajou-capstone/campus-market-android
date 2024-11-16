@@ -23,6 +23,7 @@ sealed interface TradePostState {
 sealed interface TradePostEvent {
     data class NavigateToTrade(val tradeId: Long) : TradePostEvent
     data class FetchOriginalContents(val tradeContents: TradeContents) : TradePostEvent
+    data object PatchOrPostFailed: TradePostEvent
 }
 
 sealed interface TradePostIntent {

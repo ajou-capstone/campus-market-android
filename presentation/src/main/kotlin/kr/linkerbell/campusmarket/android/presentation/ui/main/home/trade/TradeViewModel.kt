@@ -38,31 +38,41 @@ class TradeViewModel @Inject constructor(
 
     init {
         launch {
-            searchTradeListUseCase(
-                name = "",
-                category = "",
-                minPrice = 0,
-                maxPrice = Int.MAX_VALUE,
-                sorted = ""
-            )
-                .cachedIn(viewModelScope)
-                .catch { exception ->
-                    when (exception) {
-                        is ServerException -> {
-                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        }
-
-                        else -> {
-                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                        }
-                    }
-                }.collect {
-                    _summarizedTradeList.value = it
-                }
+            searchTradeList()
         }
     }
 
     fun onIntent(intent: TradeScreenIntent) {
+        when (intent) {
+            is TradeScreenIntent.RefreshNewTrades -> {
+                launch {
+                    searchTradeList()
+                }
+            }
+        }
+    }
 
+    private suspend fun searchTradeList() {
+        searchTradeListUseCase(
+            name = "",
+            category = "",
+            minPrice = 0,
+            maxPrice = Int.MAX_VALUE,
+            sorted = ""
+        )
+            .cachedIn(viewModelScope)
+            .catch { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }.collect {
+                _summarizedTradeList.value = it
+            }
     }
 }

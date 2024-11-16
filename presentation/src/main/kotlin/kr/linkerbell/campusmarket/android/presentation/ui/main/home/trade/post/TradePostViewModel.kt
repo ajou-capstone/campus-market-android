@@ -74,7 +74,6 @@ class TradePostViewModel @Inject constructor(
                         thumbnail = s3UrlsForImages.firstOrNull() ?: "",
                         images = s3UrlsForImages.drop(1)
                     )
-
                     if (tradeId != -1L) {
                         patchTradeContents(tradeContent)
                     } else {
@@ -112,6 +111,7 @@ class TradePostViewModel @Inject constructor(
                     _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
+            _event.emit(TradePostEvent.PatchOrPostFailed)
         }
         return s3Url
     }
@@ -148,6 +148,7 @@ class TradePostViewModel @Inject constructor(
                     _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
+            _event.emit(TradePostEvent.PatchOrPostFailed)
         }
     }
 
@@ -169,6 +170,7 @@ class TradePostViewModel @Inject constructor(
                     _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
+            _event.emit(TradePostEvent.PatchOrPostFailed)
         }
     }
 

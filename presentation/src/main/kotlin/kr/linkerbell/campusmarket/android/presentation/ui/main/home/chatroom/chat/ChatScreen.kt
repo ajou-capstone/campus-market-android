@@ -498,6 +498,7 @@ fun ChatScreen(
                         RippleBox(
                             onClick = {
                                 isGalleryShowing = true
+                                isMessageMenuOpen = false
                             }
                         ) {
                             Column(
@@ -532,6 +533,7 @@ fun ChatScreen(
                         RippleBox(
                             onClick = {
                                 intent(ChatIntent.Session.SendSchedule)
+                                isMessageMenuOpen = false
                             }
                         ) {
                             Column(
@@ -572,7 +574,7 @@ fun ChatScreen(
                 intent(ChatIntent.Refresh)
             }
 
-            Lifecycle.Event.ON_PAUSE -> {
+            Lifecycle.Event.ON_STOP -> {
                 intent(ChatIntent.Session.Disconnect)
             }
 

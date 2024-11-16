@@ -181,7 +181,7 @@ class ChatRoomViewModel @Inject constructor(
                 }.collect { roomList ->
                     _state.value = ChatRoomState.Init
                     val newRoomId: Set<Long> =
-                        _roomList.value.map { it.id }.toSet() - roomList.map { it.id }.toSet()
+                        roomList.map { it.id }.toSet() - _roomList.value.map { it.id }.toSet()
                     newRoomId.forEach { id ->
                         onIntent(ChatRoomIntent.Session.Subscribe(id))
                     }

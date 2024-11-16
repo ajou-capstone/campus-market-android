@@ -86,6 +86,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .weight(1f),
             state = pagerState,
+            beyondBoundsPageCount = data.homeTypeList.size,
             userScrollEnabled = false
         ) { page ->
             when (data.homeTypeList.getOrNull(page)) {
