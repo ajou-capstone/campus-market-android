@@ -495,7 +495,7 @@ private fun TradeInfoBottomBar(
 @Composable
 private fun TradeItemStatus(isSold: Boolean) {
     val backgroundColor = if (isSold) LightGray else Blue100
-    val text = if (isSold) "거래 완료" else "거래 가능"
+    val text = if (isSold) "거래 완료" else "거래하기"
 
     Box(
         modifier = Modifier

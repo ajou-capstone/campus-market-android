@@ -84,6 +84,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.isEmpty
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
@@ -230,6 +231,9 @@ fun TradeSearchResultScreen(
             }
         }
     }
+    LaunchedEffectWithLifecycle(coroutineContext) {
+        argument.intent(TradeSearchResultIntent.RefreshNewTrades)
+    }
 }
 
 @Composable
@@ -331,7 +335,7 @@ private fun TradeSearchResultPriceFilter(
 
     var isPriceFilterChecked by remember { mutableStateOf(false) }
 
-    val updatePriceQuery ={
+    val updatePriceQuery = {
         if (minPrice > maxPrice) {
             maxPrice = minPrice
         }
@@ -366,7 +370,7 @@ private fun TradeSearchResultPriceFilter(
                         val filteredValue = newValue.filter { it.isDigit() }
                         minPrice = filteredValue.toIntOrNull() ?: 0
                         minPriceInText = filteredValue
-                        if(isPriceFilterChecked){
+                        if (isPriceFilterChecked) {
                             updatePriceQuery()
                         }
                     }
@@ -394,7 +398,7 @@ private fun TradeSearchResultPriceFilter(
                         val filteredValue = newValue.filter { it.isDigit() }
                         maxPrice = filteredValue.toIntOrNull() ?: 1000000
                         maxPriceInText = filteredValue
-                        if(isPriceFilterChecked){
+                        if (isPriceFilterChecked) {
                             updatePriceQuery()
                         }
                     }
@@ -632,7 +636,9 @@ private fun TradeSearchResultItemCard(
                     .clip(RoundedCornerShape(8.dp))
             )
             Column(
-                modifier = Modifier.padding(start = 10.dp).weight(4f)
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .weight(4f)
             ) {
                 Text(
                     text = item.title,
@@ -666,13 +672,14 @@ private fun TradeSearchResultItemCard(
                 }
             }
             Column(
-                modifier = Modifier.weight(2f)
+                modifier = Modifier
+                    .weight(2f)
                     .wrapContentWidth(Alignment.End)
                     .widthIn(min = 100.dp),
                 horizontalAlignment = Alignment.End
-                ) {
+            ) {
                 TradeSearchResultItemStatus(
-                    isSold = item.itemStatus === "Available"
+                    isSold = item.itemStatus == "SOLDOUT"
                 )
                 Text(
                     text = "${item.price} 원",
