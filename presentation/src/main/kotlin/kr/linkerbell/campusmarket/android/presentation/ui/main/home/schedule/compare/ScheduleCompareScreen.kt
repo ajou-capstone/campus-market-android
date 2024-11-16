@@ -30,9 +30,9 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObser
 import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space52
@@ -101,11 +101,11 @@ fun ScheduleCompareScreen(
                     .padding(Space20),
                 dataList = listOf(
                     ScheduleTableData(
-                        color = Gray400,
+                        color = Blue400,
                         scheduleList = data.mySchedule
                     ),
                     ScheduleTableData(
-                        color = Blue400,
+                        color = Red400,
                         scheduleList = data.userSchedule
                     )
                 ),
