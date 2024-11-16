@@ -12,6 +12,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.CategoryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.ChangeTradeStatusReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.DeletedLikedItemRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostLikedItemRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.PostTradeReq
@@ -89,24 +90,44 @@ class TradeApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
+    suspend fun changeTradeStatus(
+        itemStatus: String,
+        itemId: Long,
+        buyerId: Long
+    ): Result<Unit> {
+        return client.patch("$baseUrl/api/v1/items/$itemId/change-status") {
+            setBody(
+                ChangeTradeStatusReq(
+                    itemStatus = itemStatus,
+                    buyerId = buyerId
+                )
+            )
+        }.convert(errorMessageMapper::map)
+    }
+
     suspend fun getCategoryList(): Result<CategoryListRes> {
-        return client.get("$baseUrl/api/v1/items/categories").convert(errorMessageMapper::map)
+        return client.get("$baseUrl/api/v1/items/categories")
+            .convert(errorMessageMapper::map)
     }
 
     suspend fun getTradeInfo(itemId: Long): Result<TradeInfoRes> {
-        return client.get("$baseUrl/api/v1/items/$itemId").convert(errorMessageMapper::map)
+        return client.get("$baseUrl/api/v1/items/$itemId")
+            .convert(errorMessageMapper::map)
     }
 
 
     suspend fun postLikeItem(itemId: Long): Result<PostLikedItemRes> {
-        return client.post("$baseUrl/api/v1/items/$itemId/likes").convert(errorMessageMapper::map)
+        return client.post("$baseUrl/api/v1/items/$itemId/likes")
+            .convert(errorMessageMapper::map)
     }
 
     suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemRes> {
-        return client.delete("$baseUrl/api/v1/items/$itemId/likes").convert(errorMessageMapper::map)
+        return client.delete("$baseUrl/api/v1/items/$itemId/likes")
+            .convert(errorMessageMapper::map)
     }
 
     suspend fun deleteTradeInfo(itemId: Long): Result<Unit> {
-        return client.delete("$baseUrl/api/v1/items/$itemId").convert(errorMessageMapper::map)
+        return client.delete("$baseUrl/api/v1/items/$itemId")
+            .convert(errorMessageMapper::map)
     }
 }

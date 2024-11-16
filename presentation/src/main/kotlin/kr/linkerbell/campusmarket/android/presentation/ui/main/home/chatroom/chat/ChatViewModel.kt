@@ -18,6 +18,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlo
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Session
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
@@ -25,6 +26,8 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ConnectRoo
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetMessageListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ReadMessageUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.ChangeTradeStatusUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetTradeInfoUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.GetPreSignedUrlUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadImageUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
@@ -43,7 +46,9 @@ class ChatViewModel @Inject constructor(
     private val getMessageListUseCase: GetMessageListUseCase,
     private val readMessageUseCase: ReadMessageUseCase,
     private val getPreSignedUrlUseCase: GetPreSignedUrlUseCase,
-    private val uploadImageUseCase: UploadImageUseCase
+    private val uploadImageUseCase: UploadImageUseCase,
+    private val changeTradeStatusUseCase: ChangeTradeStatusUseCase,
+    private val getTradeInfoUseCase: GetTradeInfoUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<ChatState> = MutableStateFlow(ChatState.Init)
@@ -67,6 +72,9 @@ class ChatViewModel @Inject constructor(
 
     private val _room: MutableStateFlow<Room> = MutableStateFlow(Room.empty)
     val room: StateFlow<Room> = _room.asStateFlow()
+
+    private val _trade: MutableStateFlow<TradeInfo> = MutableStateFlow(TradeInfo.empty)
+    val trade: StateFlow<TradeInfo> = _trade.asStateFlow()
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private val sessionAction = viewModelScope.actor<ChatIntent.Session>(coroutineContext) {
@@ -210,6 +218,10 @@ class ChatViewModel @Inject constructor(
                     sessionAction.send(intent)
                 }
             }
+
+            ChatIntent.OnSell -> {
+                sell()
+            }
         }
     }
 
@@ -237,6 +249,24 @@ class ChatViewModel @Inject constructor(
                         id = it.userId
                     ).onSuccess {
                         _userProfile.value = it
+                    }.onFailure { exception ->
+                        when (exception) {
+                            is ServerException -> {
+                                _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                            }
+
+                            else -> {
+                                _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                            }
+                        }
+                    }
+                }
+
+                if (trade.value == TradeInfo.empty) {
+                    getTradeInfoUseCase(
+                        itemId = it.tradeId
+                    ).onSuccess {
+                        _trade.value = it
                     }.onFailure { exception ->
                         when (exception) {
                             is ServerException -> {
@@ -284,6 +314,28 @@ class ChatViewModel @Inject constructor(
                 }.collect {
                     _messageList.value = it
                 }
+        }
+    }
+
+    private fun sell() {
+        launch {
+            changeTradeStatusUseCase(
+                itemStatus = "SOLDOUT",
+                itemId = room.value.tradeId,
+                buyerId = userProfile.value.id,
+            ).onSuccess {
+                _event.emit(ChatEvent.Sell.Success)
+            }.onFailure { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 }

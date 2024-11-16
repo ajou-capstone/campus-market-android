@@ -47,12 +47,14 @@ fun NavGraphBuilder.chatDestination(
             val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
             val myProfile by viewModel.myProfile.collectAsStateWithLifecycle()
             val room by viewModel.room.collectAsStateWithLifecycle()
+            val trade by viewModel.trade.collectAsStateWithLifecycle()
 
             ChatData(
                 messageList = messageList,
                 userProfile = userProfile,
                 myProfile = myProfile,
-                room = room
+                room = room,
+                trade = trade
             )
         }
 

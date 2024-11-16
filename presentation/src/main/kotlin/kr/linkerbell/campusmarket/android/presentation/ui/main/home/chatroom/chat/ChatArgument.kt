@@ -19,7 +19,11 @@ sealed interface ChatState {
     data object Init : ChatState
 }
 
-sealed interface ChatEvent
+sealed interface ChatEvent {
+    sealed interface Sell : ChatEvent {
+        data object Success : Sell
+    }
+}
 
 sealed interface ChatIntent {
     data object Refresh : ChatIntent
@@ -32,4 +36,6 @@ sealed interface ChatIntent {
         data object SendSchedule : Session
         data object Disconnect : Session
     }
+
+    data object OnSell : ChatIntent
 }
