@@ -19,11 +19,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,6 +92,7 @@ fun ChatScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
     val localConfiguration = LocalConfiguration.current
+    val scrollState = rememberLazyListState()
 
     var message: String by remember { mutableStateOf("") }
 
@@ -158,6 +161,7 @@ fun ChatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
+            state = scrollState,
             verticalArrangement = Arrangement.spacedBy(Space8),
             contentPadding = PaddingValues(vertical = Space20)
         ) {
@@ -586,6 +590,11 @@ fun ChatScreen(
         event.eventObserve { event ->
 
         }
+    }
+
+    LaunchedEffect(data.messageList) {
+        val lastIndex = data.messageList.lastIndex.takeIf { it > -1 } ?: return@LaunchedEffect
+        scrollState.scrollToItem(lastIndex)
     }
 }
 
