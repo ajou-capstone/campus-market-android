@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
@@ -80,16 +81,19 @@ class ChatRoomViewModel @Inject constructor(
             id: Long
         ) {
             session?.let {
-                it.subscribe(id).catch { exception ->
-                    when (exception) {
-                        is ServerException -> {
-                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        }
+                // TODO : Refresh / Unsubscribe 등의 구독 취소 시 Cancel 로직 없음
+                launch {
+                    it.subscribe(id).catch { exception ->
+                        when (exception) {
+                            is ServerException -> {
+                                _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                            }
 
-                        else -> {
-                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                            else -> {
+                                _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                            }
                         }
-                    }
+                    }.collect()
                 }
             } ?: throw IllegalStateException("Session is not connected")
         }
