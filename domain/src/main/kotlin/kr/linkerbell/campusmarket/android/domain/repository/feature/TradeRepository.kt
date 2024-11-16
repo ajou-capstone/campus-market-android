@@ -38,6 +38,12 @@ interface TradeRepository {
 
     suspend fun patchTradeContents(tradeContents: TradeContents, itemId: Long): Result<Unit>
 
+    suspend fun changeTradeStatus(
+        itemStatus: String,
+        itemId: Long,
+        buyerId: Long
+    ): Result<Unit>
+
     suspend fun getCategoryList(): Result<CategoryList>
 
     suspend fun searchTradeInfo(itemId: Long): Result<TradeInfo>

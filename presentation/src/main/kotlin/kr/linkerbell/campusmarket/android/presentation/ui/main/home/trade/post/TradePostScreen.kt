@@ -248,8 +248,7 @@ fun TradePostScreen(
     BackHandler(enabled = true) {
         if (isContentsChanged) {
             isBackButtonConfirmDialogVisible = true
-        }
-        else{
+        } else {
             navController.popBackStack()
         }
     }
@@ -593,8 +592,6 @@ private fun TradePostScreenCategorySelector(
             categoryList.indexOf(category).takeIf { it >= 0 } ?: 8
         )
     }
-    Timber.tag("siri22").d("$categoryList")
-    Timber.tag("siri22").d("$itemIndex, ${categoryList[itemIndex]}, ${translateToKor(categoryList[itemIndex])}")
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
@@ -605,6 +602,7 @@ private fun TradePostScreenCategorySelector(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(30.dp)
                 .clickable {
                     isDropDownExpanded = !isDropDownExpanded
                 },

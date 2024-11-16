@@ -70,6 +70,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space32
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
@@ -77,6 +78,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.Typ
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultIntent
 
 @Composable
 fun TradeScreen(
@@ -226,6 +228,9 @@ private fun TradeScreen(
         }
     }
 
+    LaunchedEffectWithLifecycle(coroutineContext) {
+        argument.intent(TradeScreenIntent.RefreshNewTrades)
+    }
 }
 
 @Composable
@@ -297,7 +302,7 @@ private fun TradeItemCard(
                 horizontalAlignment = Alignment.End
             ) {
                 TradeItemStatus(
-                    isSold = item.itemStatus === "Available"
+                    isSold = (item.itemStatus == "SOLDOUT")
                 )
                 Text(
                     text = "${item.price} 원",

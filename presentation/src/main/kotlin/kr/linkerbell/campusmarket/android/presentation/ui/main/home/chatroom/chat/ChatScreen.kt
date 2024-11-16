@@ -19,11 +19,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,12 +47,14 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
@@ -75,6 +79,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Launc
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
+import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
@@ -90,11 +95,13 @@ fun ChatScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
     val localConfiguration = LocalConfiguration.current
+    val scrollState = rememberLazyListState()
 
     var message: String by remember { mutableStateOf("") }
 
     var isMessageMenuOpen: Boolean by remember { mutableStateOf(false) }
     var isGalleryShowing by remember { mutableStateOf(false) }
+    var isSellCompleteDialogShowing by remember { mutableStateOf(false) }
 
     fun navigateToUserProfile(id: Long) {
 
@@ -117,6 +124,18 @@ fun ChatScreen(
                 intent(ChatIntent.Session.SendImage(image))
                 isGalleryShowing = false
             }
+        )
+    }
+
+    if (isSellCompleteDialogShowing) {
+        DialogScreen(
+            title = "거래 완료",
+            message = "상대방과의 거래를 완료했습니다.",
+            isCancelable = false,
+            onConfirm = {
+                navController.safeNavigateUp()
+            },
+            onDismissRequest = { isSellCompleteDialogShowing = false }
         )
     }
 
@@ -150,14 +169,34 @@ fun ChatScreen(
                 text = data.room.title,
                 style = Headline2.merge(Gray900),
                 modifier = Modifier
-                    .padding(start = Space20)
+                    .padding(horizontal = Space20)
                     .weight(1f)
             )
+            if (data.trade.userId == data.myProfile.id && !data.trade.isSold) {
+                RippleBox(
+                    modifier = Modifier.padding(end = Space20),
+                    onClick = {
+                        intent(ChatIntent.OnSell)
+                    }
+                ) {
+                    Text(
+                        text = "판매하기",
+                        style = Body0.merge(Gray900)
+                    )
+                }
+            } else {
+                Text(
+                    text = "거래완료",
+                    modifier = Modifier.padding(end = Space20),
+                    style = Body0.merge(Gray400)
+                )
+            }
         }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
+            state = scrollState,
             verticalArrangement = Arrangement.spacedBy(Space8),
             contentPadding = PaddingValues(vertical = Space20)
         ) {
@@ -584,8 +623,17 @@ fun ChatScreen(
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
-
+            when (event) {
+                is ChatEvent.Sell.Success -> {
+                    isSellCompleteDialogShowing = true
+                }
+            }
         }
+    }
+
+    LaunchedEffect(data.messageList) {
+        val lastIndex = data.messageList.lastIndex.takeIf { it > -1 } ?: return@LaunchedEffect
+        scrollState.scrollToItem(lastIndex)
     }
 }
 
@@ -675,6 +723,22 @@ private fun ChatScreenPreview() {
                 title = "title1",
                 isAlarm = true,
                 readLatestMessageId = 1L
+            ),
+            trade = TradeInfo(
+                itemId = 1L,
+                userId = 1L,
+                campusId = 1L,
+                nickname = "정은재",
+                title = "title1",
+                description = "description1",
+                price = 10000,
+                category = "category1",
+                thumbnail = "https://placehold.co/600x400",
+                images = listOf("https://placehold.co/600x400"),
+                chatCount = 1,
+                likeCount = 1,
+                isLiked = true,
+                isSold = false
             )
         )
     )

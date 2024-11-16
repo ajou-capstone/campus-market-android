@@ -108,6 +108,14 @@ class MockTradeRepository @Inject constructor(
         return Result.success(Unit)
     }
 
+    override suspend fun changeTradeStatus(
+        itemStatus: String,
+        itemId: Long,
+        buyerId: Long
+    ): Result<Unit> {
+        return Result.success(Unit)
+    }
+
     override suspend fun getCategoryList(): Result<CategoryList> {
         return Result.success(CategoryList.empty)
     }

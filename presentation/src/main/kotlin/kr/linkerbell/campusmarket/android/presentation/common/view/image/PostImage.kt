@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import kr.linkerbell.campusmarket.android.presentation.R
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red700
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
@@ -31,7 +31,7 @@ fun PostImage(
     val context = LocalContext.current
 
     Box(
-        modifier = modifier.background(Gray200)
+        modifier = modifier.background(Black)
     ) {
         SubcomposeAsyncImage(
             model = ImageRequest.Builder(context)

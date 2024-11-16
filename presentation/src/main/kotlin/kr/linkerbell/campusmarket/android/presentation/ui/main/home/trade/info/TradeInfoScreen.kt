@@ -534,7 +534,7 @@ private fun TradeStartButton(
         }
     } else {
         val backgroundColor = if (isSold) BlueGray200 else Blue400
-        val text = if (isSold) "거래 완료" else "거래 가능"
+        val text = if (isSold) "거래 완료" else "거래하기"
 
         Row(
             modifier = Modifier

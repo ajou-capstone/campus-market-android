@@ -89,6 +89,18 @@ class RealTradeRepository @Inject constructor(
         return tradeApi.patchTradeContents(tradeContents, itemId)
     }
 
+    override suspend fun changeTradeStatus(
+        itemStatus: String,
+        itemId: Long,
+        buyerId: Long
+    ): Result<Unit> {
+        return tradeApi.changeTradeStatus(
+            itemStatus = itemStatus,
+            itemId = itemId,
+            buyerId = buyerId
+        )
+    }
+
     override suspend fun getCategoryList(): Result<CategoryList> {
         return tradeApi.getCategoryList().toDomain()
     }
