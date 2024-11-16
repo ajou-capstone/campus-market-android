@@ -331,6 +331,18 @@ private fun TradeSearchResultPriceFilter(
 
     var isPriceFilterChecked by remember { mutableStateOf(false) }
 
+    val updatePriceQuery ={
+        if (minPrice > maxPrice) {
+            maxPrice = minPrice
+        }
+        updateQuery(
+            currentQuery.copy(
+                minPrice = minPrice,
+                maxPrice = maxPrice,
+            )
+        )
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -354,6 +366,9 @@ private fun TradeSearchResultPriceFilter(
                         val filteredValue = newValue.filter { it.isDigit() }
                         minPrice = filteredValue.toIntOrNull() ?: 0
                         minPriceInText = filteredValue
+                        if(isPriceFilterChecked){
+                            updatePriceQuery()
+                        }
                     }
                 },
                 hintText = "최소 가격",
@@ -379,6 +394,9 @@ private fun TradeSearchResultPriceFilter(
                         val filteredValue = newValue.filter { it.isDigit() }
                         maxPrice = filteredValue.toIntOrNull() ?: 1000000
                         maxPriceInText = filteredValue
+                        if(isPriceFilterChecked){
+                            updatePriceQuery()
+                        }
                     }
                 },
                 hintText = "최대 가격",
