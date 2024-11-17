@@ -109,7 +109,7 @@ fun ChatScreen(
 
     fun navigateToScheduleCompare(id: Long) {
         val route = makeRoute(
-            ScheduleCompareConstant.ROUTE_STRUCTURE,
+            ScheduleCompareConstant.ROUTE,
             listOf(ScheduleCompareConstant.ROUTE_ARGUMENT_USER_ID to id)
         )
         navController.safeNavigate(route)
