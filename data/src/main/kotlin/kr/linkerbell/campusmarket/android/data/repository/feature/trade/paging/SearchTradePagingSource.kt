@@ -31,9 +31,9 @@ class SearchTradePagingSource(
             category = category,
             minPrice = minPrice,
             maxPrice = maxPrice,
-            sorted = sorted,
-            pageNum = pageNum,
-            pageSize = pageSize
+            sort = sorted,
+            page = pageNum,
+            size = pageSize
         ).map { data ->
             val nextPage = if (data.hasNext) pageNum + 1 else null
             val previousPage = if (data.hasPrevious) pageNum - 1 else null

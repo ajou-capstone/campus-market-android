@@ -36,18 +36,18 @@ class TradeApi @Inject constructor(
         category: String,
         minPrice: Int,
         maxPrice: Int,
-        sorted: String,
-        pageNum: Int,
-        pageSize: Int
+        sort: String,
+        page: Int,
+        size: Int
     ): Result<SearchTradeListRes> {
         return client.get("$baseUrl/api/v1/items") {
             parameter("name", name)
             parameter("category", category)
             parameter("minPrice", minPrice.toString())
             parameter("maxPrice", maxPrice.toString())
-            parameter("sort", sorted)
-            parameter("page", pageNum.toString())
-            parameter("size", pageSize.toString())
+            parameter("sort", sort)
+            parameter("page", page.toString())
+            parameter("size", size.toString())
         }.convert(errorMessageMapper::map)
     }
 

@@ -73,8 +73,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.UserProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultIntent
 
 @Composable
 fun TradeInfoScreen(
@@ -95,6 +95,18 @@ fun TradeInfoScreen(
 
     fun navigateToChatRoom(id: Long) {
         navController.navigate("${ChatConstant.ROUTE}/$id")
+    }
+
+    fun navigateToAuthorProfileScreen(authorId: Long) {
+        if (!isOwnerOfThisTrade) {
+            val newRoute = makeRoute(
+                route = UserProfileConstant.ROUTE,
+                arguments = mapOf(
+                    UserProfileConstant.ROUTE_ARGUMENT_USER_ID to authorId.toString()
+                )
+            )
+            navController.navigate(newRoute)
+        }
     }
 
     Scaffold(
@@ -145,7 +157,10 @@ fun TradeInfoScreen(
             )
             TradeInfoAuthor(
                 authorInfo,
-                authorNickname = tradeInfo.nickname
+                authorNickname = tradeInfo.nickname,
+                onClicked = { authorId ->
+                    navigateToAuthorProfileScreen(authorId)
+                }
             )
             TradeInfoContent(
                 title = tradeInfo.title,
@@ -344,7 +359,8 @@ private fun TradeInfoImageViewer(thumbUrl: String, imageUrls: List<String>) {
 @Composable
 private fun TradeInfoAuthor(
     authorInfo: UserProfile,
-    authorNickname: String
+    authorNickname: String,
+    onClicked: (Long) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -357,7 +373,7 @@ private fun TradeInfoAuthor(
         Row(
             modifier = Modifier
                 .clickable {
-                    //TODO(사용자 프로필 보여주는 화면으로 이동)
+                    onClicked(authorInfo.id)
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
