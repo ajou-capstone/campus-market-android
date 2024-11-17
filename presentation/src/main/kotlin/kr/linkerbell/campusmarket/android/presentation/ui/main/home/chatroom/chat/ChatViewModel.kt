@@ -92,7 +92,7 @@ class ChatViewModel @Inject constructor(
                         retryCount++
                     }
 
-                if (retryCount >= 10) {
+                if (retryCount >= 100) {
                     result.onFailure { exception ->
                         when (exception) {
                             is ServerException -> {
@@ -105,7 +105,7 @@ class ChatViewModel @Inject constructor(
                         }
                     }
                 }
-            } while (result.isFailure && retryCount < 10)
+            } while (result.isFailure && retryCount < 100)
         }
 
         suspend fun subscribe(
