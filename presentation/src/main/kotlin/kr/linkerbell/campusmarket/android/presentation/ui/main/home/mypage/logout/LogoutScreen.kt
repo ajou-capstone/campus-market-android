@@ -60,7 +60,7 @@ fun LogoutScreen(
     if (isLogoutDialogVisible) {
         LogoutDialog(
             onConfirm = {
-                //TODO(Logout API)
+                argument.intent(LogoutIntent.LogOut)
                 //TODO : 처음 로그인 화면까지 이동
             },
             onDismissRequest = { isLogoutDialogVisible = false }
@@ -72,7 +72,7 @@ fun LogoutScreen(
             .background(White)
             .fillMaxSize()
     ) {
-        val (topBar, contents, button) = createRefs()
+        val (topBar, contents) = createRefs()
         Row(
             modifier = Modifier
                 .height(Space56)

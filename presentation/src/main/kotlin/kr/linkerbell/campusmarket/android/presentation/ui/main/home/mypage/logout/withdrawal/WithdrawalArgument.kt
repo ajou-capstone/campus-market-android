@@ -21,4 +21,6 @@ sealed interface WithdrawalState {
 
 sealed interface WithdrawalEvent
 
-sealed interface WithdrawalIntent
+sealed interface WithdrawalIntent{
+    data object Withdrawal : WithdrawalIntent
+}

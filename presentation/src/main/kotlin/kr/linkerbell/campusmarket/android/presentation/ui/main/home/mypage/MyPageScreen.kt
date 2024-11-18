@@ -140,7 +140,6 @@ fun MyPageScreen(
                     tint = Gray900
                 )
             }
-
         }
 
         Column(

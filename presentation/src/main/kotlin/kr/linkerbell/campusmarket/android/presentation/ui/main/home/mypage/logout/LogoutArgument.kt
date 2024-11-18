@@ -21,4 +21,6 @@ sealed interface LogoutState {
 
 sealed interface LogoutEvent
 
-sealed interface LogoutIntent
+sealed interface LogoutIntent{
+    data object LogOut: LogoutIntent
+}
