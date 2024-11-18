@@ -592,12 +592,7 @@ private fun TradePostScreenCategorySelector(
     changeCategory: (String) -> Unit
 ) {
     var isDropDownExpanded by remember { mutableStateOf(false) }
-    var itemIndex by remember {
-        mutableIntStateOf(
-            categoryList.indexOf(category).takeIf { it >= 0 } ?: 8
-        )
-    }
-    Timber.tag("siri22").d("$$category / $itemIndex / ${translateToKor(categoryList[itemIndex])} / ${categoryList.indexOf(category)}")
+    var itemIndex = categoryList.indexOf(category).takeIf { it >= 0 } ?: 8
 
     Box(
         modifier = Modifier
