@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -46,9 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.LightGray
@@ -248,17 +245,7 @@ private fun TradeSearchResultSearchBar(
         modifier = Modifier
             .height(Space56)
             .background(White)
-            .fillMaxWidth()
-            .drawBehind {
-                val strokeWidth = 1.dp.toPx()
-                val y = size.height - strokeWidth / 2
-                drawLine(
-                    color = Gray900,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
-                )
-            },
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -632,13 +619,11 @@ private fun TradeSearchResultItemCard(
             PostImage(
                 data = item.thumbnail,
                 modifier = Modifier
-                    .size(85.dp)
+                    .size(100.dp)
                     .clip(RoundedCornerShape(8.dp))
             )
             Column(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .weight(4f)
+                modifier = Modifier.padding(start = 10.dp)
             ) {
                 Text(
                     text = item.title,
@@ -658,33 +643,39 @@ private fun TradeSearchResultItemCard(
                     style = Caption2,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val favIcon =
-                        if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-                    Icon(
-                        imageVector = favIcon,
-                        tint = Gray900,
-                        contentDescription = "isLike",
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Spacer(modifier = Modifier.padding(2.dp))
-                    Text(item.likeCount.toString())
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(min = 100.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TradeSearchResultItemStatus(
+                            isSold = item.itemStatus == "SOLDOUT"
+                        )
+                        Text(
+                            text = "${item.price} 원",
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.padding(start = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val favIcon =
+                            if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                        Icon(
+                            imageVector = favIcon,
+                            tint = Gray900,
+                            contentDescription = "isLike",
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Spacer(modifier = Modifier.padding(2.dp))
+                        Text(item.likeCount.toString())
+                    }
                 }
-            }
-            Column(
-                modifier = Modifier
-                    .weight(2f)
-                    .wrapContentWidth(Alignment.End)
-                    .widthIn(min = 100.dp),
-                horizontalAlignment = Alignment.End
-            ) {
-                TradeSearchResultItemStatus(
-                    isSold = item.itemStatus == "SOLDOUT"
-                )
-                Text(
-                    text = "${item.price} 원",
-                    modifier = Modifier.padding(4.dp)
-                )
             }
         }
     }
@@ -705,7 +696,7 @@ private fun TradeSearchResultItemStatus(isSold: Boolean) {
             text = text,
             style = Body1,
             color = White,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
         )
     }
 }

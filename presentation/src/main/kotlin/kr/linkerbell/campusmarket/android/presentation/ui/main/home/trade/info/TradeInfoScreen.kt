@@ -38,8 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.layout.ContentScale
@@ -89,6 +87,7 @@ fun TradeInfoScreen(
     val tradeInfo = data.tradeInfo
     val authorInfo = data.authorInfo
     val isOwnerOfThisTrade = (data.userInfo.id == authorInfo.id)
+    var isNewChatRoomAvailable by remember { mutableStateOf(true) }
 
     var isDeleteConfirmButtonVisible by remember { mutableStateOf(false) }
     var isFailedToFetchDataDialogVisible by remember { mutableStateOf(false) }
@@ -178,7 +177,10 @@ fun TradeInfoScreen(
         event.eventObserve { event ->
             when (event) {
                 is TradeInfoEvent.NavigateToChatRoom -> {
-                    navigateToChatRoom(id = event.id)
+                    if (isNewChatRoomAvailable) {
+                        isNewChatRoomAvailable = false
+                        navigateToChatRoom(id = event.id)
+                    }
                 }
 
                 is TradeInfoEvent.FailedToFetchData -> {
@@ -203,17 +205,7 @@ private fun TradeInfoTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(White)
-            .height(56.dp)
-            .drawBehind {
-                val strokeWidth = 1.dp.toPx()
-                val y = size.height - strokeWidth / 2
-                drawLine(
-                    color = Gray900,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
-                )
-            },
+            .height(56.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -359,16 +351,6 @@ private fun TradeInfoAuthor(
     Row(
         modifier = Modifier
             .background(White)
-            .drawBehind {
-                val strokeWidth = 1.dp.toPx()
-                val y = size.height - strokeWidth / 2
-                drawLine(
-                    color = Gray900,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
-                )
-            }
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -424,7 +406,7 @@ private fun TradeInfoContent(
         Text(text = "$likeCount 명이 좋아함", color = Black, style = Body1)
         Spacer(Modifier.padding(spacerPadding))
 
-        Text(text = "$chatCount 명이 관심 있어함", color = Black, style = Body1)
+        Text(text = "$chatCount 명이 대화중", color = Black, style = Body1)
         Spacer(Modifier.padding(spacerPadding))
 
         HorizontalDivider(
@@ -451,15 +433,6 @@ private fun TradeInfoBottomBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .drawBehind {
-                val strokeWidth = 1.dp.toPx()
-                drawLine(
-                    color = Gray900,
-                    start = Offset(0f, 0f),
-                    end = Offset(size.width, 0f),
-                    strokeWidth = strokeWidth
-                )
-            }
             .background(White),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

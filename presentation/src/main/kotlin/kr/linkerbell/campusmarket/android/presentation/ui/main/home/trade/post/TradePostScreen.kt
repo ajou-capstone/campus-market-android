@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -40,8 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,7 +75,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.Typ
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
-import timber.log.Timber
 
 @Composable
 fun TradePostScreen(
@@ -102,6 +100,7 @@ fun TradePostScreen(
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
     var hasThumbnails by remember { mutableStateOf(false) }
     var isContentsChanged by remember { mutableStateOf(false) }
+    var hasImage by remember { mutableStateOf(false) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isValidationDialogVisible by remember { mutableStateOf(false) }
@@ -122,6 +121,11 @@ fun TradePostScreen(
 
             description.isBlank() -> {
                 validationDialogContent = "상품 상세 정보를 입력해주세요"
+                isValidContents = false
+            }
+
+            (!hasImage) -> {
+                validationDialogContent = "한 장 이상의 이미지를 첨부해주세요"
                 isValidContents = false
             }
         }
@@ -227,8 +231,8 @@ fun TradePostScreen(
                         isPatchOrPostAvailable = false
                         argument.intent(
                             TradePostIntent.PostOrPatchTrade(
-                                title = title,
-                                description = description,
+                                title = title.trim(),
+                                description = description.trim(),
                                 price = price.toIntOrNull() ?: 0,
                                 category = category,
                                 originalImageList = originalImageList,
@@ -315,6 +319,11 @@ fun TradePostScreen(
                 }
 
                 is TradePostEvent.PatchOrPostFailed -> {
+                    isPatchOrPostAvailable = true
+                }
+
+                is TradePostEvent.NoImageDetected -> {
+                    hasImage = false
                     isPatchOrPostAvailable = true
                 }
             }
@@ -418,17 +427,7 @@ private fun TradePostScreenTopBar(navigateUp: () -> Unit) {
         modifier = Modifier
             .background(White)
             .fillMaxWidth()
-            .height(56.dp)
-            .drawBehind {
-                val strokeWidth = 1.dp.toPx()
-                val y = size.height - strokeWidth / 2
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
-                )
-            },
+            .height(56.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -625,6 +624,7 @@ private fun TradePostScreenCategorySelector(
         DropdownMenu(
             expanded = isDropDownExpanded,
             onDismissRequest = { isDropDownExpanded = false },
+            modifier = Modifier.heightIn(max = 300.dp)
         ) {
             categoryList.forEachIndexed { index, category ->
                 DropdownMenuItem(

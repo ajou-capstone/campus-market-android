@@ -2,7 +2,6 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +20,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadI
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
+import javax.inject.Inject
 
 @HiltViewModel
 class TradePostViewModel @Inject constructor(
@@ -66,18 +66,22 @@ class TradePostViewModel @Inject constructor(
                 launch {
                     val s3UrlsForImages = buildImageList(intent.originalImageList, intent.imageList)
 
-                    val tradeContent = TradeContents(
-                        intent.title,
-                        intent.description,
-                        intent.price,
-                        intent.category,
-                        thumbnail = s3UrlsForImages.firstOrNull() ?: "",
-                        images = s3UrlsForImages.drop(1)
-                    )
-                    if (tradeId != -1L) {
-                        patchTradeContents(tradeContent)
+                    if (s3UrlsForImages.isEmpty()) {
+                        _event.emit(TradePostEvent.NoImageDetected)
                     } else {
-                        postTradeContents(tradeContent)
+                        val tradeContent = TradeContents(
+                            intent.title,
+                            intent.description,
+                            intent.price,
+                            intent.category,
+                            thumbnail = s3UrlsForImages.firstOrNull() ?: "",
+                            images = s3UrlsForImages.drop(1)
+                        )
+                        if (tradeId != -1L) {
+                            patchTradeContents(tradeContent)
+                        } else {
+                            postTradeContents(tradeContent)
+                        }
                     }
                 }
             }
