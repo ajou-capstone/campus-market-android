@@ -75,6 +75,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.Typ
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
+import timber.log.Timber
 
 @Composable
 fun TradePostScreen(
@@ -100,7 +101,7 @@ fun TradePostScreen(
     var imageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
     var hasThumbnails by remember { mutableStateOf(false) }
     var isContentsChanged by remember { mutableStateOf(false) }
-    var hasImage by remember { mutableStateOf(false) }
+    var hasImage by remember { mutableStateOf(true) }
 
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isValidationDialogVisible by remember { mutableStateOf(false) }
@@ -113,6 +114,7 @@ fun TradePostScreen(
 
     val validateContent = {
         isValidContents = true
+        hasImage = true
         when {
             title.isBlank() -> {
                 validationDialogContent = "제목을 입력해주세요"
@@ -121,6 +123,11 @@ fun TradePostScreen(
 
             description.isBlank() -> {
                 validationDialogContent = "상품 상세 정보를 입력해주세요"
+                isValidContents = false
+            }
+
+            (price.toInt() > 999999999) -> {
+                validationDialogContent = "가격은 "
                 isValidContents = false
             }
 
@@ -585,12 +592,13 @@ private fun TradePostScreenCategorySelector(
     changeCategory: (String) -> Unit
 ) {
     var isDropDownExpanded by remember { mutableStateOf(false) }
-    var currentCategory by remember { mutableStateOf(category) }
     var itemIndex by remember {
         mutableIntStateOf(
             categoryList.indexOf(category).takeIf { it >= 0 } ?: 8
         )
     }
+    Timber.tag("siri22").d("$$category / $itemIndex / ${translateToKor(categoryList[itemIndex])} / ${categoryList.indexOf(category)}")
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))

@@ -74,6 +74,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.TradeSearchResultIntent
 
 @Composable
 fun TradeInfoScreen(
@@ -174,6 +175,7 @@ fun TradeInfoScreen(
     }
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
+        argument.intent(TradeInfoIntent.RefreshNewTrades)
         event.eventObserve { event ->
             when (event) {
                 is TradeInfoEvent.NavigateToChatRoom -> {
@@ -181,10 +183,6 @@ fun TradeInfoScreen(
                         isNewChatRoomAvailable = false
                         navigateToChatRoom(id = event.id)
                     }
-                }
-
-                is TradeInfoEvent.FailedToFetchData -> {
-
                 }
             }
         }
