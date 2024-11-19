@@ -2,7 +2,6 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +22,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyPr
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
+import javax.inject.Inject
 
 @HiltViewModel
 class TradeInfoViewModel @Inject constructor(
@@ -57,29 +57,7 @@ class TradeInfoViewModel @Inject constructor(
 
     init {
         launch {
-            _state.value = TradeInfoState.Loading
-            zip(
-                { getMyProfileUseCase() },
-                { getTradeInfoUseCase(itemId) }
-            ).mapCatching { (myProfile, tradeInfo) ->
-                _userInfo.value = myProfile
-                _tradeInfo.value = tradeInfo
-
-                getUserProfileUseCase(tradeInfo.userId).getOrThrow()
-            }.onSuccess {
-                _state.value = TradeInfoState.Init
-                _authorInfo.value = it
-            }.onFailure { exception ->
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
-
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                    }
-                }
-            }
+            getTradeInfo()
         }
     }
 
@@ -95,6 +73,10 @@ class TradeInfoViewModel @Inject constructor(
 
             is TradeInfoIntent.OnTradeStart -> {
                 makeRoom()
+            }
+
+            is TradeInfoIntent.RefreshNewTrades -> {
+                launch { getTradeInfo() }
             }
         }
     }
@@ -183,6 +165,32 @@ class TradeInfoViewModel @Inject constructor(
                     else -> {
                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                     }
+                }
+            }
+        }
+    }
+
+    private suspend fun getTradeInfo() {
+        _state.value = TradeInfoState.Loading
+        zip(
+            { getMyProfileUseCase() },
+            { getTradeInfoUseCase(itemId) }
+        ).mapCatching { (myProfile, tradeInfo) ->
+            _userInfo.value = myProfile
+            _tradeInfo.value = tradeInfo
+
+            getUserProfileUseCase(tradeInfo.userId).getOrThrow()
+        }.onSuccess {
+            _state.value = TradeInfoState.Init
+            _authorInfo.value = it
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
         }

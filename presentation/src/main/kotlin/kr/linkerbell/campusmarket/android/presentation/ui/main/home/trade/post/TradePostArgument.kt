@@ -1,10 +1,10 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 
 import androidx.compose.runtime.Immutable
-import kotlin.coroutines.CoroutineContext
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.presentation.model.gallery.GalleryImage
+import kotlin.coroutines.CoroutineContext
 
 @Immutable
 data class TradePostArgument(
@@ -23,7 +23,8 @@ sealed interface TradePostState {
 sealed interface TradePostEvent {
     data class NavigateToTrade(val tradeId: Long) : TradePostEvent
     data class FetchOriginalContents(val tradeContents: TradeContents) : TradePostEvent
-    data object PatchOrPostFailed: TradePostEvent
+    data object PatchOrPostFailed : TradePostEvent
+    data object NoImageDetected : TradePostEvent
 }
 
 sealed interface TradePostIntent {

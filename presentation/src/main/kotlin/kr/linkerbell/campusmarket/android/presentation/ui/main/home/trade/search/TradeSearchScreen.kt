@@ -28,10 +28,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -159,17 +157,7 @@ private fun TradeSearchScreenSearchBar(
         modifier = Modifier
             .height(Space56)
             .background(White)
-            .fillMaxWidth()
-            .drawBehind {
-                val strokeWidth = 1.dp.toPx()
-                val y = size.height - strokeWidth / 2
-                drawLine(
-                    color = Gray900,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
-                )
-            },
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
