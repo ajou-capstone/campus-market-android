@@ -125,7 +125,7 @@ fun TradePostScreen(
             }
 
             (price.toInt() > 999999999) -> {
-                validationDialogContent = "가격은 "
+                validationDialogContent = "가격은 10억 이하로 설정해주세요"
                 isValidContents = false
             }
 
