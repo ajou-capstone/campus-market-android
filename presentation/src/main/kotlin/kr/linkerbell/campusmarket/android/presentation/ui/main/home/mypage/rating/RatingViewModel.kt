@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,6 +50,7 @@ class RatingViewModel @Inject constructor(
             rating = rating
         ).onSuccess {
             _state.value = RatingState.Init
+            _event.emit(RatingEvent.RateSuccess)
         }.onFailure { exception ->
             when (exception) {
                 is ServerException -> {

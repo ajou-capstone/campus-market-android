@@ -7,7 +7,7 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.homeDestinat
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.scheduleCompareDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.tradeInfoDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.tradePostDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review.ratingDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.ratingDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result.tradeSearchResultDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.tradeSearchDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.nonlogin.nonLoginNavGraphNavGraph

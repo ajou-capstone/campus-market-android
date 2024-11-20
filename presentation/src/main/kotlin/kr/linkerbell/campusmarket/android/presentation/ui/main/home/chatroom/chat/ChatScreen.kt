@@ -85,7 +85,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review.RatingConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.RatingConstant
 
 @Composable
 fun ChatScreen(

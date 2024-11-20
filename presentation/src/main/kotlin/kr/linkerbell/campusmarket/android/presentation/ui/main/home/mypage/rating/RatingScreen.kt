@@ -1,10 +1,8 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +42,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -53,6 +54,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
+import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 
 @Composable
@@ -60,6 +64,9 @@ fun RatingScreen(
     navController: NavController,
     argument: RatingArgument,
 ) {
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
+
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
@@ -68,6 +75,19 @@ fun RatingScreen(
 
     var descriptionLength by remember { mutableIntStateOf(0) }
     var isReviewRequested by remember { mutableStateOf(false) }
+    var isRatingSuccessDialogVisible by remember { mutableStateOf(false) }
+
+    if(isRatingSuccessDialogVisible){
+        DialogScreen(
+            title = "작성된 리뷰가 등록되었습니다!",
+            isCancelable = false,
+            onConfirm = { },
+            onDismissRequest = {
+                isRatingSuccessDialogVisible = false
+                navController.safeNavigateUp()
+            }
+        )
+    }
 
     Dialog(
         onDismissRequest = {},
@@ -158,6 +178,7 @@ fun RatingScreen(
                         .background(Gray400)
                         .clickable {
                             //TODO(마이페이지>어쩌고에서 나중에 할 수 있을지?)
+                            navController.safeNavigateUp()
                         },
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -169,6 +190,17 @@ fun RatingScreen(
                     )
                 }
             }
+        }
+    }
+
+    LaunchedEffectWithLifecycle(event) {
+        event.eventObserve { event ->
+            when (event) {
+                is RatingEvent.RateSuccess -> {
+                    isRatingSuccessDialogVisible = true
+                }
+            }
+
         }
     }
 }
@@ -237,6 +269,7 @@ private fun StarRatingBar(
         }
     }
 }
+
 
 @Preview
 @Composable
