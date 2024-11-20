@@ -36,10 +36,19 @@ fun NavGraphBuilder.withdrawalDestination(
             )
         }
 
+        val data: WithdrawalData = let {
+            val myProfile by viewModel.myProfile.collectAsStateWithLifecycle()
+
+            WithdrawalData(
+                myProfile = myProfile
+            )
+        }
+
         ErrorObserver(viewModel)
         WithdrawalScreen(
             navController = navController,
             argument = argument,
+            data = data
         )
     }
 }

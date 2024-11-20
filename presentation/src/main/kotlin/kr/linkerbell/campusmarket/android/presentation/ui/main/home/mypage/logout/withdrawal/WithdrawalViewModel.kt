@@ -10,14 +10,17 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authentication.WithdrawUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class WithdrawalViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val withdrawUseCase: WithdrawUseCase
+    private val withdrawUseCase: WithdrawUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<WithdrawalState> = MutableStateFlow(WithdrawalState.Init)
@@ -25,6 +28,15 @@ class WithdrawalViewModel @Inject constructor(
 
     private val _event: MutableEventFlow<WithdrawalEvent> = MutableEventFlow()
     val event: EventFlow<WithdrawalEvent> = _event.asEventFlow()
+
+    private val _myProfile: MutableStateFlow<MyProfile> = MutableStateFlow(MyProfile.empty)
+    val myProfile: StateFlow<MyProfile> = _myProfile.asStateFlow()
+
+    init {
+        launch {
+            getMyProfile()
+        }
+    }
 
     fun onIntent(intent: WithdrawalIntent) {
         when (intent) {
@@ -36,7 +48,7 @@ class WithdrawalViewModel @Inject constructor(
         }
     }
 
-    private suspend fun WithdrawalViewModel.userWithdraw() {
+    private suspend fun userWithdraw() {
         withdrawUseCase().onSuccess {
             _state.value = WithdrawalState.Init
         }.onFailure { exception ->
@@ -53,4 +65,21 @@ class WithdrawalViewModel @Inject constructor(
         }
     }
 
+    private suspend fun getMyProfile() {
+        getMyProfileUseCase().onSuccess {
+            _state.value = WithdrawalState.Init
+            _myProfile.value = it
+        }.onFailure { exception ->
+            _state.value = WithdrawalState.Init
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
+        }
+    }
 }

@@ -18,9 +18,10 @@ sealed interface WithdrawalState {
     data object Loading : WithdrawalState
 }
 
+sealed interface WithdrawalEvent {
+    data object WithdrawalSuccess : WithdrawalEvent
+}
 
-sealed interface WithdrawalEvent
-
-sealed interface WithdrawalIntent{
+sealed interface WithdrawalIntent {
     data object Withdrawal : WithdrawalIntent
 }
