@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,11 +14,11 @@ fun NavGraphBuilder.ratingDestination(
     navController: NavController
 ) {
     composable(
-        route = RatingConstant.ROUTE,
+        route = RatingConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument(RatingConstant.ROUTE) {
-                type = NavType.StringType
-                defaultValue = ""
+            navArgument(RatingConstant.ROUTE_ARGUMENT_USER_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
             }
         )
     ) {
@@ -36,14 +36,10 @@ fun NavGraphBuilder.ratingDestination(
             )
         }
 
-        val data: RatingData = let {
-
-            RatingData(
-                initialData = ""
-            )
-        }
-
         ErrorObserver(viewModel)
-        RatingScreen()
+        RatingScreen(
+            navController = navController,
+            argument = argument,
+        )
     }
 }

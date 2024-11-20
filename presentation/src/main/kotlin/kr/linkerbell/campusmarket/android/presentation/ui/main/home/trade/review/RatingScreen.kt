@@ -1,0 +1,258 @@
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
+import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+
+@Composable
+fun RatingScreen(
+    navController: NavController,
+    argument: RatingArgument,
+) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+    var userRating by remember { mutableIntStateOf(5) }
+    var userDescription by remember { mutableStateOf("") }
+
+    var descriptionLength by remember { mutableIntStateOf(0) }
+    var isReviewRequested by remember { mutableStateOf(false) }
+
+    Dialog(
+        onDismissRequest = {},
+    ) {
+        Column(
+            modifier = Modifier
+                .size(height = screenHeight * 0.6f, width = screenWidth * 0.8f)
+                .clip(RoundedCornerShape(16.dp))
+                .fillMaxSize()
+                .background(Color.White)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "거래는 어떠셨나요?",
+                    style = Headline2,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Text(
+                    text = "상대방에 대한 리뷰를 남겨주세요",
+                    style = Body2,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Text(
+                    text = userRating.toString(),
+                    style = Headline1,
+                    modifier = Modifier.padding(8.dp)
+                )
+                StarRatingBar(
+                    rating = userRating,
+                    180.dp,
+                    onRatingChanged = { newRating ->
+                        userRating = newRating
+                    }
+                )
+
+                TypingTextField(
+                    text = userDescription,
+                    onValueChange = {
+                        descriptionLength = userDescription.length
+                        if (descriptionLength <= 200) {
+                            userDescription = it
+                        }
+                    },
+                    maxLines = 100,
+                    modifier = Modifier
+                        .heightIn(min = 140.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                Text(
+                    text = if (descriptionLength <= 200) "(${descriptionLength}/200)"
+                    else "리뷰는 최대 200자까지만 작성할 수 있어요!",
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 16.dp),
+                    style = Caption1,
+                    color = if (descriptionLength <= 200) Gray900 else Red400
+                )
+            }
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Blue400)
+                        .clickable {
+                            if (!isReviewRequested) {
+                                isReviewRequested = true
+                                argument.intent(RatingIntent.RateUser(userDescription, userRating))
+                            }
+                        },
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "평가하기",
+                        modifier = Modifier.padding(8.dp),
+                        style = Headline2,
+                        color = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.padding(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Gray400)
+                        .clickable {
+                            //TODO(마이페이지>어쩌고에서 나중에 할 수 있을지?)
+                        },
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "나중에 하기",
+                        modifier = Modifier.padding(8.dp),
+                        style = Headline2,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StarRatingBar(
+    rating: Int,
+    width: Dp,
+    onRatingChanged: (Int) -> Unit
+) {
+    val adjustedRating = remember { mutableIntStateOf(rating) }
+
+    Box(
+        modifier = Modifier.width(width),
+        contentAlignment = Alignment.Center
+    ) {
+        Slider(
+            value = adjustedRating.intValue.toFloat(),
+            onValueChange = { newValue ->
+                adjustedRating.intValue = newValue.roundToInt()
+                onRatingChanged(adjustedRating.intValue)
+            },
+            valueRange = 0f..10f,
+            steps = 10,
+            modifier = Modifier
+                .width(width * 2.0f)
+                .alpha(0f)
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
+            for (i in 1..5) {
+                when {
+                    adjustedRating.intValue >= i * 2 -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.filled_star),
+                            contentDescription = "Filled Star",
+                            colorFilter = ColorFilter.tint(Blue400),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
+                    adjustedRating.intValue >= (i * 2) - 1 -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.half_filled_star),
+                            contentDescription = "Half Filled Star",
+                            colorFilter = ColorFilter.tint(Blue400),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
+                    else -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.empty_star),
+                            contentDescription = "Empty Star",
+                            colorFilter = ColorFilter.tint(Blue400),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun RatingScreenPreview() {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        RatingScreen(
+            navController = rememberNavController(),
+            argument = RatingArgument(
+                state = RatingState.Init,
+                event = MutableEventFlow(),
+                intent = {},
+                logEvent = { _, _ -> },
+                coroutineContext = CoroutineExceptionHandler { _, _ -> }
+            )
+        )
+    }
+}

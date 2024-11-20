@@ -85,6 +85,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review.RatingConstant
 
 @Composable
 fun ChatScreen(
@@ -134,6 +135,16 @@ fun ChatScreen(
             isCancelable = false,
             onConfirm = {
                 navController.safeNavigateUp()
+
+                val newRoute = makeRoute(
+                    route = RatingConstant.ROUTE,
+                    arguments = mapOf(
+                        RatingConstant.ROUTE_ARGUMENT_USER_ID to data.userProfile.id,
+                        RatingConstant.ROUTE_ARGUMENT_ITEM_ID to data.trade.itemId
+                    )
+                )
+                navController.popBackStack()
+                navController.navigate(newRoute)
             },
             onDismissRequest = { isSellCompleteDialogShowing = false }
         )

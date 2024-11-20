@@ -120,4 +120,18 @@ class RealTradeRepository @Inject constructor(
     override suspend fun deleteTradeInfo(itemId: Long): Result<Unit> {
         return tradeApi.deleteTradeInfo(itemId)
     }
+
+    override suspend fun postUserRating(
+        targetUserId: Long,
+        itemId: Long,
+        description: String,
+        rating: Int
+    ): Result<Unit> {
+        return tradeApi.postUserRating(
+            targetUserId,
+            itemId,
+            description,
+            rating
+        )
+    }
 }

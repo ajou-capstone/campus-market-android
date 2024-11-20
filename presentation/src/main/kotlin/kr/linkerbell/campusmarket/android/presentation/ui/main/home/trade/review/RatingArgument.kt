@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.review
 
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext
@@ -18,7 +18,11 @@ sealed interface RatingState {
     data object Loading : RatingState
 }
 
-
 sealed interface RatingEvent
 
-sealed interface RatingIntent
+sealed interface RatingIntent {
+    data class RateUser(
+        val description: String,
+        val rating: Int
+    ) : RatingIntent
+}
