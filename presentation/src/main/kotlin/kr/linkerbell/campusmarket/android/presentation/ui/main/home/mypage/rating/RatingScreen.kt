@@ -2,7 +2,6 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rati
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
@@ -49,7 +48,6 @@ import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
@@ -57,7 +55,12 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButton
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonProperties
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+import kotlin.math.roundToInt
 
 @Composable
 fun RatingScreen(
@@ -77,7 +80,7 @@ fun RatingScreen(
     var isReviewRequested by remember { mutableStateOf(false) }
     var isRatingSuccessDialogVisible by remember { mutableStateOf(false) }
 
-    if(isRatingSuccessDialogVisible){
+    if (isRatingSuccessDialogVisible) {
         DialogScreen(
             title = "작성된 리뷰가 등록되었습니다!",
             isCancelable = false,
@@ -150,44 +153,41 @@ fun RatingScreen(
                 )
             }
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Blue400)
-                        .clickable {
+                Row(modifier = Modifier.wrapContentSize()) {
+                    ConfirmButton(
+                        properties = ConfirmButtonProperties(
+                            size = ConfirmButtonSize.Large,
+                            type = ConfirmButtonType.Secondary
+                        ),
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            navController.safeNavigateUp()
+                        }
+                    ) { style ->
+                        Text(
+                            text = "나중에 하기",
+                            style = style
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    ConfirmButton(
+                        properties = ConfirmButtonProperties(
+                            size = ConfirmButtonSize.Large,
+                            type = ConfirmButtonType.Primary
+                        ),
+                        modifier = Modifier.weight(1f),
+                        onClick = {
                             if (!isReviewRequested) {
                                 isReviewRequested = true
                                 argument.intent(RatingIntent.RateUser(userDescription, userRating))
                             }
-                        },
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "평가하기",
-                        modifier = Modifier.padding(8.dp),
-                        style = Headline2,
-                        color = Color.White
-                    )
-                }
-                Spacer(modifier = Modifier.padding(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Gray400)
-                        .clickable {
-                            //TODO(마이페이지>어쩌고에서 나중에 할 수 있을지?)
-                            navController.safeNavigateUp()
-                        },
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "나중에 하기",
-                        modifier = Modifier.padding(8.dp),
-                        style = Headline2,
-                        color = Color.White
-                    )
+                        }
+                    ) { style ->
+                        Text(
+                            text = "평가하기",
+                            style = style
+                        )
+                    }
                 }
             }
         }

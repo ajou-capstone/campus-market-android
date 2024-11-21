@@ -7,8 +7,8 @@ object RatingConstant {
     const val ROUTE_ARGUMENT_USER_ID = "userId"
     const val ROUTE_ARGUMENT_ITEM_ID = "itemId"
 
-    const val ROUTE_STRUCTURE = "$ROUTE?" +
-            "$ROUTE_ARGUMENT_USER_ID={$ROUTE_ARGUMENT_USER_ID}" +
-            "$ROUTE_ARGUMENT_ITEM_ID={$ROUTE_ARGUMENT_ITEM_ID}"
+    const val ROUTE_STRUCTURE = ROUTE +
+            "?$ROUTE_ARGUMENT_USER_ID={$ROUTE_ARGUMENT_USER_ID}" +
+            "&$ROUTE_ARGUMENT_ITEM_ID={$ROUTE_ARGUMENT_ITEM_ID}"
 }
 

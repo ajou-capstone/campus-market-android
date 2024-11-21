@@ -19,6 +19,10 @@ fun NavGraphBuilder.ratingDestination(
             navArgument(RatingConstant.ROUTE_ARGUMENT_USER_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
+            },
+            navArgument(RatingConstant.ROUTE_ARGUMENT_ITEM_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
             }
         )
     ) {
