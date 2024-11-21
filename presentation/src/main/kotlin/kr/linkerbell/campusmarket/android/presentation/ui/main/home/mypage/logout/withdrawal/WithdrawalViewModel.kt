@@ -11,6 +11,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.history.DeleteAllSearchHistoryUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authentication.WithdrawUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
@@ -20,7 +21,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 class WithdrawalViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val withdrawUseCase: WithdrawUseCase,
-    private val getMyProfileUseCase: GetMyProfileUseCase
+    private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val deleteAllSearchHistoryUseCase: DeleteAllSearchHistoryUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<WithdrawalState> = MutableStateFlow(WithdrawalState.Init)
@@ -50,6 +52,7 @@ class WithdrawalViewModel @Inject constructor(
 
     private suspend fun userWithdraw() {
         withdrawUseCase().onSuccess {
+            deleteAllSearchHistoryUseCase()
             _state.value = WithdrawalState.Init
         }.onFailure { exception ->
             _state.value = WithdrawalState.Init

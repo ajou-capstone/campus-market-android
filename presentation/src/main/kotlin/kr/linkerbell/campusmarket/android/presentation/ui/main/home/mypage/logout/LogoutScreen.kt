@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +48,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.withdrawal.WithdrawalConstant
+import kotlin.system.exitProcess
 
 @Composable
 fun LogoutScreen(
@@ -57,11 +60,21 @@ fun LogoutScreen(
 
     var isLogoutDialogVisible by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
+    fun restartApp() {
+        context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { intent ->
+            context.startActivity(
+                Intent.makeRestartActivityTask(intent.component)
+            )
+        }
+        exitProcess(0)
+    }
     if (isLogoutDialogVisible) {
         LogoutDialog(
             onConfirm = {
                 argument.intent(LogoutIntent.LogOut)
-                //TODO : 처음 로그인 화면까지 이동
+                restartApp()
             },
             onDismissRequest = { isLogoutDialogVisible = false }
         )

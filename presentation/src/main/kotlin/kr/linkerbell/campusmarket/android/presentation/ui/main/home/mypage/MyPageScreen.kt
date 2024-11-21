@@ -56,6 +56,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Error
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 
 @Composable
@@ -193,7 +194,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            navController.navigate(ChangeCampusConstant.ROUTE)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
