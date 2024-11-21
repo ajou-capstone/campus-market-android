@@ -136,6 +136,15 @@ class MockTradeRepository @Inject constructor(
         return Result.success(Unit)
     }
 
+    override suspend fun postUserRating(
+        targetUserId: Long,
+        itemId: Long,
+        description: String,
+        rating: Int
+    ): Result<Unit> {
+        return Result.success(Unit)
+    }
+
     private suspend fun randomShortDelay() {
         delay(LongRange(100, 500).random())
     }

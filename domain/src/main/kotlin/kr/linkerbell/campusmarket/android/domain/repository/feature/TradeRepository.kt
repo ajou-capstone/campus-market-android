@@ -53,4 +53,11 @@ interface TradeRepository {
     suspend fun deleteLikedItem(itemId: Long): Result<DeletedLikedItemInfo>
 
     suspend fun deleteTradeInfo(itemId: Long): Result<Unit>
+
+    suspend fun postUserRating(
+        targetUserId: Long,
+        itemId: Long,
+        description: String,
+        rating: Int
+    ) : Result<Unit>
 }
