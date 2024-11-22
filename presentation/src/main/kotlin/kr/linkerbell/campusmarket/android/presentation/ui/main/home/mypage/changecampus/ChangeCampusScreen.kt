@@ -83,6 +83,7 @@ fun ChangeCampusScreen(
     if (isChangeCampusDialogVisible) {
         ChangeCampusDialog(
             onDismissRequest = {
+                isChangeCampusDialogVisible = false
                 navController.safeNavigateUp()
             }
         )
@@ -150,7 +151,7 @@ fun ChangeCampusScreen(
                 )
                 Spacer(modifier = Modifier.height(Space12))
                 Text(
-                    text = "재학중인 대학교 캠퍼스를 입력하세요.",
+                    text = "변경하실 대학교 캠퍼스를 선택하세요.",
                     style = Headline2.merge(Gray900)
                 )
                 Spacer(modifier = Modifier.height(Space40))
@@ -227,6 +228,7 @@ fun ChangeCampusScreen(
                     modifier = Modifier
                         .padding(start = Space20, end = Space20, bottom = Space12)
                         .fillMaxWidth(),
+
                     properties = ConfirmButtonProperties(
                         size = ConfirmButtonSize.Large,
                         type = ConfirmButtonType.Primary
