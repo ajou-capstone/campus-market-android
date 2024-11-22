@@ -173,7 +173,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-//TODO(프로필 설정 페이지로 이동)
+//프로필 설정 페이지로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -226,7 +226,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //TODO(최근 거래 목록 페이지로 이동)
+                            //최근 거래 목록 페이지로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -248,7 +248,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //TODO(최근 작성된 리뷰 페이지로 이동)
+                            //최근 작성된 리뷰 페이지로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -270,7 +270,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //TODO(찜한 목록으로 이동)
+                            //찜한 목록으로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -301,7 +301,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //TODO((알림)설정 페이지로 이동)
+                            //(알림)설정 페이지로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -323,7 +323,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //TODO(문의하기 페이지로 이동)
+                            //문의하기 페이지로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -345,7 +345,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //TODO(약관 페이지로 이동 (Notion))
+                            //약관 페이지로 이동 (Notion)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
