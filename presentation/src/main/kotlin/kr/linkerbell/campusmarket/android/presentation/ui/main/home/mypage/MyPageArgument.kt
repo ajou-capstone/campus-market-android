@@ -20,4 +20,6 @@ sealed interface MyPageState {
 
 sealed interface MyPageEvent
 
-sealed interface MyPageIntent
+sealed interface MyPageIntent{
+    data object RefreshData : MyPageIntent
+}
