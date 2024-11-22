@@ -38,7 +38,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
@@ -53,7 +52,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
-import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
@@ -174,7 +172,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+//TODO(프로필 설정 페이지로 이동)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -225,7 +225,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            //TODO(최근 거래 목록 페이지로 이동)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -245,7 +247,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            //TODO(최근 작성된 리뷰 페이지로 이동)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -265,7 +269,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            //TODO(찜한 목록으로 이동)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -294,7 +300,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            //TODO((알림)설정 페이지로 이동)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -314,7 +322,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            //TODO(문의하기 페이지로 이동)
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -334,7 +344,9 @@ fun MyPageScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .clickable {},
+                        .clickable {
+                            //TODO(약관 페이지로 이동 (Notion))
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -373,14 +385,6 @@ fun MyPageScreen(
                     )
                 }
             }
-
-        }
-    }
-
-    LaunchedEffectWithLifecycle(event, coroutineContext) {
-        argument.intent(MyPageIntent.RefreshData)
-
-        event.eventObserve { event ->
 
         }
     }
