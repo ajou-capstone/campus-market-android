@@ -2,7 +2,6 @@ package kr.linkerbell.campusmarket.android.domain.repository.feature
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.DeletedLikedItemInfo
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.LikedItemInfo
@@ -60,5 +59,5 @@ interface TradeRepository {
         itemId: Long,
         description: String,
         rating: Int
-    ) : Result<Unit>
+    ): Result<Unit>
 }
