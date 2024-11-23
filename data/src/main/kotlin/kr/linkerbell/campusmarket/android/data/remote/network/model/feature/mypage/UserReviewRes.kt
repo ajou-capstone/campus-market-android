@@ -31,7 +31,7 @@ data class ReviewItemRes(
     @SerialName("description")
     val description: String,
     @SerialName("rating")
-    val rating: Double,
+    val rating: Int,
     @SerialName("createdAt")
     val createdAt: LocalDateTime
 ) : DataMapper<UserReview> {
@@ -41,7 +41,7 @@ data class ReviewItemRes(
             nickname = nickname,
             profileImage = profileImage,
             description = description,
-            rating = rating.toInt(),
+            rating = rating,
             createdAt = createdAt
         )
     }
