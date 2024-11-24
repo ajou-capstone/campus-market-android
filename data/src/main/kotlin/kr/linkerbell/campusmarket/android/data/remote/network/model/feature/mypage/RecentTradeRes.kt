@@ -24,11 +24,11 @@ data class RecentTradeRes(
 @Serializable
 data class RecentTradeSortRes(
     @SerialName("empty")
-    val direction: Boolean,
+    val empty: Boolean,
     @SerialName("sorted")
     val sorted: Boolean,
     @SerialName("unsorted")
-    val orderProperty: Boolean,
+    val unsorted: Boolean,
 )
 
 

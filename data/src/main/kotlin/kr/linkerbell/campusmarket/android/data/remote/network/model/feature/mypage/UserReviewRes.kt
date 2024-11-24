@@ -25,11 +25,11 @@ data class UserReviewRes(
 @Serializable
 data class UserReviewSortRes(
     @SerialName("empty")
-    val direction: Boolean,
+    val empty: Boolean,
     @SerialName("sorted")
     val sorted: Boolean,
     @SerialName("unsorted")
-    val orderProperty: Boolean,
+    val unsorted: Boolean,
 )
 
 @Serializable
