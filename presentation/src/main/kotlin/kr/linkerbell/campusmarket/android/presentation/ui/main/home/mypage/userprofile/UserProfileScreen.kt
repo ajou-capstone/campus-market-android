@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +48,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
@@ -71,7 +73,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.isEmpty
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
@@ -181,7 +185,7 @@ fun UserProfileScreen(
                 }
                 Column {
                     val recentTrades = data.recentTrades
-                    if (recentTrades.itemCount == 0) {
+                    if (recentTrades.isEmpty()) {
                         Text(
                             text = "아직 판매중인 물건이 없어요",
                             style = Caption2,
@@ -189,10 +193,15 @@ fun UserProfileScreen(
                             modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                         )
                     } else {
-                        for (index in 0..<recentTrades.itemCount) {
-                            val trade = recentTrades[index]
-                            if (trade != null && index < 3) {
-                                Spacer(modifier = Modifier.padding(4.dp))
+                        LazyColumn(
+                            modifier = Modifier.padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                count = recentTrades.itemCount,
+                                key = { index -> recentTrades[index]?.id ?: -1 }
+                            ) { index ->
+                                val trade = recentTrades[index] ?: return@items
                                 TradeHistoryCard(
                                     recentTrade = trade,
                                     onClicked = {
@@ -206,8 +215,7 @@ fun UserProfileScreen(
                                         navController.navigate(tradeInfoRoute)
                                     }
                                 )
-                            } else {
-                                break
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
@@ -236,14 +244,14 @@ fun UserProfileScreen(
                                         RecentReviewConstant.ROUTE_ARGUMENT_USER_ID to data.userProfile.id,
                                     )
                                 )
-                                navController.navigate(newRoute)
+                                navController.safeNavigate(newRoute)
                             }
                         }
                     )
                 }
                 Column {
                     val recentReview = data.recentReviews
-                    if (recentReview.itemCount == 0) {
+                    if (recentReview.isEmpty()) {
                         Text(
                             text = "아직 작성된 리뷰가 없어요",
                             style = Caption2,
@@ -251,13 +259,19 @@ fun UserProfileScreen(
                             modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                         )
                     } else {
-                        for (index in 0..<recentReview.itemCount) {
-                            val review = recentReview[index]
-                            if (review != null && index < 3) {
-                                Spacer(modifier = Modifier.padding(4.dp))
+                        LazyColumn(
+                            modifier = Modifier.padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                count = recentReview.itemCount,
+                                key = { index ->
+                                    "${recentReview[index]?.userId ?: -1}_${recentReview[index]?.createdAt?.date ?: LocalDate.now()}".hashCode()
+                                }
+                            ) { index ->
+                                val review = recentReview[index] ?: return@items
                                 ReviewCard(review)
-                            } else {
-                                break
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }

@@ -5,7 +5,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.repository.feature.MyPageRepository
-import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 
 class GetUserReviewUseCase @Inject constructor(
     private val myPageRepository: MyPageRepository

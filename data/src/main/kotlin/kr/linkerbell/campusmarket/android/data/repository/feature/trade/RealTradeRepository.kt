@@ -3,6 +3,7 @@ package kr.linkerbell.campusmarket.android.data.repository.feature.trade
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kr.linkerbell.campusmarket.android.data.common.DEFAULT_PAGING_SIZE
@@ -18,7 +19,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedT
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
-import javax.inject.Inject
 
 class RealTradeRepository @Inject constructor(
     private val tradeApi: TradeApi,

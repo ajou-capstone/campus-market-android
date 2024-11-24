@@ -3,13 +3,13 @@ package kr.linkerbell.campusmarket.android.data.remote.network.api.feature
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.RecentTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserReviewRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
-import javax.inject.Inject
 
 class MyPageApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,

@@ -7,6 +7,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
@@ -21,7 +22,6 @@ import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trad
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.UserRatingReq
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
-import javax.inject.Inject
 
 class TradeApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,

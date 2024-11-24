@@ -3,6 +3,7 @@ package kr.linkerbell.campusmarket.android.data.repository.feature.mypage
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kr.linkerbell.campusmarket.android.data.common.DEFAULT_PAGING_SIZE
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.MyPageApi
@@ -11,7 +12,6 @@ import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.repository.feature.MyPageRepository
-import javax.inject.Inject
 
 class RealMyPageRepository @Inject constructor(
     private val myPageApi: MyPageApi,

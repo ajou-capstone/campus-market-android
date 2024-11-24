@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import kr.linkerbell.campusmarket.android.data.repository.feature.chat.RealChatRepository
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.RealMyPageRepository
 import kr.linkerbell.campusmarket.android.data.repository.feature.schedule.RealScheduleRepository
@@ -24,7 +25,6 @@ import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TermRepos
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TrackingRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.UserRepository
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

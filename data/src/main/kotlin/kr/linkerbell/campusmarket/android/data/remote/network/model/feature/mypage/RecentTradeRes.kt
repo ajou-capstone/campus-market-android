@@ -4,7 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
-import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 
 @Serializable
 data class RecentTradeRes(

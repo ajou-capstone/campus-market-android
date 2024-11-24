@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
@@ -137,7 +138,7 @@ fun RecentReviewScreen(
                     count = recentReviewList.itemCount,
                     key = { index ->
                         "${recentReviewList[index]?.userId ?: -1}_" +
-                                "${recentReviewList[index]?.createdAt!!.date}".hashCode()
+                                "${recentReviewList[index]?.createdAt?.date ?: LocalDate.now()}".hashCode()
                     }
                 ) { index ->
                     val review = recentReviewList[index] ?: return@items
