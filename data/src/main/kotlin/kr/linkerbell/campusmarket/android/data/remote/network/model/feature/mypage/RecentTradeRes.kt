@@ -11,7 +11,7 @@ data class RecentTradeRes(
     @SerialName("items")
     val reviewList: List<RecentTradeItemRes>,
     @SerialName("sort")
-    val sort: String,
+    val sort: RecentTradeSortRes,
     @SerialName("currentPage")
     val currentPage: Int,
     @SerialName("size")
@@ -21,6 +21,17 @@ data class RecentTradeRes(
     @SerialName("hasNext")
     val hasNext: Boolean,
 )
+
+@Serializable
+data class RecentTradeSortRes(
+    @SerialName("empty")
+    val direction: Boolean,
+    @SerialName("sorted")
+    val sorted: Boolean,
+    @SerialName("unsorted")
+    val orderProperty: Boolean,
+)
+
 
 @Serializable
 data class RecentTradeItemRes(
