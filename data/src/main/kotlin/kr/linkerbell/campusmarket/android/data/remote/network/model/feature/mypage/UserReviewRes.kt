@@ -8,8 +8,10 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 
 @Serializable
 data class UserReviewRes(
-    @SerialName("reviewList")
+    @SerialName("content")
     val reviewList: List<ReviewItemRes>,
+    @SerialName("sort")
+    val sort: UserReviewSortRes,
     @SerialName("currentPage")
     val currentPage: Int,
     @SerialName("size")
@@ -18,6 +20,16 @@ data class UserReviewRes(
     val hasPrevious: Boolean,
     @SerialName("hasNext")
     val hasNext: Boolean,
+)
+
+@Serializable
+data class UserReviewSortRes(
+    @SerialName("empty")
+    val direction: Boolean,
+    @SerialName("sorted")
+    val sorted: Boolean,
+    @SerialName("unsorted")
+    val orderProperty: Boolean,
 )
 
 @Serializable
