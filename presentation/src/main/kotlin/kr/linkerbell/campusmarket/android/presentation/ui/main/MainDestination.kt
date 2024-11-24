@@ -5,6 +5,10 @@ import androidx.navigation.NavGraphBuilder
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.chatDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.homeDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.changeCampusDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.info.inquiryInfoDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.inquiryDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.post.inquiryPostDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.view.inquiryViewDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.logoutDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.withdrawal.withdrawalDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.ratingDestination
@@ -37,6 +41,8 @@ fun NavGraphBuilder.mainDestination(
     userProfileDestination(navController = navController)
     recentTradeDestination(navController = navController)
     recentReviewDestination(navController = navController)
+    inquiryDestination(navController = navController)
+    inquiryPostDestination(navController = navController)
 
     chatDestination(navController = navController)
 
@@ -47,4 +53,6 @@ fun NavGraphBuilder.mainDestination(
     withdrawalDestination(navController = navController)
     myRecentTradeDestination(navController = navController)
     myRecentReviewDestination(navController = navController)
+    inquiryViewDestination(navController = navController)
+    inquiryInfoDestination(navController = navController)
 }
