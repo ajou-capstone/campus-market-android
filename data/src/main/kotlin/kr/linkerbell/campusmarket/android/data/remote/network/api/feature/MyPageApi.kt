@@ -34,11 +34,12 @@ class MyPageApi @Inject constructor(
         userId: Long,
         page: Int,
         size: Int,
+        type: String
     ): Result<RecentTradeRes> {
         return client.get("$baseUrl/api/v1/items/$userId/history") {
             parameter("page", page.toString())
             parameter("size", size.toString())
-            parameter("type", type.toString())
+            parameter("type", type)
         }.convert(errorMessageMapper::map)
     }
 }
