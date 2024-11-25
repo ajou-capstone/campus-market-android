@@ -10,16 +10,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
@@ -48,11 +47,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
@@ -135,7 +136,6 @@ fun UserProfileScreen(
         }
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .padding(8.dp)
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
@@ -153,7 +153,9 @@ fun UserProfileScreen(
                 modifier = Modifier.padding(horizontal = 2.dp, vertical = 16.dp)
             )
             Column(
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxHeight()
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -194,7 +196,8 @@ fun UserProfileScreen(
                         )
                     } else {
                         LazyColumn(
-                            modifier = Modifier.padding(8.dp),
+                            modifier = Modifier
+                                .padding(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(
@@ -266,7 +269,10 @@ fun UserProfileScreen(
                             items(
                                 count = recentReview.itemCount,
                                 key = { index ->
-                                    "${recentReview[index]?.userId ?: -1}_${recentReview[index]?.createdAt?.date ?: LocalDate.now()}".hashCode()
+                                    ("${recentReview[index]?.userId ?: -1}_${
+                                        recentReview[index]?.createdAt?.date ?: Clock.System.now()
+                                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                                    }").hashCode()
                                 }
                             ) { index ->
                                 val review = recentReview[index] ?: return@items

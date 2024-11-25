@@ -1,6 +1,5 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_trade
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,10 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.LightGray
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -42,7 +40,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrad
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
@@ -107,6 +104,7 @@ fun RecentTradeScreen(
         }
         Column(
             modifier = Modifier
+                .fillMaxHeight()
                 .padding(vertical = 8.dp)
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
@@ -217,38 +215,6 @@ private fun TradeItemStatus(isSold: Boolean) {
             color = White,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
         )
-    }
-}
-
-@Composable
-private fun RatingStars(
-    rating: Int = 0,
-    starSize: Dp = 20.dp,
-    interval: Dp = 4.dp
-) {
-    val adjustedRating = rating.coerceIn(0, 10)
-
-    @Composable
-    fun StarImage(resourceId: Int, size: Dp) {
-        Image(
-            painter = painterResource(id = resourceId),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(Blue400),
-            modifier = Modifier.size(size)
-        )
-    }
-
-    Row {
-        repeat(5) { index ->
-            val starPoints = (index + 1) * 2
-            val resource = when {
-                adjustedRating >= starPoints -> R.drawable.filled_star
-                adjustedRating >= starPoints - 1 -> R.drawable.half_filled_star
-                else -> R.drawable.empty_star
-            }
-            StarImage(resource, starSize)
-            Spacer(modifier = Modifier.padding(end = interval))
-        }
     }
 }
 
