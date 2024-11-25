@@ -36,11 +36,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -139,8 +141,10 @@ fun RecentReviewScreen(
                 items(
                     count = recentReviewList.itemCount,
                     key = { index ->
-                        "${recentReviewList[index]?.userId ?: -1}_" +
-                                "${recentReviewList[index]?.createdAt?.date ?: LocalDate.now()}".hashCode()
+                        ("${recentReviewList[index]?.userId ?: -1}_${
+                            recentReviewList[index]?.createdAt?.date ?: Clock.System.now()
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                        }").hashCode()
                     }
                 ) { index ->
                     val review = recentReviewList[index] ?: return@items
