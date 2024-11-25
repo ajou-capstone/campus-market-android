@@ -59,5 +59,5 @@ interface TradeRepository {
         itemId: Long,
         description: String,
         rating: Int
-    ) : Result<Unit>
+    ): Result<Unit>
 }

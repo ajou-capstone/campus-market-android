@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kr.linkerbell.campusmarket.android.data.repository.feature.chat.RealChatRepository
+import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.RealMyPageRepository
 import kr.linkerbell.campusmarket.android.data.repository.feature.schedule.RealScheduleRepository
 import kr.linkerbell.campusmarket.android.data.repository.feature.trade.RealTradeRepository
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.authentication.RealAuthenticationRepository
@@ -15,6 +16,7 @@ import kr.linkerbell.campusmarket.android.data.repository.nonfeature.term.RealTe
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.tracking.RealTrackingRepository
 import kr.linkerbell.campusmarket.android.data.repository.nonfeature.user.RealUserRepository
 import kr.linkerbell.campusmarket.android.domain.repository.feature.ChatRepository
+import kr.linkerbell.campusmarket.android.domain.repository.feature.MyPageRepository
 import kr.linkerbell.campusmarket.android.domain.repository.feature.ScheduleRepository
 import kr.linkerbell.campusmarket.android.domain.repository.feature.TradeRepository
 import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.AuthenticationRepository
@@ -81,4 +83,10 @@ abstract class RepositoryModule {
     internal abstract fun bindsScheduleRepository(
         scheduleRepository: RealScheduleRepository
     ): ScheduleRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindsMyPageRepository(
+        myPageRepository: RealMyPageRepository
+    ): MyPageRepository
 }

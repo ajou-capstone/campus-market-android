@@ -7,6 +7,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
@@ -21,7 +22,6 @@ import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trad
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade.UserRatingReq
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeContents
-import javax.inject.Inject
 
 class TradeApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,
@@ -36,18 +36,18 @@ class TradeApi @Inject constructor(
         category: String,
         minPrice: Int,
         maxPrice: Int,
-        sorted: String,
-        pageNum: Int,
-        pageSize: Int
+        sort: String,
+        page: Int,
+        size: Int
     ): Result<SearchTradeListRes> {
         return client.get("$baseUrl/api/v1/items") {
             parameter("name", name)
             parameter("category", category)
             parameter("minPrice", minPrice.toString())
             parameter("maxPrice", maxPrice.toString())
-            parameter("sort", sorted)
-            parameter("page", pageNum.toString())
-            parameter("size", pageSize.toString())
+            parameter("sort", sort)
+            parameter("page", page.toString())
+            parameter("size", size.toString())
         }.convert(errorMessageMapper::map)
     }
 
