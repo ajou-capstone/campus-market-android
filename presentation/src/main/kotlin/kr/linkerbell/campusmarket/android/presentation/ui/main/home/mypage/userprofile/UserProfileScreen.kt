@@ -83,7 +83,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_review.RecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_trade.RecentTradeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
-import timber.log.Timber
 
 @Composable
 fun UserProfileScreen(
@@ -188,7 +187,6 @@ fun UserProfileScreen(
                 }
                 Column {
                     val recentTrades = data.recentTrades
-                    Timber.tag("siri22").d("recentTrades : ${recentTrades.itemCount}")
                     if (recentTrades.isEmpty()) {
                         Text(
                             text = "아직 판매중인 물건이 없어요",
