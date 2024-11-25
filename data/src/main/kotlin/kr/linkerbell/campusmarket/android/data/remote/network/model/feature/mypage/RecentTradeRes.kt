@@ -7,7 +7,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrad
 
 @Serializable
 data class RecentTradeRes(
-    @SerialName("items")
+    @SerialName("content")
     val reviewList: List<RecentTradeItemRes>,
     @SerialName("sort")
     val sort: RecentTradeSortRes,
@@ -31,10 +31,9 @@ data class RecentTradeSortRes(
     val unsorted: Boolean,
 )
 
-
 @Serializable
 data class RecentTradeItemRes(
-    @SerialName("id")
+    @SerialName("itemId")
     val id: Long,
     @SerialName("title")
     val title: String,

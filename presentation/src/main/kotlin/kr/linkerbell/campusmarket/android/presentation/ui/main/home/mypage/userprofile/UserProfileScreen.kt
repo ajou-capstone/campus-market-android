@@ -180,7 +180,7 @@ fun UserProfileScreen(
                                         RecentTradeConstant.ROUTE_ARGUMENT_USER_ID to data.userProfile.id,
                                     )
                                 )
-                                navController.navigate(newRoute)
+                                navController.safeNavigate(newRoute)
                             }
                         }
                     )
