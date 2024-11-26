@@ -44,7 +44,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
@@ -225,9 +225,8 @@ private fun TradeHistoryCard(
 ) {
     Row(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Gray200)
             .fillMaxWidth()
             .clickable {
                 onClicked()
@@ -259,11 +258,16 @@ private fun TradeHistoryCard(
             TradeItemStatus(recentTrade.isSold)
         }
     }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
 }
 
 @Composable
 private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue100
+    val backgroundColor = if (isSold) LightGray else Blue200
     val text = if (isSold) "거래 완료" else "거래 가능"
 
     Box(
@@ -299,6 +303,11 @@ private fun MyRecentTradeListScreen(
             )
         }
     }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
     LazyColumn {
         items(
             count = recentTradeList.itemCount,
@@ -311,7 +320,6 @@ private fun MyRecentTradeListScreen(
                     onItemClicked(trade.id)
                 }
             )
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

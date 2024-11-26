@@ -60,7 +60,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -136,7 +136,6 @@ fun UserProfileScreen(
         }
         Column(
             modifier = Modifier
-                .padding(8.dp)
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
                     start.linkTo(parent.start)
@@ -150,15 +149,15 @@ fun UserProfileScreen(
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Gray900,
-                modifier = Modifier.padding(horizontal = 2.dp, vertical = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
             )
             Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxHeight()
+                modifier = Modifier.fillMaxHeight()
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -195,13 +194,9 @@ fun UserProfileScreen(
                             modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                         )
                     } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .padding(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
+                        LazyColumn {
                             items(
-                                count = recentTrades.itemCount,
+                                count = minOf(recentTrades.itemCount, 3),
                                 key = { index -> recentTrades[index]?.id ?: -1 }
                             ) { index ->
                                 val trade = recentTrades[index] ?: return@items
@@ -225,7 +220,9 @@ fun UserProfileScreen(
                 }
                 Spacer(modifier = Modifier.padding(8.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -267,7 +264,7 @@ fun UserProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(
-                                count = recentReview.itemCount,
+                                count = minOf(recentReview.itemCount, 3),
                                 key = { index ->
                                     ("${recentReview[index]?.userId ?: -1}_${
                                         recentReview[index]?.createdAt?.date ?: Clock.System.now()
@@ -299,10 +296,9 @@ private fun TradeHistoryCard(
 ) {
     Row(
         modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Gray200)
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
                 onClicked()
             }
@@ -333,11 +329,16 @@ private fun TradeHistoryCard(
             TradeItemStatus(recentTrade.isSold)
         }
     }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
 }
 
 @Composable
 private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue100
+    val backgroundColor = if (isSold) LightGray else Blue200
     val text = if (isSold) "거래 완료" else "거래 가능"
 
     Box(
@@ -546,12 +547,12 @@ private fun OtherUserProfileScreenPreview() {
                             createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
                         ),
                         UserReview(
-                            userId = 0L,
+                            userId = 1L,
                             nickname = "reviewer_2",
                             profileImage = "",
                             description = "아주 좋아요",
                             rating = 10,
-                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
                         )
                     )
                 )
