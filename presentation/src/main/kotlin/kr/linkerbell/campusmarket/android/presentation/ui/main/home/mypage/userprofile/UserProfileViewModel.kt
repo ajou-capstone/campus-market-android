@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +24,6 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetUs
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
-import javax.inject.Inject
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
@@ -53,13 +55,14 @@ class UserProfileViewModel @Inject constructor(
 
     init {
         launch {
-            _userId.value = savedStateHandle.get<Long>(UserProfileConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
+            _userId.value =
+                savedStateHandle.get<Long>(UserProfileConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
             updateUserProfile(_userId.value)
         }
     }
 
     fun onIntent(intent: UserProfileIntent) {
-        when(intent){
+        when (intent) {
             is UserProfileIntent.RefreshUserProfile -> {
                 launch {
                     updateUserProfile(_userId.value)
@@ -68,10 +71,14 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateUserProfile(userId: Long) {
-        getOtherUserProfile(userId)
-        getOtherUserReviews(userId)
-        getOtherUserTradeHistory(userId)
+    private suspend fun updateUserProfile(userId: Long) = coroutineScope {
+        val profileJob = async { getOtherUserProfile(userId) }
+        val tradeHistoryJob = async { getOtherUserTradeHistory(userId) }
+        val reviewsJob = async { getOtherUserReviews(userId) }
+
+        profileJob.await()
+        tradeHistoryJob.await()
+        reviewsJob.await()
     }
 
     private suspend fun getOtherUserProfile(userId: Long) {

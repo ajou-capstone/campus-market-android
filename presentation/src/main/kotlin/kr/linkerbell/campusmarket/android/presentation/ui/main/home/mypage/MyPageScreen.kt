@@ -52,10 +52,13 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
 
 @Composable
 fun MyPageScreen(
@@ -106,7 +109,7 @@ fun MyPageScreen(
             .background(White)
             .fillMaxSize()
     ) {
-        val (topBar, contents, button) = createRefs()
+        val (topBar, contents) = createRefs()
         Row(
             modifier = Modifier
                 .height(Space56)
@@ -195,7 +198,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate(ChangeCampusConstant.ROUTE)
+                            navController.safeNavigate(ChangeCampusConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -226,7 +229,13 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //최근 거래 목록 페이지로 이동
+                            val newRoute = makeRoute(
+                                route = MyRecentTradeConstant.ROUTE,
+                                arguments = mapOf(
+                                    MyRecentTradeConstant.ROUTE_ARGUMENT_USER_ID to userProfile.id.toString()
+                                )
+                            )
+                            navController.safeNavigate(newRoute)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -367,7 +376,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate(LogoutConstant.ROUTE)
+                            navController.safeNavigate(LogoutConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
