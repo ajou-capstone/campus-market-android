@@ -52,7 +52,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
@@ -164,7 +163,7 @@ fun RatingScreen(
                         onClick = {
                             navController.safeNavigateUp()
                         }
-                    ) {style ->
+                    ) { style ->
                         Text(
                             text = "나중에 할게요",
                             style = style
@@ -183,7 +182,7 @@ fun RatingScreen(
                                 argument.intent(RatingIntent.RateUser(userDescription, userRating))
                             }
                         }
-                    ) {style ->
+                    ) { style ->
                         Text(
                             text = "평가하기",
                             style = style
