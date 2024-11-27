@@ -164,10 +164,10 @@ fun RatingScreen(
                         onClick = {
                             navController.safeNavigateUp()
                         }
-                    ) {
+                    ) {style ->
                         Text(
                             text = "나중에 할게요",
-                            style = Headline3
+                            style = style
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
@@ -183,10 +183,10 @@ fun RatingScreen(
                                 argument.intent(RatingIntent.RateUser(userDescription, userRating))
                             }
                         }
-                    ) {
+                    ) {style ->
                         Text(
                             text = "평가하기",
-                            style = Headline3
+                            style = style
                         )
                     }
                 }
