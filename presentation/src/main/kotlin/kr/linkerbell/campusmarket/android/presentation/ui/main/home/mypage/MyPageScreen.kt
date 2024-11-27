@@ -59,7 +59,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
-import timber.log.Timber
 
 @Composable
 fun MyPageScreen(
@@ -104,7 +103,6 @@ fun MyPageScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     val userProfile = data.myProfile
-    Timber.tag("siri22").d("userProfile : ${userProfile.id}")
     ConstraintLayout(
         modifier = Modifier
             .background(White)

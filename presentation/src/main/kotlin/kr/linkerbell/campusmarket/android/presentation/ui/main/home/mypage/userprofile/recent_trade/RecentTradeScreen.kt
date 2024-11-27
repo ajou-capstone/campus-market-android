@@ -202,7 +202,6 @@ private fun TradeHistoryCard(
 private fun TradeItemStatus(isSold: Boolean) {
     val backgroundColor = if (isSold) LightGray else Blue300
     val text = if (isSold) "거래 완료" else "거래 가능"
-
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(5.dp))

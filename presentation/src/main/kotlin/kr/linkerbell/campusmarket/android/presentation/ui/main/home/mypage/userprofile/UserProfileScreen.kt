@@ -325,7 +325,6 @@ private fun TradeHistoryCard(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(4.dp),
             )
-
         }
         Box(
             modifier = Modifier.fillMaxWidth(),
