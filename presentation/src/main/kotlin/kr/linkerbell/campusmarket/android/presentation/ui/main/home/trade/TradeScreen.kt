@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -32,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -54,11 +54,12 @@ import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.R
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
@@ -139,8 +140,6 @@ private fun TradeScreen(
         ) {
             TradeSearchBar { navController.navigate(TradeSearchConstant.ROUTE) }
         }
-
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -155,7 +154,7 @@ private fun TradeScreen(
                 }
         ) {
             LazyColumn(
-                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
+                contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
             ) {
                 items(
                     count = data.summarizedTradeList.itemCount,
@@ -234,83 +233,83 @@ private fun TradeItemCard(
     item: SummarizedTrade,
     onItemCardClicked: (Long) -> Unit
 ) {
-    Box(
-        Modifier
-            .shadow(4.dp)
-            .clip(RoundedCornerShape(5.dp))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp)
             .clickable {
                 onItemCardClicked(item.itemId)
-            }
+            },
     ) {
-        Row(
+        PostImage(
+            data = item.thumbnail,
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(8.dp),
+                .size(100.dp)
+                .clip(RoundedCornerShape(8.dp))
+        )
+        Column(
+            modifier = Modifier.padding(start = 10.dp)
         ) {
-            PostImage(
-                data = item.thumbnail,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
+            Text(
+                text = item.title,
+                style = Headline3,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                modifier = Modifier.padding(bottom = 4.dp),
             )
-            Column(
-                modifier = Modifier.padding(start = 10.dp)
-            ) {
-                Text(
-                    text = item.title,
-                    style = Headline3,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    modifier = Modifier.padding(bottom = 4.dp),
-                )
 
-                Text(
-                    text = item.nickname,
-                    style = Caption2,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                Text(
-                    text = "${item.chatCount} 명이 대화중",
-                    style = Caption2,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
+            Text(
+                text = item.nickname,
+                style = Caption2,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = "${item.chatCount} 명이 대화중",
+                style = Caption2,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(min = 100.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TradeItemStatus(
+                        isSold = item.itemStatus == "SOLDOUT"
+                    )
+                    Text(
+                        text = "${item.price} 원",
+                        style = Body1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .widthIn(min = 100.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.padding(start = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TradeItemStatus(
-                            isSold = item.itemStatus == "SOLDOUT"
-                        )
-                        Text(
-                            text = "${item.price} 원",
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(4.dp)
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.padding(start = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val favIcon =
-                            if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-                        Icon(
-                            imageVector = favIcon,
-                            tint = Gray900,
-                            contentDescription = "isLike",
-                            modifier = Modifier.size(12.dp)
-                        )
-                        Spacer(modifier = Modifier.padding(2.dp))
-                        Text(item.likeCount.toString())
-                    }
+                    val favIcon =
+                        if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                    Icon(
+                        imageVector = favIcon,
+                        tint = Gray900,
+                        contentDescription = "isLike",
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.padding(2.dp))
+                    Text(item.likeCount.toString())
                 }
             }
         }
     }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
 }
 
 @Composable
@@ -358,7 +357,7 @@ private fun TradeSearchBar(
 
 @Composable
 private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue100
+    val backgroundColor = if (isSold) LightGray else Blue300
     val text = if (isSold) "거래 완료" else "거래 가능"
 
     Box(

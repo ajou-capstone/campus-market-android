@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -39,13 +41,12 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
@@ -129,7 +130,7 @@ fun RecentTradeScreen(
                 }
             }
             LazyColumn(
-                contentPadding = PaddingValues(horizontal = 20.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 items(
                     count = recentTradeList.itemCount,
@@ -162,10 +163,9 @@ private fun TradeHistoryCard(
 ) {
     Row(
         modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Gray200)
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
                 onClicked()
             }
@@ -182,25 +182,25 @@ private fun TradeHistoryCard(
                 style = Headline2,
                 color = Black,
             )
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
             Text(
                 text = "${recentTrade.price} 원",
-                style = Headline3,
-                color = Black,
+                style = Body1,
+                overflow = TextOverflow.Ellipsis
             )
-        }
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopEnd
-        ) {
+            Spacer(modifier = Modifier.padding(bottom = 8.dp))
             TradeItemStatus(recentTrade.isSold)
         }
     }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
 }
 
 @Composable
 private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue100
+    val backgroundColor = if (isSold) LightGray else Blue300
     val text = if (isSold) "거래 완료" else "거래 가능"
 
     Box(

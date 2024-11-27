@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
@@ -51,6 +52,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
@@ -60,7 +62,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.Confi
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
-import kotlin.math.roundToInt
 
 @Composable
 fun RatingScreen(
@@ -82,7 +83,7 @@ fun RatingScreen(
 
     if (isRatingSuccessDialogVisible) {
         DialogScreen(
-            title = "작성된 리뷰가 등록되었습니다!",
+            title = "리뷰가 등록되었습니다!",
             isCancelable = false,
             onConfirm = { },
             onDismissRequest = {
@@ -163,10 +164,10 @@ fun RatingScreen(
                         onClick = {
                             navController.safeNavigateUp()
                         }
-                    ) { style ->
+                    ) {
                         Text(
-                            text = "나중에 하기",
-                            style = style
+                            text = "나중에 할게요",
+                            style = Headline3
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
@@ -182,10 +183,10 @@ fun RatingScreen(
                                 argument.intent(RatingIntent.RateUser(userDescription, userRating))
                             }
                         }
-                    ) { style ->
+                    ) {
                         Text(
                             text = "평가하기",
-                            style = style
+                            style = Headline3
                         )
                     }
                 }

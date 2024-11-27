@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -60,7 +61,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -70,7 +71,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -157,7 +157,7 @@ fun UserProfileScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -194,7 +194,9 @@ fun UserProfileScreen(
                             modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                         )
                     } else {
-                        LazyColumn {
+                        LazyColumn(
+                            contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
+                        ) {
                             items(
                                 count = minOf(recentTrades.itemCount, 3),
                                 key = { index -> recentTrades[index]?.id ?: -1 }
@@ -222,7 +224,7 @@ fun UserProfileScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -255,13 +257,11 @@ fun UserProfileScreen(
                         Text(
                             text = "아직 작성된 리뷰가 없어요",
                             style = Caption2,
-                            color = Gray600,
                             modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                         )
                     } else {
                         LazyColumn(
-                            modifier = Modifier.padding(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
                         ) {
                             items(
                                 count = minOf(recentReview.itemCount, 3),
@@ -274,7 +274,11 @@ fun UserProfileScreen(
                             ) { index ->
                                 val review = recentReview[index] ?: return@items
                                 ReviewCard(review)
-                                Spacer(modifier = Modifier.height(8.dp))
+                                HorizontalDivider(
+                                    thickness = 1.dp,
+                                    color = Gray200,
+                                    modifier = Modifier.padding(horizontal = 2.dp)
+                                )
                             }
                         }
                     }
@@ -296,7 +300,7 @@ private fun TradeHistoryCard(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(8.dp)
             .clip(RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .clickable {
@@ -318,9 +322,10 @@ private fun TradeHistoryCard(
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
             Text(
                 text = "${recentTrade.price} 원",
-                style = Headline3,
-                color = Black,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(4.dp),
             )
+
         }
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -338,7 +343,7 @@ private fun TradeHistoryCard(
 
 @Composable
 private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue200
+    val backgroundColor = if (isSold) LightGray else Blue300
     val text = if (isSold) "거래 완료" else "거래 가능"
 
     Box(
@@ -358,12 +363,10 @@ private fun TradeItemStatus(isSold: Boolean) {
 
 @Composable
 private fun ReviewCard(review: UserReview) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(Gray200)
             .padding(8.dp)
     ) {
         Row {

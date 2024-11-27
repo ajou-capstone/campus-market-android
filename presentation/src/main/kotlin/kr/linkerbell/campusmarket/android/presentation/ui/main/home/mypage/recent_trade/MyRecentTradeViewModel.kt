@@ -64,19 +64,19 @@ class MyRecentTradeViewModel @Inject constructor(
     fun onIntent(intent: MyRecentTradeIntent) {
         when (intent) {
             is MyRecentTradeIntent.RefreshAllTradeList -> {
-                launch{
+                launch {
                     getAllTradeHistory(_userId.value)
                 }
             }
 
             is MyRecentTradeIntent.RefreshSellTradeList -> {
-                launch{
+                launch {
                     getSalesTradeHistory(_userId.value)
                 }
             }
 
             is MyRecentTradeIntent.RefreshBuyTradeList -> {
-                launch{
+                launch {
                     getBuyTradeHistory(_userId.value)
                 }
             }

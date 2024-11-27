@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.co
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -29,7 +31,10 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
@@ -94,25 +99,46 @@ fun ScheduleCompareScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            ScheduleTable(
-                modifier = Modifier
-                    .height(Space52 * (endTime.hour - startTime.hour + 1))
-                    .fillMaxWidth()
-                    .padding(Space20),
-                dataList = listOf(
-                    ScheduleTableData(
-                        color = Blue400,
-                        scheduleList = data.mySchedule
-                    ),
-                    ScheduleTableData(
-                        color = Red400,
-                        scheduleList = data.userSchedule
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(Gray400)
+                            .size(height = 8.dp, width = 8.dp)
                     )
-                ),
-                startTime = startTime,
-                endTime = endTime
-            )
-            Spacer(modifier = Modifier.height(Space20))
+                    Text(
+                        text = "불가능한 시간",
+                        style = Body1,
+                        color = Black,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                }
+                ScheduleTable(
+                    modifier = Modifier
+                        .height(Space52 * (endTime.hour - startTime.hour + 1))
+                        .fillMaxWidth()
+                        .padding(Space20),
+                    dataList = listOf(
+                        ScheduleTableData(
+                            color = Gray400,
+                            scheduleList = data.mySchedule
+                        ),
+                        ScheduleTableData(
+                            color = Gray400,
+                            scheduleList = data.userSchedule
+                        )
+                    ),
+                    startTime = startTime,
+                    endTime = endTime
+                )
+                Spacer(modifier = Modifier.height(Space20))
+            }
         }
     }
 

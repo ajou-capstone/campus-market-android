@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.result
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
