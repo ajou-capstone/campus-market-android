@@ -59,6 +59,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
@@ -266,6 +267,7 @@ fun MyPageScreen(
                                 )
                             )
                             navController.safeNavigate(newRoute)
+                            navController.safeNavigate(MyLikesConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -287,7 +289,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //찜한 목록으로 이동
+                            navController.safeNavigate(MyLikesConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {

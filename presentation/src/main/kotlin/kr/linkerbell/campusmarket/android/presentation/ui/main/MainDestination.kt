@@ -9,6 +9,7 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inqui
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.inquiryDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.post.inquiryPostDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.view.inquiryViewDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.myLikesDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.logoutDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.withdrawal.withdrawalDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.ratingDestination
@@ -55,4 +56,5 @@ fun NavGraphBuilder.mainDestination(
     myRecentReviewDestination(navController = navController)
     inquiryViewDestination(navController = navController)
     inquiryInfoDestination(navController = navController)
+    myLikesDestination(navController = navController)
 }
