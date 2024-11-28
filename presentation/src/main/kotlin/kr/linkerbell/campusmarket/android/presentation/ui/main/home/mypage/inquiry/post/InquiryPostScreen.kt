@@ -54,6 +54,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -84,13 +85,7 @@ fun InquiryPostScreen(
     var validationDialogContent by remember { mutableStateOf("") }
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
 
-    val inquiryCategoryList by remember { mutableStateOf(data.inquiryCategoryList) }
     var currentSelectedCategory by remember { mutableStateOf("DEFAULT") }
-    var isDropDownExpanded by remember { mutableStateOf(false) }
-    val itemIndex = remember {
-        mutableIntStateOf(
-            inquiryCategoryList.indexOf(currentSelectedCategory).takeIf { it >= 0 } ?: 4)
-    }
 
     fun validateContent() {
         isContentAvailable = true
@@ -126,7 +121,7 @@ fun InquiryPostScreen(
             .background(White)
             .fillMaxSize()
     ) {
-        val (topBar, contents) = createRefs()
+        val (topBar, contents, button) = createRefs()
         Row(
             modifier = Modifier
                 .height(Space56)
@@ -203,62 +198,15 @@ fun InquiryPostScreen(
                     style = Headline2.merge(Gray900),
                     color = Black
                 )
-                Spacer(modifier = Modifier.padding(8.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Gray200)
-                        .fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(30.dp)
-                            .clickable {
-                                isDropDownExpanded = !isDropDownExpanded
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = translateToKor(inquiryCategoryList[itemIndex.intValue]),
-                            maxLines = 1,
-                            style = Body1,
-                            color = Color.Black,
-                            modifier = Modifier
-                                .padding(start = 8.dp, end = 4.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Search Button",
-                            tint = Gray900,
-                            modifier = Modifier
-                                .size(24.dp)
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = isDropDownExpanded,
-                        onDismissRequest = { isDropDownExpanded = false },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        inquiryCategoryList.forEachIndexed { index, category ->
-                            DropdownMenuItem(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                text = { Text(text = translateToKor(category)) },
-                                onClick = {
-                                    isDropDownExpanded = false
-                                    itemIndex.intValue = index
-                                    currentSelectedCategory = category
-                                }
-                            )
-                        }
-                    }
-                }
             }
+            Spacer(modifier = Modifier.padding(8.dp))
+            CategorySelectBox(
+                inquiryCategoryList = data.inquiryCategoryList,
+                currentSelectedCategory = currentSelectedCategory,
+                onClick = { selectedCategory ->
+                    currentSelectedCategory = selectedCategory
+                }
+            )
             Spacer(modifier = Modifier.padding(8.dp))
             Column {
                 Text(
@@ -289,6 +237,14 @@ fun InquiryPostScreen(
                 )
             }
             Spacer(modifier = Modifier.padding(32.dp))
+        }
+        Box(
+            modifier = Modifier
+                .padding(Space20)
+                .constrainAs(button) {
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
             PostButton(
                 isPostAvailable = isPostAvailable,
                 onPostButtonClicked = {
@@ -334,6 +290,71 @@ private fun translateToKor(engCategory: String): String {
         "ADVERTISEMENT_INQUIRY" -> "광고 문의"
         "OTHER" -> "기타"
         else -> "문의 종류를 선택해주세요"
+    }
+}
+
+@Composable
+private fun CategorySelectBox(
+    inquiryCategoryList: List<String>,
+    currentSelectedCategory: String,
+    onClick: (String) -> Unit
+) {
+    var isDropDownExpanded by remember { mutableStateOf(false) }
+    val itemIndex = remember {
+        mutableIntStateOf(
+            inquiryCategoryList.indexOf(currentSelectedCategory).takeIf { it >= 0 } ?: 4)
+    }
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(Gray200)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+                .clickable {
+                    isDropDownExpanded = !isDropDownExpanded
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = translateToKor(inquiryCategoryList[itemIndex.intValue]),
+                maxLines = 1,
+                style = Body1,
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 4.dp)
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Search Button",
+                tint = Gray900,
+                modifier = Modifier
+                    .size(24.dp)
+            )
+        }
+        DropdownMenu(
+            expanded = isDropDownExpanded,
+            onDismissRequest = { isDropDownExpanded = false },
+            modifier = Modifier
+                .heightIn(max = 200.dp)
+                .fillMaxWidth()
+        ) {
+            inquiryCategoryList.forEachIndexed { index, category ->
+                DropdownMenuItem(
+                    text = { Text(text = translateToKor(category)) },
+                    onClick = {
+                        isDropDownExpanded = false
+                        itemIndex.intValue = index
+                        onClick(category)
+                    }
+                )
+            }
+        }
     }
 }
 
