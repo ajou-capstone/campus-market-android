@@ -136,7 +136,9 @@ private fun MyRecentReviewListScreen(
 ) {
     if (recentReview.isEmpty()) {
         Box(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

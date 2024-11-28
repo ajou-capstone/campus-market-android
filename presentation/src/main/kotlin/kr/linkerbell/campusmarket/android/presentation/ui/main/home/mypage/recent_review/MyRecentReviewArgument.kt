@@ -20,8 +20,4 @@ sealed interface MyRecentReviewState {
 
 sealed interface MyRecentReviewEvent
 
-sealed interface MyRecentReviewIntent {
-    data object RefreshAllReviewList : MyRecentReviewIntent
-    data object RefreshSellReviewList : MyRecentReviewIntent
-    data object RefreshBuyReviewList : MyRecentReviewIntent
-}
+sealed interface MyRecentReviewIntent
