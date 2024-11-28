@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
@@ -58,6 +60,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
 
 @Composable
@@ -175,13 +178,13 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-//프로필 설정 페이지로 이동
+                            //프로필 설정 페이지로 이동
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        painter = painterResource(R.drawable.ic_edit),
                         contentDescription = null,
                         tint = Blue400
                     )
@@ -203,7 +206,7 @@ fun MyPageScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        painter = painterResource(R.drawable.ic_campus),
                         contentDescription = null,
                         tint = Blue400
                     )
@@ -240,7 +243,7 @@ fun MyPageScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        painter = painterResource(R.drawable.ic_box),
                         contentDescription = null,
                         tint = Blue400
                     )
@@ -256,13 +259,19 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //최근 작성된 리뷰 페이지로 이동
+                            val newRoute = makeRoute(
+                                route = MyRecentReviewConstant.ROUTE,
+                                arguments = mapOf(
+                                    MyRecentReviewConstant.ROUTE_ARGUMENT_USER_ID to userProfile.id.toString()
+                                )
+                            )
+                            navController.safeNavigate(newRoute)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        painter = painterResource(R.drawable.ic_list),
                         contentDescription = null,
                         tint = Blue400
                     )
@@ -284,7 +293,7 @@ fun MyPageScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        imageVector = Icons.Default.Favorite,
                         contentDescription = null,
                         tint = Blue400
                     )
@@ -315,7 +324,7 @@ fun MyPageScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        painter = painterResource(R.drawable.ic_setting),
                         contentDescription = null,
                         tint = Blue400
                     )
@@ -381,7 +390,7 @@ fun MyPageScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
+                        painter = painterResource(R.drawable.ic_logout),
                         contentDescription = null,
                         tint = Blue400
                     )

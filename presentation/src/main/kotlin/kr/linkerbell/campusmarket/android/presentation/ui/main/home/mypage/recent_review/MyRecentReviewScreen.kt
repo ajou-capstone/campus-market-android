@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_review
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,10 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,9 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +37,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,20 +60,21 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.isEmpty
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 
 @Composable
-fun RecentReviewScreen(
+fun MyRecentReviewScreen(
     navController: NavController,
-    argument: RecentReviewArgument,
-    data: RecentReviewData
+    argument: MyRecentReviewArgument,
+    data: MyRecentReviewData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    val recentReviewList = data.recentReviews
+    val recentReviews by remember { mutableStateOf(data.recentReviews) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -105,14 +109,13 @@ fun RecentReviewScreen(
                 )
             }
             Text(
-                text = "최근 평가",
+                text = "최근 리뷰 목록",
                 style = Headline2
             )
         }
         Column(
             modifier = Modifier
                 .padding(vertical = 8.dp)
-                .fillMaxHeight()
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
                     start.linkTo(parent.start)
@@ -122,36 +125,52 @@ fun RecentReviewScreen(
                     height = Dimension.fillToConstraints
                 }
         ) {
-            if (recentReviewList.itemCount == 0) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "아직 작성된 리뷰가 없어요",
-                        style = Caption2,
-                        color = Gray600,
-                        modifier = Modifier.padding(start = 8.dp, top = 8.dp)
-                    )
-                }
+            MyRecentReviewListScreen(recentReviews)
+        }
+    }
+}
+
+@Composable
+private fun MyRecentReviewListScreen(
+    recentReview: LazyPagingItems<UserReview>
+) {
+    if (recentReview.isEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "보여줄 항목이 없어요",
+                style = Caption2,
+                color = Gray600,
+                modifier = Modifier.padding(start = 8.dp, top = 8.dp)
+            )
+        }
+    }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
+    LazyColumn {
+        items(
+            count = recentReview.itemCount,
+            key = { index ->
+                ("${recentReview[index]?.userId ?: -1}_${
+                    recentReview[index]?.createdAt?.date ?: Clock.System.now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                }")
             }
-            LazyColumn(
-                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
-            ) {
-                items(
-                    count = recentReviewList.itemCount,
-                    key = { index ->
-                        ("${recentReviewList[index]?.userId ?: -1}_${
-                            recentReviewList[index]?.createdAt?.date ?: Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault())
-                        }")
-                    }
-                ) { index ->
-                    val review = recentReviewList[index] ?: return@items
-                    ReviewCard(review)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
+        ) { index ->
+            val review = recentReview[index] ?: return@items
+            ReviewCard(review = review)
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = Gray200,
+                modifier = Modifier.padding(horizontal = 2.dp)
+            )
         }
     }
 }
@@ -162,7 +181,6 @@ private fun ReviewCard(review: UserReview) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(Gray200)
             .padding(8.dp)
     ) {
         Row {
@@ -268,16 +286,16 @@ private fun RatingStars(
 @Preview
 @Composable
 private fun RecentReviewScreenPreview() {
-    RecentReviewScreen(
+    MyRecentReviewScreen(
         navController = rememberNavController(),
-        argument = RecentReviewArgument(
-            state = RecentReviewState.Init,
+        argument = MyRecentReviewArgument(
+            state = MyRecentReviewState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
             coroutineContext = Dispatchers.IO
         ),
-        data = RecentReviewData(
+        data = MyRecentReviewData(
             recentReviews = MutableStateFlow(
                 PagingData.from(
                     listOf(
@@ -290,12 +308,12 @@ private fun RecentReviewScreenPreview() {
                             createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
                         ),
                         UserReview(
-                            userId = 0L,
+                            userId = 1L,
                             nickname = "reviewer_2",
                             profileImage = "",
                             description = "아주 좋아요",
                             rating = 10,
-                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
                         )
                     )
                 )
