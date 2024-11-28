@@ -49,6 +49,10 @@ class MyRecentReviewViewModel @Inject constructor(
         }
     }
 
+    fun onIntent(intent: MyRecentReviewIntent) {
+
+    }
+
     private suspend fun getRecentReviewHistory(userId: Long) {
         getUserReviewUseCase(userId)
             .cachedIn(viewModelScope)
