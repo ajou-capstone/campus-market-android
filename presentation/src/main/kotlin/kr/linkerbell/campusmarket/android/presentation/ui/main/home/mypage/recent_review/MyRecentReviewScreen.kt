@@ -161,7 +161,7 @@ private fun MyRecentReviewListScreen(
                 ("${recentReview[index]?.userId ?: -1}_${
                     recentReview[index]?.createdAt?.date ?: Clock.System.now()
                         .toLocalDateTime(TimeZone.currentSystemDefault())
-                }").hashCode()
+                }")
             }
         ) { index ->
             val review = recentReview[index] ?: return@items
