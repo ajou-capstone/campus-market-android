@@ -1,7 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,8 +55,10 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeConten
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
@@ -163,16 +164,25 @@ fun TradePostScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(
-                    text = "사진",
-                    style = Headline3,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                Row(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "사진",
+                        style = Headline3,
+                    )
+                    Text(
+                        text = "(첫 번째 사진은 썸네일로 지정됩니다.)",
+                        style = Caption2,
+                        color = Gray600,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
                 Row {
                     TradePostScreenAddImageBox(
                         onAddImageClicked = { isGalleryShowing = true }
                     )
-
                     Row(
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState())
@@ -341,7 +351,6 @@ private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
     Card(
         modifier = Modifier.size(100.dp),
         colors = CardDefaults.cardColors(Blue200),
-        border = BorderStroke(1.dp, Blue400)
     ) {
         Box(modifier = Modifier
             .fillMaxSize()
@@ -354,7 +363,7 @@ private fun TradePostScreenAddImageBox(onAddImageClicked: () -> Unit) {
                     .size(64.dp)
                     .align(Alignment.Center)
                     .padding(4.dp),
-                painter = painterResource(id = R.drawable.ic_plus),
+                painter = painterResource(id = R.drawable.camera),
                 tint = White,
                 contentDescription = null,
             )
@@ -466,7 +475,9 @@ private fun TradePostScreenTradeInfo(
     changeCategory: (String) -> Unit
 ) {
     Column {
-        Column(modifier = Modifier.padding(vertical = 16.dp)) {
+        Column(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
             Text(
                 text = "제목",
                 style = Headline3,
@@ -489,65 +500,66 @@ private fun TradePostScreenTradeInfo(
                             }
                     )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         }
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            Column(
-                modifier = Modifier
-                    .weight(2f)
-                    .padding(end = 16.dp)
-            ) {
-                Text(
-                    text = "가격",
-                    style = Headline3,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                TypingTextField(
-                    text = price,
-                    onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() }) {
-                            val sanitizedValue = newValue
-                                .trimStart('0')
-                                .ifEmpty { "0" }
-                            changePrice(sanitizedValue)
+        Column(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Text(
+                text = "가격",
+                style = Headline3,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            TypingTextField(
+                text = price,
+                onValueChange = { newValue ->
+                    if (newValue.all { it.isDigit() }) {
+                        var sanitizedValue = newValue
+                            .trimStart('0')
+                        if (sanitizedValue == "0") {
+                            sanitizedValue = ""
                         }
-                    },
-                    hintText = "가격을 입력하세요",
-                    maxLines = 1,
-                    maxTextLength = 100,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    trailingIconContent = {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Clear button",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clickable {
-                                    changePrice("0")
-                                }
-                        )
-                    },
-                    modifier = Modifier
-                )
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "분류",
-                    style = Headline3,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                TradePostScreenCategorySelector(
-                    categoryList,
-                    category,
-                    changeCategory = changeCategory
-                )
-            }
+                        changePrice(sanitizedValue)
+                    }
+                },
+                hintText = "가격을 입력하세요",
+                maxLines = 1,
+                maxTextLength = 100,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                trailingIconContent = {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear button",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable {
+                                changePrice("0")
+                            }
+                    )
+                },
+                modifier = Modifier
+            )
         }
-        Column {
+        Column(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Text(
+                text = "분류",
+                style = Headline3,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            TradePostScreenCategorySelector(
+                categoryList,
+                category,
+                changeCategory = changeCategory
+            )
+        }
+        Column(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -602,6 +614,7 @@ private fun TradePostScreenCategorySelector(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(Blue300)
                 .height(30.dp)
                 .clickable {
                     isDropDownExpanded = !isDropDownExpanded
@@ -613,7 +626,8 @@ private fun TradePostScreenCategorySelector(
                 text = translateToKor(categoryList[itemIndex]),
                 maxLines = 1,
                 style = Body2,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp),
+                color = White
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,

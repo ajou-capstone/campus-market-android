@@ -1,7 +1,6 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.result
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.LightGray
@@ -68,13 +66,13 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryLis
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue500
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
@@ -189,15 +187,14 @@ fun TradeSearchResultScreen(
                 .nestedScroll(refreshState.nestedScrollConnection)
         ) {
             LazyColumn(
-                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 20.dp)
+                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp)
             ) {
-
                 items(
                     count = data.summarizedTradeList.itemCount,
                     key = { index -> data.summarizedTradeList[index]?.itemId ?: -1 }
                 ) { index ->
                     val trade = data.summarizedTradeList[index] ?: return@items
-                    TradeSearchResultItemCard(
+                    TradeItemCard(
                         item = trade,
                         onItemCardClicked = {
                             val tradeInfoRoute = makeRoute(
@@ -464,8 +461,7 @@ private fun TradeSearchResultCategoryFilter(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .background(Blue400)
-                .border(1.dp, Blue500, shape = RoundedCornerShape(4.dp))
+                .background(Blue300)
                 .fillMaxWidth()
         ) {
             Row(
@@ -545,15 +541,13 @@ private fun TradeSearchResultSortOption(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .background(Blue400)
-                .border(1.dp, Blue500, shape = RoundedCornerShape(4.dp))
+                .background(Blue300)
                 .fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(30.dp)
-                    .border(1.dp, Blue500, shape = RoundedCornerShape(4.dp))
                     .clickable {
                         isDropDownExpanded = !isDropDownExpanded
                     },
@@ -565,8 +559,7 @@ private fun TradeSearchResultSortOption(
                     maxLines = 1,
                     style = Body1,
                     color = Color.White,
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 4.dp)
+                    modifier = Modifier.padding(start = 8.dp, end = 4.dp)
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
@@ -598,14 +591,12 @@ private fun TradeSearchResultSortOption(
 }
 
 @Composable
-private fun TradeSearchResultItemCard(
+private fun TradeItemCard(
     item: SummarizedTrade,
     onItemCardClicked: (Long) -> Unit
 ) {
     Box(
         Modifier
-            .shadow(4.dp)
-            .clip(RoundedCornerShape(5.dp))
             .clickable {
                 onItemCardClicked(item.itemId)
             }
@@ -632,16 +623,17 @@ private fun TradeSearchResultItemCard(
                     maxLines = 1,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
-
                 Text(
                     text = item.nickname,
                     style = Caption2,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    color = Black
                 )
                 Text(
                     text = "${item.chatCount} 명이 대화중",
                     style = Caption2,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    color = Black
                 )
                 Row(
                     modifier = Modifier
@@ -651,13 +643,14 @@ private fun TradeSearchResultItemCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        TradeSearchResultItemStatus(
+                        TradeItemStatus(
                             isSold = item.itemStatus == "SOLDOUT"
                         )
                         Text(
                             text = "${item.price} 원",
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(4.dp)
+                            modifier = Modifier.padding(4.dp),
+                            color = Black
                         )
                     }
                     Row(
@@ -668,7 +661,7 @@ private fun TradeSearchResultItemCard(
                             if (item.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
                         Icon(
                             imageVector = favIcon,
-                            tint = Gray900,
+                            tint = Blue400,
                             contentDescription = "isLike",
                             modifier = Modifier.size(12.dp)
                         )
@@ -679,26 +672,11 @@ private fun TradeSearchResultItemCard(
             }
         }
     }
-}
-
-@Composable
-private fun TradeSearchResultItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue100
-    val text = if (isSold) "거래 완료" else "거래 가능"
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(5.dp))
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = Body1,
-            color = White,
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-        )
-    }
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = Gray200,
+        modifier = Modifier.padding(horizontal = 2.dp)
+    )
 }
 
 private fun translateToKor(engCategory: String): String {
@@ -716,6 +694,26 @@ private fun translateToKor(engCategory: String): String {
         "OTHER" -> "기타"
         "" -> "전체"
         else -> "기타"
+    }
+}
+
+@Composable
+private fun TradeItemStatus(isSold: Boolean) {
+    val backgroundColor = if (isSold) LightGray else Blue300
+    val text = if (isSold) "거래 완료" else "거래 가능"
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(5.dp))
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = Body1,
+            color = White,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+        )
     }
 }
 

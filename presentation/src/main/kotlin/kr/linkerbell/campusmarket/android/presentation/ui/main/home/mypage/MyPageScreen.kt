@@ -103,7 +103,6 @@ fun MyPageScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     val userProfile = data.myProfile
-
     ConstraintLayout(
         modifier = Modifier
             .background(White)

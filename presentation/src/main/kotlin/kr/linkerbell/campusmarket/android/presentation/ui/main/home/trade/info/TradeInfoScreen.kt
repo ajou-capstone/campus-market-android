@@ -1,6 +1,7 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,7 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,7 +58,6 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.BlueGray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
@@ -149,7 +149,7 @@ fun TradeInfoScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .background(Gray50)
+                .background(White)
         ) {
             TradeInfoImageViewer(
                 thumbUrl = tradeInfo.thumbnail,
@@ -364,7 +364,7 @@ private fun TradeInfoAuthor(
 ) {
     Row(
         modifier = Modifier
-            .background(White)
+            .background(Gray50)
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -391,9 +391,23 @@ private fun TradeInfoAuthor(
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
-        Text(text = "${authorInfo.rating} 점", color = Black, style = Headline3)
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.filled_star),
+                contentDescription = "Filled Star",
+                colorFilter = ColorFilter.tint(Blue400),
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = "${authorInfo.rating} 점",
+                color = Black,
+                style = Headline3,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
     }
-
 }
 
 @Composable
@@ -472,30 +486,9 @@ private fun TradeInfoBottomBar(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TradeItemStatus(isSold)
             Spacer(Modifier.padding(8.dp))
             TradeStartButton(isSold, isOwnerOfThisTrade, onChatButtonClick)
         }
-    }
-}
-
-@Composable
-private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue100
-    val text = if (isSold) "거래 완료" else "거래 가능"
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(5.dp))
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = Body1,
-            color = White,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
     }
 }
 
@@ -521,7 +514,7 @@ private fun TradeStartButton(
         }
     } else {
         val backgroundColor = if (isSold) BlueGray200 else Blue400
-        val text = if (isSold) "거래 완료" else "거래하기"
+        val text = if (isSold) "완료된 거래" else "거래하기"
 
         Row(
             modifier = Modifier
@@ -640,7 +633,7 @@ private fun TradeInfoScreenPreview() {
                 likeCount = 20,
                 price = 15000,
                 isLiked = true,
-                isSold = false
+                isSold = true
             ),
             userInfo = MyProfile.empty
         )

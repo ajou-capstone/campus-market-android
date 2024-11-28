@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.result
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.result
 
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
 
@@ -12,7 +12,7 @@ object TradeSearchResultConstant {
     const val ROUTE_ARGUMENT_MAXPRICE = "maxPrice"
     const val ROUTE_ARGUMENT_SORTED = "sort"
 
-    const val ROUTE_STRUCTURE = "${ROUTE}?" +
+    const val ROUTE_STRUCTURE = "$ROUTE?" +
             "$ROUTE_ARGUMENT_NAME={$ROUTE_ARGUMENT_NAME}" +
             "&$ROUTE_ARGUMENT_CATEGORY={$ROUTE_ARGUMENT_CATEGORY}" +
             "&$ROUTE_ARGUMENT_MINPRICE={$ROUTE_ARGUMENT_MINPRICE}" +

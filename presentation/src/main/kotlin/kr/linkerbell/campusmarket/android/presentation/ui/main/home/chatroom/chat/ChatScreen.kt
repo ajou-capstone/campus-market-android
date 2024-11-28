@@ -84,8 +84,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.RatingConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
 
 @Composable
 fun ChatScreen(
@@ -296,7 +296,7 @@ fun ChatScreen(
                             Spacer(modifier = Modifier.width(Space8))
                             Box(
                                 modifier = Modifier.background(
-                                    color = Blue200,
+                                    color = Gray400,
                                     shape = RoundedCornerShape(Space4, Space20, Space20, Space20)
                                 )
                             ) {
@@ -354,7 +354,7 @@ fun ChatScreen(
                             Spacer(modifier = Modifier.width(Space8))
                             Box(
                                 modifier = Modifier.background(
-                                    color = Blue200,
+                                    color = Gray400,
                                     shape = RoundedCornerShape(Space4, Space20, Space20, Space20)
                                 )
                             ) {
@@ -429,7 +429,7 @@ fun ChatScreen(
                             Spacer(modifier = Modifier.width(Space8))
                             Box(
                                 modifier = Modifier.background(
-                                    color = Blue100,
+                                    color = Gray400,
                                     shape = RoundedCornerShape(Space12, Space12, Space12, Space12)
                                 )
                             ) {
@@ -708,7 +708,7 @@ private fun ChatScreenPreview() {
                     id = 6L,
                     chatRoomId = 1L,
                     userId = 2L,
-                    content = "엄청나게 긴 메세지를 엄청나게 보내는데 ".repeat(100),
+                    content = "엄청나게 긴 메세지를 엄청나게 보내는데 ".repeat(5),
                     createdAt = currentTime
                 ),
             ),
