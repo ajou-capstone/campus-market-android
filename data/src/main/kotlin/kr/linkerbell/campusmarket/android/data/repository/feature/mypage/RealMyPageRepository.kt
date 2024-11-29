@@ -9,6 +9,7 @@ import kr.linkerbell.campusmarket.android.data.common.DEFAULT_PAGING_SIZE
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.MyPageApi
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.InquiryPagingSource
+import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.MyLikesPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.RecentTradePagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.ReviewPagingSource
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryCategoryList
@@ -16,6 +17,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInf
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.MyPageRepository
 
 class RealMyPageRepository @Inject constructor(
@@ -84,5 +86,19 @@ class RealMyPageRepository @Inject constructor(
 
     override suspend fun getInquiryInfo(qaId: Long): Result<InquiryInfo> {
         return myPageApi.getInquiryInfo(qaId).toDomain()
+    }
+
+    override suspend fun getMyLikes(): Flow<PagingData<SummarizedTrade>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGING_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                MyLikesPagingSource(
+                    myPageApi = myPageApi
+                )
+            },
+        ).flow
     }
 }

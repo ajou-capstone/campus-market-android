@@ -7,6 +7,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInf
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
+import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 
 interface MyPageRepository {
 
@@ -18,6 +19,8 @@ interface MyPageRepository {
         userId: Long,
         type: String
     ): Flow<PagingData<RecentTrade>>
+
+    suspend fun getMyLikes(): Flow<PagingData<SummarizedTrade>>
 
     suspend fun getInquiryCategoryList(): Result<InquiryCategoryList>
 

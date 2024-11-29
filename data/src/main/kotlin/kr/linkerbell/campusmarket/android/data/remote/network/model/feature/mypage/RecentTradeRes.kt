@@ -8,7 +8,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrad
 @Serializable
 data class RecentTradeRes(
     @SerialName("content")
-    val reviewList: List<RecentTradeItemRes>,
+    val content: List<RecentTradeItemRes>,
     @SerialName("sort")
     val sort: RecentTradeSortRes,
     @SerialName("currentPage")
@@ -34,7 +34,7 @@ data class RecentTradeSortRes(
 @Serializable
 data class RecentTradeItemRes(
     @SerialName("itemId")
-    val id: Long,
+    val itemId: Long,
     @SerialName("title")
     val title: String,
     @SerialName("price")
@@ -46,7 +46,7 @@ data class RecentTradeItemRes(
 ) : DataMapper<RecentTrade> {
     override fun toDomain(): RecentTrade {
         return RecentTrade(
-            id = id,
+            id = itemId,
             title = title,
             price = price,
             thumbnail = thumbnail,

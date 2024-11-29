@@ -12,11 +12,11 @@ import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorM
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryCategoryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryContentsReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryInfoRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.MyLikesRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.RecentTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserInquiryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserReviewRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
-import timber.log.Timber
 
 class MyPageApi @Inject constructor(
     @AuthHttpClient private val client: HttpClient,
@@ -84,5 +84,15 @@ class MyPageApi @Inject constructor(
     suspend fun getInquiryInfo(qaId: Long): Result<InquiryInfoRes> {
         return client.get("$baseUrl/api/v1/answers/${qaId}")
             .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getMyLikes(
+        page: Int,
+        size: Int
+    ): Result<MyLikesRes> {
+        return client.get("$baseUrl/api/v1/items/likes") {
+            parameter("page", page.toString())
+            parameter("size", size.toString())
+        }.convert<MyLikesRes>(errorMessageMapper::map)
     }
 }
