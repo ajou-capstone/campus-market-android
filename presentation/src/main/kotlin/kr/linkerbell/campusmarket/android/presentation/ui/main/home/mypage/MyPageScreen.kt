@@ -335,77 +335,61 @@ fun MyPageScreen(
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            //문의하기 페이지로 이동
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
-                        contentDescription = null,
-                        tint = Blue400
-                    )
-                    Text(
-                        text = "문의",
-                        style = Headline3,
-                        color = Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            //약관 페이지로 이동 (Notion)
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_error),
-                        contentDescription = null,
-                        tint = Blue400
-                    )
-                    Text(
-                        text = "약관 보기",
-                        style = Headline3,
-                        color = Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            navController.safeNavigate(LogoutConstant.ROUTE)
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_logout),
-                        contentDescription = null,
-                        tint = Blue400
-                    )
-                    Text(
-                        text = "로그아웃/탈퇴",
-                        style = Headline3,
-                        color = Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
+                Text(
+                    text = "문의",
+                    style = Headline3,
+                    color = Black,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
-
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        //약관 페이지로 이동 (Notion)
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(R.drawable.ic_error),
+                    contentDescription = null,
+                    tint = Blue400
+                )
+                Text(
+                    text = "약관 보기",
+                    style = Headline3,
+                    color = Black,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.safeNavigate(LogoutConstant.ROUTE)
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(R.drawable.ic_logout),
+                    contentDescription = null,
+                    tint = Blue400
+                )
+                Text(
+                    text = "로그아웃/탈퇴",
+                    style = Headline3,
+                    color = Black,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
         }
     }
 }
+
 
 @Composable
 private fun MyProfileUserInfo(
