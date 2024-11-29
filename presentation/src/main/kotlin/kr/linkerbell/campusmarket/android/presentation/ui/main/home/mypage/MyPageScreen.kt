@@ -54,11 +54,14 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.ChangeProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.InquiryConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
@@ -179,7 +182,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            //프로필 설정 페이지로 이동
+                            navController.safeNavigate(ChangeProfileConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -336,12 +339,28 @@ fun MyPageScreen(
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
-                Text(
-                    text = "문의",
-                    style = Headline3,
-                    color = Black,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.safeNavigate(InquiryConstant.ROUTE)
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_list),
+                        contentDescription = null,
+                        tint = Blue400
+                    )
+                    Text(
+                        text = "문의",
+                        style = Headline3,
+                        color = Black,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
             }
             Row(
                 modifier = Modifier
@@ -389,8 +408,10 @@ fun MyPageScreen(
             }
         }
     }
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
+        argument.intent(MyPageIntent.RefreshData)
+    }
 }
-
 
 @Composable
 private fun MyProfileUserInfo(
@@ -441,7 +462,6 @@ private fun MyProfileUserInfo(
         }
     }
 }
-
 
 @Preview
 @Composable
