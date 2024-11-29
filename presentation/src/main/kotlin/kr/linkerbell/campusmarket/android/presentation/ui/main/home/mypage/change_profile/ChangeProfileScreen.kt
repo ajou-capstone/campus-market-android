@@ -81,19 +81,22 @@ fun ChangeProfileScreen(
     val originalProfileImage = data.myProfile.profileImage
     val originalNickname = data.myProfile.nickname
     var newProfileImage: GalleryImage? by rememberSaveable { mutableStateOf(null) }
-    var newNickname = data.myProfile.nickname
-
-    val isNicknameSizeValid = newNickname.toByteArray(Charsets.UTF_8).size in 0..20
-    val isNicknameFormValid = newNickname.matches("[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9]*".toRegex())
+    var newNickname: String? by remember { mutableStateOf(null) }
 
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
     var isGalleryShowing by remember { mutableStateOf(false) }
 
     fun nicknameValidation(): Boolean {
-        return newNickname.isNotBlank()
-                && isNicknameSizeValid
-                && isNicknameFormValid
-                && (newNickname != originalNickname)
+        val changedNickname = newNickname
+        if (changedNickname != null) {
+            val isNicknameSizeValid = changedNickname.toByteArray(Charsets.UTF_8).size in 0..20
+            val isNicknameFormValid = changedNickname.matches("[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9]*".toRegex())
+
+            return isNicknameSizeValid
+                    && isNicknameFormValid
+                    && (changedNickname != originalNickname)
+        }
+        return false
     }
 
     if (isSuccessDialogVisible) {
@@ -192,7 +195,7 @@ fun ChangeProfileScreen(
                 }
                 Spacer(modifier = Modifier.padding(vertical = 16.dp))
                 TypingTextField(
-                    text = newNickname,
+                    text = newNickname ?: originalNickname,
                     onValueChange = { newNickname = it },
                     hintText = "닉네임을 입력하세요",
                     maxLines = 1,
@@ -212,12 +215,14 @@ fun ChangeProfileScreen(
                     bottom.linkTo(parent.bottom)
                 }
         ) {
+            val nickname : String = newNickname ?: ""
+
             PostNewProfile(
-                newNickname.isNotEmpty() && newNickname != originalNickname,
+                nickname.isNotEmpty() && newNickname != originalNickname,
                 onClicked = {
                     if (nicknameValidation()) {
                         argument.intent(
-                            ChangeProfileIntent.OnChangeNickname(newNickname)
+                            ChangeProfileIntent.OnChangeNickname(nickname)
                         )
                     }
                     if (newProfileImage != null) {
