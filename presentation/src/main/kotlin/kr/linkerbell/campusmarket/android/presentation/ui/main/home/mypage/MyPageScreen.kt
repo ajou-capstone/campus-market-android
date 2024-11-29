@@ -267,7 +267,6 @@ fun MyPageScreen(
                                 )
                             )
                             navController.safeNavigate(newRoute)
-                            navController.safeNavigate(MyLikesConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
