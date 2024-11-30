@@ -14,6 +14,7 @@ import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.ReviewPagingSource
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryCategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
@@ -100,5 +101,17 @@ class RealMyPageRepository @Inject constructor(
                 )
             },
         ).flow
+    }
+
+    override suspend fun getMyKeywordList(): Result<List<Keyword>> {
+        return myPageApi.getMyKeywordList().toDomain()
+    }
+
+    override suspend fun postNewKeyword(keywordName: String): Result<Unit> {
+        return myPageApi.postNewKeyword(keywordName)
+    }
+
+    override suspend fun deleteKeyword(keywordId: Long): Result<Unit> {
+        return myPageApi.deleteKeyword(keywordId)
     }
 }

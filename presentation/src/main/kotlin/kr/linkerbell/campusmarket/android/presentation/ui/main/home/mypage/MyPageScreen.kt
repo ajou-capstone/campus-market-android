@@ -63,6 +63,7 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.chang
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.InquiryConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.keyword.KeywordConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
@@ -303,6 +304,28 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "찜한 목록",
+                        style = Headline3,
+                        color = Black,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.safeNavigate(KeywordConstant.ROUTE)
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_keyword),
+                        modifier = Modifier.size(16.dp),
+                        contentDescription = null,
+                        tint = Blue400
+                    )
+                    Text(
+                        text = "키워드 설정",
                         style = Headline3,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)

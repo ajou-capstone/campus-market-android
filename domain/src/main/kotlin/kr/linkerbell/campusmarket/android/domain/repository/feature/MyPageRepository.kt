@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryCategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
@@ -29,4 +30,10 @@ interface MyPageRepository {
     suspend fun getInquiryList(): Flow<PagingData<UserInquiry>>
 
     suspend fun getInquiryInfo(qaId: Long): Result<InquiryInfo>
+
+    suspend fun getMyKeywordList(): Result<List<Keyword>>
+
+    suspend fun postNewKeyword(keywordName: String): Result<Unit>
+
+    suspend fun deleteKeyword(keywordId: Long): Result<Unit>
 }
