@@ -10,6 +10,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.MyPage
 import kr.linkerbell.campusmarket.android.data.remote.network.util.toDomain
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.InquiryPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.MyLikesPagingSource
+import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.NotificationPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.RecentTradePagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.ReviewPagingSource
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryCategoryList
@@ -17,6 +18,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInf
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserNotification
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.MyPageRepository
@@ -113,5 +115,27 @@ class RealMyPageRepository @Inject constructor(
 
     override suspend fun deleteKeyword(keywordId: Long): Result<Unit> {
         return myPageApi.deleteKeyword(keywordId)
+    }
+
+    override suspend fun deleteAllNotification(): Result<Unit> {
+        return myPageApi.deleteAllNotification()
+    }
+
+    override suspend fun getNotificationHistory(): Flow<PagingData<UserNotification>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGING_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                NotificationPagingSource(
+                    myPageApi = myPageApi
+                )
+            },
+        ).flow
+    }
+
+    override suspend fun deleteNotificationById(notificationId: Long): Result<Unit> {
+        return myPageApi.deleteNotificationById(notificationId)
     }
 }

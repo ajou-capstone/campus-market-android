@@ -70,9 +70,11 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.search.TradeSearchConstant
@@ -138,7 +140,10 @@ private fun TradeScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            TradeSearchBar { navController.navigate(TradeSearchConstant.ROUTE) }
+            TradeSearchBar(
+                onClicked = { navController.safeNavigate(TradeSearchConstant.ROUTE) },
+                onNotificationIconClicked = { navController.safeNavigate(NotificationConstant.ROUTE) }
+            )
         }
         Box(
             modifier = Modifier
@@ -314,7 +319,8 @@ private fun TradeItemCard(
 
 @Composable
 private fun TradeSearchBar(
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
+    onNotificationIconClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -337,11 +343,10 @@ private fun TradeSearchBar(
                 }
             }
         )
-
         RippleBox(
             modifier = Modifier.padding(end = Space20),
             onClick = {
-//                navigateToNotificationScreen()
+                onNotificationIconClicked()
             }
         ) {
             Icon(

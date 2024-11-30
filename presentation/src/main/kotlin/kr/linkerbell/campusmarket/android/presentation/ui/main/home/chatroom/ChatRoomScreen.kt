@@ -50,6 +50,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 
 @Composable
 fun ChatRoomScreen(
@@ -104,7 +105,7 @@ private fun ChatRoomScreen(
     }
 
     fun navigateToNotificationScreen() {
-//        navController.safeNavigate(NotificationConstant.ROUTE)
+        navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
     Column(
