@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.chatDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.homeDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.changeProfileDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.changeCampusDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.info.inquiryInfoDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.inquiryDestination
@@ -57,4 +58,5 @@ fun NavGraphBuilder.mainDestination(
     inquiryViewDestination(navController = navController)
     inquiryInfoDestination(navController = navController)
     myLikesDestination(navController = navController)
+    changeProfileDestination(navController = navController)
 }
