@@ -1,6 +1,7 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.api.feature
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -12,7 +13,9 @@ import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorM
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryCategoryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryContentsReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryInfoRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.KeywordListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.MyLikesRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.PostNewKeywordReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.RecentTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserInquiryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserReviewRes
@@ -94,5 +97,23 @@ class MyPageApi @Inject constructor(
             parameter("page", page.toString())
             parameter("size", size.toString())
         }.convert<MyLikesRes>(errorMessageMapper::map)
+    }
+
+    suspend fun getMyKeywordList(): Result<KeywordListRes> {
+        return client.get("$baseUrl/api/v1/keywords")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun postNewKeyword(keywordName: String): Result<Unit> {
+        return client.post("$baseUrl/api/v1/keywords") {
+            setBody(
+                PostNewKeywordReq(keywordName = keywordName)
+            )
+        }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun deleteKeyword(keywordId: Long): Result<Unit> {
+        return client.delete("$baseUrl/api/v1/keywords/${keywordId}")
+            .convert(errorMessageMapper::map)
     }
 }
