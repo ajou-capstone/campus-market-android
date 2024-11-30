@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 
-
 @Serializable
 data class KeywordListRes(
     @SerialName("keywordList")
