@@ -87,7 +87,7 @@ fun UserReportScreen(
     var validationDialogContent by remember { mutableStateOf("") }
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
 
-    var currentSelectedCategory by remember { mutableStateOf("DEFAULT") }
+    var currentSelectedCategory by remember { mutableStateOf("OTHER") }
 
     fun validateContent() {
         isContentAvailable = true
