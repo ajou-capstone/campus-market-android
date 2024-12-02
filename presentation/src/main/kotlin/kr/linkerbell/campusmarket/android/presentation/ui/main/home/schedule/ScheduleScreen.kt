@@ -52,7 +52,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.common.table.ScheduleTable
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.common.table.ScheduleTableData
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.edit.ScheduleEditScreen
@@ -108,7 +110,7 @@ private fun ScheduleScreen(
     var editingSchedule: Schedule? by remember { mutableStateOf(null) }
 
     fun navigateToNotificationScreen() {
-//        navController.safeNavigate(NotificationConstant.ROUTE)
+        navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
     if (isScheduleAddShowing) {

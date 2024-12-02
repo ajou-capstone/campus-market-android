@@ -7,6 +7,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInf
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserNotification
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 
@@ -36,4 +37,10 @@ interface MyPageRepository {
     suspend fun postNewKeyword(keywordName: String): Result<Unit>
 
     suspend fun deleteKeyword(keywordId: Long): Result<Unit>
+
+    suspend fun deleteAllNotification(): Result<Unit>
+
+    suspend fun getNotificationHistory(): Flow<PagingData<UserNotification>>
+
+    suspend fun deleteNotificationById(notificationId: Long): Result<Unit>
 }

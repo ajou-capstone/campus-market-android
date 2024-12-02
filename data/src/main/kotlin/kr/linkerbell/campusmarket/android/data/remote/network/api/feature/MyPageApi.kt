@@ -18,6 +18,7 @@ import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypa
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.PostNewKeywordReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.RecentTradeRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserInquiryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserNotificationListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserReviewRes
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 
@@ -114,6 +115,26 @@ class MyPageApi @Inject constructor(
 
     suspend fun deleteKeyword(keywordId: Long): Result<Unit> {
         return client.delete("$baseUrl/api/v1/keywords/${keywordId}")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun deleteAllNotification(): Result<Unit> {
+        return client.delete("$baseUrl/api/v1/notification-history")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getNotificationHistory(
+        page: Int,
+        size: Int
+    ): Result<UserNotificationListRes> {
+        return client.get("$baseUrl/api/v1/notification-history") {
+            parameter("page", page.toString())
+            parameter("size", size.toString())
+        }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun deleteNotificationById(notificationId: Long): Result<Unit> {
+        return client.delete("$baseUrl/api/v1/notification-history/${notificationId}")
             .convert(errorMessageMapper::map)
     }
 }

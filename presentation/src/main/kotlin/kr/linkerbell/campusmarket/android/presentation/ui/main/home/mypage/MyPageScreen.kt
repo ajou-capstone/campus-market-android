@@ -62,9 +62,10 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.ChangeProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.InquiryConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.keyword.KeywordConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
 
@@ -138,12 +139,11 @@ fun MyPageScreen(
             RippleBox(
                 modifier = Modifier.padding(end = Space20),
                 onClick = {
-                    //navController.safeNavigate(NotificationConstant.ROUTE)
+                    navController.safeNavigate(NotificationConstant.ROUTE)
                 }
             ) {
                 Icon(
-                    modifier = Modifier
-                        .size(Space24),
+                    modifier = Modifier.size(Space24),
                     painter = painterResource(R.drawable.ic_notification),
                     contentDescription = null,
                     tint = Gray900
@@ -226,7 +226,7 @@ fun MyPageScreen(
 
             Column(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
-                    text = "최근 활동",
+                    text = "나의 활동",
                     style = Headline2,
                     color = Black,
                     modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
