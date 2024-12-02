@@ -16,7 +16,7 @@ data class SummarizedUserReport(
             qaId = 0L,
             userId = 0L,
             title = "",
-            category = "",
+            category = "OTHER",
             isCompleted = false,
             createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
             answerDate = LocalDateTime(2000, 1, 1, 0, 0, 0)

@@ -63,6 +63,16 @@ class MyPageApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
+    suspend fun getItemReportCategoryList(): Result<ItemReportCategoryListRes> {
+        return client.get("$baseUrl/api/v1/items/report")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getUserReportCategoryList(): Result<UserReportCategoryListRes> {
+        return client.get("$baseUrl/api/v1/users/report")
+            .convert(errorMessageMapper::map)
+    }
+
     suspend fun postInquiry(
         title: String,
         category: String,
@@ -77,16 +87,6 @@ class MyPageApi @Inject constructor(
                 )
             )
         }.convert(errorMessageMapper::map)
-    }
-
-    suspend fun getItemReportCategoryList(): Result<ItemReportCategoryListRes> {
-        return client.get("$baseUrl/api/v1/items/report")
-            .convert(errorMessageMapper::map)
-    }
-
-    suspend fun getUserReportCategoryList(): Result<UserReportCategoryListRes> {
-        return client.get("$baseUrl/api/v1/users/report")
-            .convert(errorMessageMapper::map)
     }
 
     suspend fun postItemReport(itemId: Long, category: String, description: String): Result<Unit> {

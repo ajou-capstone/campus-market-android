@@ -74,7 +74,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.item.ItemReportConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.user.UserReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.UserProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 
@@ -127,7 +126,9 @@ fun TradeInfoScreen(
         topBar = {
             TradeInfoTopBar(
                 isOwnerOfThisTrade = isOwnerOfThisTrade,
-                onNavigatePreviousScreenButton = { navController.safeNavigateUp() },
+                onNavigatePreviousScreenButton = {
+                    navController.safeNavigateUp()
+                },
                 onReportOptionClicked = {
                     navigateToItemReportScreen()
                 },
