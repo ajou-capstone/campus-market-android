@@ -80,6 +80,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.user.UserReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_review.RecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_trade.RecentTradeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
@@ -96,6 +97,17 @@ fun UserProfileScreen(
     val userprofile = data.userProfile
 
     var isNewScreenLoadingAvailable by remember { mutableStateOf(false) }
+
+    fun navigateToUserReportScreen(userId: Long) {
+        val newRoute = makeRoute(
+            route = UserReportConstant.ROUTE,
+            arguments = mapOf(
+                UserReportConstant.ROUTE_ARGUMENT_USER_ID to userId.toString()
+            )
+        )
+        navController.navigate(newRoute)
+
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -145,7 +157,10 @@ fun UserProfileScreen(
                     height = Dimension.fillToConstraints
                 }
         ) {
-            UserProfileInfo(userProfile = userprofile)
+            UserProfileInfo(
+                userProfile = userprofile,
+                onReportUserClicked = {navigateToUserReportScreen(userprofile.id)}
+            )
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Gray900,
@@ -470,7 +485,8 @@ private fun RatingStars(
 
 @Composable
 private fun UserProfileInfo(
-    userProfile: UserProfile
+    userProfile: UserProfile,
+    onReportUserClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -514,6 +530,15 @@ private fun UserProfileInfo(
                     color = Black,
                 )
             }
+            Spacer(modifier = Modifier.padding(bottom = 8.dp))
+            Text(
+                text = "이 사용자 신고하기",
+                style = Caption2,
+                color = Gray600,
+                modifier = Modifier.clickable {
+                    onReportUserClicked()
+                }
+            )
         }
     }
 }
