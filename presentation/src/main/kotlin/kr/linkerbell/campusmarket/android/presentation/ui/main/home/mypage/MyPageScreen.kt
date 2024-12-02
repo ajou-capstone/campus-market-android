@@ -59,14 +59,14 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeR
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.ChangeProfileConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.keyword.KeywordConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.ChangeProfileConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.campus.ChangeCampusConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.keyword.KeywordConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_review.MyRecentReviewConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_trade.MyRecentTradeConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.list.ReportListConstant
 
 @Composable
