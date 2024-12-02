@@ -61,13 +61,13 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.ChangeProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.InquiryConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.keyword.KeywordConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.list.ReportListConstant
 
 @Composable
 fun MyPageScreen(
@@ -367,7 +367,7 @@ fun MyPageScreen(
                         .padding(8.dp)
                         .fillMaxWidth()
                         .clickable {
-                            navController.safeNavigate(InquiryConstant.ROUTE)
+                            navController.safeNavigate(ReportListConstant.ROUTE)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -378,7 +378,7 @@ fun MyPageScreen(
                         tint = Blue400
                     )
                     Text(
-                        text = "문의",
+                        text = "문의/신고",
                         style = Headline3,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)

@@ -10,16 +10,20 @@ import javax.inject.Inject
 import kr.linkerbell.campusmarket.android.data.remote.network.di.AuthHttpClient
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.BaseUrlProvider
 import kr.linkerbell.campusmarket.android.data.remote.network.environment.ErrorMessageMapper
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryCategoryListRes
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryContentsReq
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.InquiryInfoRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.KeywordListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.MyLikesRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.PostNewKeywordReq
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.RecentTradeRes
-import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserInquiryListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserNotificationListRes
 import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.UserReviewRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.InquiryCategoryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.InquiryContentsReq
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.ItemReportCategoryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.ItemReportContentsReq
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.ReportInfoRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.ReportListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.UserReportCategoryListRes
+import kr.linkerbell.campusmarket.android.data.remote.network.model.feature.mypage.report.UserReportContentsReq
 import kr.linkerbell.campusmarket.android.data.remote.network.util.convert
 
 class MyPageApi @Inject constructor(
@@ -54,8 +58,18 @@ class MyPageApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getInquiryCategory(): Result<InquiryCategoryListRes> {
+    suspend fun getInquiryCategoryList(): Result<InquiryCategoryListRes> {
         return client.get("$baseUrl/api/v1/questions")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getItemReportCategoryList(): Result<ItemReportCategoryListRes> {
+        return client.get("$baseUrl/api/v1/items/report")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getUserReportCategoryList(): Result<UserReportCategoryListRes> {
+        return client.get("$baseUrl/api/v1/users/report")
             .convert(errorMessageMapper::map)
     }
 
@@ -75,17 +89,41 @@ class MyPageApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getUserInquiryList(
+    suspend fun postItemReport(itemId: Long, category: String, description: String): Result<Unit> {
+        return client.post("$baseUrl/api/v1/items/${itemId}/report") {
+            setBody(
+                ItemReportContentsReq(
+                    itemId = itemId,
+                    category = category,
+                    description = description
+                )
+            )
+        }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun postUserReport(userId: Long, category: String, description: String): Result<Unit> {
+        return client.post("$baseUrl/api/v1/users/${userId}/report") {
+            setBody(
+                UserReportContentsReq(
+                    userId = userId,
+                    category = category,
+                    description = description
+                )
+            )
+        }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun getReportList(
         page: Int,
         size: Int
-    ): Result<UserInquiryListRes> {
+    ): Result<ReportListRes> {
         return client.get("$baseUrl/api/v1/answers") {
             parameter("page", page.toString())
             parameter("size", size.toString())
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getInquiryInfo(qaId: Long): Result<InquiryInfoRes> {
+    suspend fun getReportInfo(qaId: Long): Result<ReportInfoRes> {
         return client.get("$baseUrl/api/v1/answers/${qaId}")
             .convert(errorMessageMapper::map)
     }

@@ -73,6 +73,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.item.ItemReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.UserProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 
@@ -109,12 +110,28 @@ fun TradeInfoScreen(
         }
     }
 
+    fun navigateToItemReportScreen() {
+        if (!isOwnerOfThisTrade) {
+            val newRoute = makeRoute(
+                route = ItemReportConstant.ROUTE,
+                arguments = mapOf(
+                    ItemReportConstant.ROUTE_ARGUMENT_ITEM_ID to tradeInfo.itemId
+                )
+            )
+            navController.navigate(newRoute)
+        }
+    }
+
     Scaffold(
         topBar = {
             TradeInfoTopBar(
                 isOwnerOfThisTrade = isOwnerOfThisTrade,
-                onNavigatePreviousScreenButton = { navController.safeNavigateUp() },
-                onReportOptionClicked = { }, //TODO(신고 페이지로 이동)
+                onNavigatePreviousScreenButton = {
+                    navController.safeNavigateUp()
+                },
+                onReportOptionClicked = {
+                    navigateToItemReportScreen()
+                },
                 onDeleteArticleOptionClicked = {
                     isDeleteConfirmButtonVisible = true
                 },

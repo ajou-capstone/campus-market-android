@@ -6,10 +6,6 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.cha
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.homeDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.changeProfileDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.changeCampusDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.info.inquiryInfoDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.inquiryDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.post.inquiryPostDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.inquiry.view.inquiryViewDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.keyword.keywordDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.myLikesDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.logoutDestination
@@ -18,6 +14,11 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notif
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.ratingDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.myRecentReviewDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.myRecentTradeDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.inquiry.inquiryDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.item.itemReportDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.user.userReportDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.info.reportInfoDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.list.reportListDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_review.recentReviewDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent_trade.recentTradeDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.userProfileDestination
@@ -46,7 +47,6 @@ fun NavGraphBuilder.mainDestination(
     recentTradeDestination(navController = navController)
     recentReviewDestination(navController = navController)
     inquiryDestination(navController = navController)
-    inquiryPostDestination(navController = navController)
 
     chatDestination(navController = navController)
 
@@ -57,10 +57,13 @@ fun NavGraphBuilder.mainDestination(
     withdrawalDestination(navController = navController)
     myRecentTradeDestination(navController = navController)
     myRecentReviewDestination(navController = navController)
-    inquiryViewDestination(navController = navController)
-    inquiryInfoDestination(navController = navController)
     myLikesDestination(navController = navController)
     changeProfileDestination(navController = navController)
     keywordDestination(navController = navController)
     notificationDestination(navController = navController)
+
+    reportListDestination(navController = navController)
+    reportInfoDestination(navController = navController)
+    itemReportDestination(navController = navController)
+    userReportDestination(navController = navController)
 }

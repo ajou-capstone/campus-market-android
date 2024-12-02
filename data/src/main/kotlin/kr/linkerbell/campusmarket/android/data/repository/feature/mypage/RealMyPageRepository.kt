@@ -13,13 +13,15 @@ import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.NotificationPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.RecentTradePagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.ReviewPagingSource
-import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryCategoryList
-import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.InquiryInfo
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
-import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserInquiry
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserNotification
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.report.InquiryCategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.report.ItemReportCategoryList
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.report.ReportInfo
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.report.SummarizedUserReport
+import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.report.UserReportCategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.domain.repository.feature.MyPageRepository
 
@@ -62,7 +64,7 @@ class RealMyPageRepository @Inject constructor(
     }
 
     override suspend fun getInquiryCategoryList(): Result<InquiryCategoryList> {
-        return myPageApi.getInquiryCategory().toDomain()
+        return myPageApi.getInquiryCategoryList().toDomain()
     }
 
     override suspend fun postInquiry(
@@ -73,7 +75,31 @@ class RealMyPageRepository @Inject constructor(
         return myPageApi.postInquiry(title, category, description)
     }
 
-    override suspend fun getInquiryList(): Flow<PagingData<UserInquiry>> {
+    override suspend fun getItemReportCategoryList(): Result<ItemReportCategoryList> {
+        return myPageApi.getItemReportCategoryList().toDomain()
+    }
+
+    override suspend fun getUserReportCategoryList(): Result<UserReportCategoryList> {
+        return myPageApi.getUserReportCategoryList().toDomain()
+    }
+
+    override suspend fun postItemReport(
+        itemId: Long,
+        category: String,
+        description: String
+    ): Result<Unit> {
+        return myPageApi.postItemReport(itemId, category, description)
+    }
+
+    override suspend fun postUserReport(
+        userId: Long,
+        category: String,
+        description: String
+    ): Result<Unit> {
+        return myPageApi.postUserReport(userId, category, description)
+    }
+
+    override suspend fun getReportList(): Flow<PagingData<SummarizedUserReport>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGING_SIZE,
@@ -87,8 +113,8 @@ class RealMyPageRepository @Inject constructor(
         ).flow
     }
 
-    override suspend fun getInquiryInfo(qaId: Long): Result<InquiryInfo> {
-        return myPageApi.getInquiryInfo(qaId).toDomain()
+    override suspend fun getReportInfo(qaId: Long): Result<ReportInfo> {
+        return myPageApi.getReportInfo(qaId).toDomain()
     }
 
     override suspend fun getMyLikes(): Flow<PagingData<SummarizedTrade>> {
