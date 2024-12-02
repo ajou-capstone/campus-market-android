@@ -8,6 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import kr.linkerbell.campusmarket.android.presentation.common.DOMAIN
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.tradeInfoDestination(
@@ -19,6 +21,11 @@ fun NavGraphBuilder.tradeInfoDestination(
             navArgument(TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
+            }
+        ),
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "$DOMAIN/${TradeInfoConstant.ROUTE_STRUCTURE}"
             }
         )
     ) {
