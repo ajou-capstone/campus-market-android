@@ -17,7 +17,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 @HiltViewModel
 class LogoutViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<LogoutState> = MutableStateFlow(LogoutState.Init)
@@ -39,6 +39,7 @@ class LogoutViewModel @Inject constructor(
     private suspend fun userLogOut() {
         logoutUseCase().onSuccess {
             _state.value = LogoutState.Init
+            _event.emit(LogoutEvent.LogOutSuccess)
         }.onFailure { exception ->
             _state.value = LogoutState.Init
             when (exception) {

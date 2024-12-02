@@ -28,7 +28,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +46,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -61,16 +62,19 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.BlueGray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray50
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray100
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space4
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
+import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.item.ItemReportConstant
@@ -106,7 +110,7 @@ fun TradeInfoScreen(
                     UserProfileConstant.ROUTE_ARGUMENT_USER_ID to authorId.toString()
                 )
             )
-            navController.navigate(newRoute)
+            navController.safeNavigate(newRoute)
         }
     }
 
@@ -118,12 +122,43 @@ fun TradeInfoScreen(
                     ItemReportConstant.ROUTE_ARGUMENT_ITEM_ID to tradeInfo.itemId
                 )
             )
-            navController.navigate(newRoute)
+            navController.safeNavigate(newRoute)
         }
     }
 
-    Scaffold(
-        topBar = {
+    if (isDeleteConfirmButtonVisible) {
+        DeleteConfirmDialog(
+            isOwnerOfThisTrade = isOwnerOfThisTrade,
+            onConfirm = {
+                argument.intent(TradeInfoIntent.DeleteThisPost)
+                navController.safeNavigateUp()
+            },
+            onDismissRequest = { isDeleteConfirmButtonVisible = false }
+        )
+    }
+
+    if (isFailedToFetchDataDialogVisible) {
+        FailedToFetchDataDialog(
+            onDismissRequest = { isFailedToFetchDataDialogVisible = false }
+        )
+    }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .background(White)
+            .fillMaxSize()
+    ) {
+        val (topBar, contents, bottomBar) = createRefs()
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) {
             TradeInfoTopBar(
                 isOwnerOfThisTrade = isOwnerOfThisTrade,
                 onNavigatePreviousScreenButton = {
@@ -145,28 +180,19 @@ fun TradeInfoScreen(
                     navController.safeNavigate(newRoute)
                 }
             )
-        },
-        bottomBar = {
-            TradeInfoBottomBar(
-                isLiked = tradeInfo.isLiked,
-                isOwnerOfThisTrade = isOwnerOfThisTrade,
-                isSold = tradeInfo.isSold,
-                price = tradeInfo.price,
-                onLikeButtonClick = {
-                    argument.intent(TradeInfoIntent.LikeButtonClicked)
-                },
-                onChatButtonClick = {
-                    argument.intent(TradeInfoIntent.OnTradeStart)
-                }
-            )
         }
-    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .background(White)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    bottom.linkTo(bottomBar.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
         ) {
             TradeInfoImageViewer(
                 thumbUrl = tradeInfo.thumbnail,
@@ -187,23 +213,28 @@ fun TradeInfoScreen(
                 chatCount = tradeInfo.chatCount
             )
         }
-    }
-
-    if (isDeleteConfirmButtonVisible) {
-        DeleteConfirmDialog(
-            isOwnerOfThisTrade = isOwnerOfThisTrade,
-            onConfirm = {
-                argument.intent(TradeInfoIntent.DeleteThisPost)
-                navController.safeNavigateUp()
-            },
-            onDismissRequest = { isDeleteConfirmButtonVisible = false }
-        )
-    }
-
-    if (isFailedToFetchDataDialogVisible) {
-        FailedToFetchDataDialog(
-            onDismissRequest = { isFailedToFetchDataDialogVisible = false }
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(bottomBar) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            TradeInfoBottomBar(
+                isLiked = tradeInfo.isLiked,
+                isOwnerOfThisTrade = isOwnerOfThisTrade,
+                isSold = tradeInfo.isSold,
+                price = tradeInfo.price,
+                onLikeButtonClick = {
+                    argument.intent(TradeInfoIntent.LikeButtonClicked)
+                },
+                onChatButtonClick = {
+                    argument.intent(TradeInfoIntent.OnTradeStart)
+                }
+            )
+        }
     }
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
@@ -240,33 +271,37 @@ private fun TradeInfoTopBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chevron_left),
-                contentDescription = "Navigate Up Button",
-                tint = Gray900,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-                        onNavigatePreviousScreenButton()
-                    }
-                    .padding(horizontal = 8.dp)
-            )
+            RippleBox(
+                modifier = Modifier.padding(start = Space20),
+                onClick = {
+                    onNavigatePreviousScreenButton()
+                }
+            ) {
+                Icon(
+                    modifier = Modifier.size(40.dp),
+                    painter = painterResource(R.drawable.ic_chevron_left),
+                    contentDescription = null,
+                    tint = Gray900
+                )
+            }
             Text(
                 text = "상세 정보",
                 style = Headline2,
                 color = Black
             )
         }
-        Box {
+        RippleBox(
+            modifier = Modifier.padding(start = Space20),
+            onClick = {
+                isDropDownExpanded = !isDropDownExpanded
+            }
+        ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
                 tint = Gray900,
                 contentDescription = "More Option Button",
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable {
-                        isDropDownExpanded = !isDropDownExpanded
-                    }
                     .padding(horizontal = 8.dp)
             )
             val userOption = if (isOwnerOfThisTrade) {
@@ -381,7 +416,7 @@ private fun TradeInfoAuthor(
 ) {
     Row(
         modifier = Modifier
-            .background(Gray50)
+            .background(Gray100)
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -418,7 +453,7 @@ private fun TradeInfoAuthor(
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = "${authorInfo.rating} 점",
+                text = "${authorInfo.rating}",
                 color = Black,
                 style = Headline3,
                 modifier = Modifier.padding(start = 4.dp)
@@ -440,26 +475,24 @@ private fun TradeInfoContent(
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        val spacerPadding = 4.dp
-
         Text(text = title, color = Black, style = Headline2)
-        Spacer(Modifier.padding(spacerPadding))
+        Spacer(Modifier.padding(Space4))
 
         Text(text = translateToKor(category), color = Black, style = Body1)
-        Spacer(Modifier.padding(spacerPadding))
+        Spacer(Modifier.padding(Space4))
 
         Text(text = "$likeCount 명이 좋아함", color = Black, style = Body1)
-        Spacer(Modifier.padding(spacerPadding))
+        Spacer(Modifier.padding(Space4))
 
         Text(text = "$chatCount 명이 대화중", color = Black, style = Body1)
-        Spacer(Modifier.padding(spacerPadding))
+        Spacer(Modifier.padding(Space4))
 
         HorizontalDivider(
             thickness = (0.4).dp,
-            color = Black
+            color = Gray900,
         )
 
-        Spacer(Modifier.padding(spacerPadding))
+        Spacer(Modifier.padding(Space4))
         Text(text = description, color = Black, style = Body1)
     }
 }
@@ -473,7 +506,6 @@ private fun TradeInfoBottomBar(
     onLikeButtonClick: () -> Unit,
     onChatButtonClick: () -> Unit,
 ) {
-
     val favIcon = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
     Row(
         modifier = Modifier
@@ -515,42 +547,33 @@ private fun TradeStartButton(
     isOwnerOfThisArticle: Boolean,
     onChatButtonClick: () -> Unit,
 ) {
-    if (isOwnerOfThisArticle) {
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(BlueGray200),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "내 판매 글입니다.",
-                modifier = Modifier.padding(8.dp),
-                style = Headline2,
-                color = Color.White
-            )
-        }
-    } else {
-        val backgroundColor = if (isSold) BlueGray200 else Blue400
-        val text = if (isSold) "완료된 거래" else "거래하기"
+    val text = when {
+        isOwnerOfThisArticle -> "내 판매 글입니다"
+        isSold -> "완료된 거래"
+        else -> "거래하기"
+    }
 
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(backgroundColor)
-                .clickable {
-                    if (!isSold) {
-                        onChatButtonClick()
-                    }
-                },
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = text,
-                modifier = Modifier.padding(8.dp),
-                style = Headline2,
-                color = Color.White
-            )
-        }
+    val backgroundColor = when {
+        isOwnerOfThisArticle || isSold -> BlueGray200
+        else -> Blue400
+    }
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(backgroundColor)
+            .clickable {
+                if (!isOwnerOfThisArticle && !isSold) {
+                    onChatButtonClick()
+                }
+            },
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
+            style = Headline2,
+            color = Color.White
+        )
     }
 }
 

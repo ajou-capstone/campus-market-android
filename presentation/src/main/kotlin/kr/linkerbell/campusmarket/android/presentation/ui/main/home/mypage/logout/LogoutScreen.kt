@@ -31,6 +31,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlin.system.exitProcess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
@@ -48,7 +49,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.withdrawal.WithdrawalConstant
-import kotlin.system.exitProcess
 
 @Composable
 fun LogoutScreen(
@@ -70,11 +70,11 @@ fun LogoutScreen(
         }
         exitProcess(0)
     }
+
     if (isLogoutDialogVisible) {
         LogoutDialog(
             onConfirm = {
                 argument.intent(LogoutIntent.LogOut)
-                restartApp()
             },
             onDismissRequest = { isLogoutDialogVisible = false }
         )
@@ -181,7 +181,11 @@ fun LogoutScreen(
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
-
+            when(event){
+                is LogoutEvent.LogOutSuccess -> {
+                    restartApp()
+                }
+            }
         }
     }
 }
