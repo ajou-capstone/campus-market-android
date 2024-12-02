@@ -64,9 +64,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.inquiry.InquiryEvent
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.inquiry.InquiryIntent
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.item.ItemReportEvent
 
 @Composable
 fun UserReportScreen(
@@ -166,7 +163,7 @@ fun UserReportScreen(
                     height = Dimension.fillToConstraints
                 }
         ) {
-            Column{
+            Column {
                 Text(
                     text = "사용자 신고 분류",
                     style = Headline2.merge(Gray900),
@@ -258,14 +255,14 @@ fun UserReportScreen(
 
 private fun translateToKor(engCategory: String): String {
     return when (engCategory) {
-        "OTHER"->"기타"
-        "FRAUD"->"사기"
-        "DISPUTE_DURING_TRANSACTION"->"거래 중 분쟁"
-        "RUDE_USER"->"비매너 사용자"
-        "PROFESSIONAL_SELLER"->"전문판매업자"
-        "DATING_PURPOSE_CHAT"->"연애 목적의 대화"
-        "HATE_SPEECH"->"욕설, 비방, 혐오표현"
-        "INAPPROPRIATE_SEXUAL_BEHAVIOR"->"부적절한 성적 행위"
+        "OTHER" -> "기타"
+        "FRAUD" -> "사기"
+        "DISPUTE_DURING_TRANSACTION" -> "거래 중 분쟁"
+        "RUDE_USER" -> "비매너 사용자"
+        "PROFESSIONAL_SELLER" -> "전문판매업자"
+        "DATING_PURPOSE_CHAT" -> "연애 목적의 대화"
+        "HATE_SPEECH" -> "욕설, 비방, 혐오표현"
+        "INAPPROPRIATE_SEXUAL_BEHAVIOR" -> "부적절한 성적 행위"
         else -> "문의 종류를 선택해주세요"
     }
 }
@@ -392,6 +389,7 @@ private fun SuccessToPostDialog(
         onDismissRequest = { onDismissRequest() }
     )
 }
+
 @Preview
 @Composable
 private fun UserReportScreenPreview() {
