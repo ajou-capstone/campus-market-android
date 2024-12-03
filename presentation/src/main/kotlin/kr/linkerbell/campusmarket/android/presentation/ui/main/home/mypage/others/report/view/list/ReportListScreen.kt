@@ -253,7 +253,7 @@ private fun InquiryCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 color = Black,
-                modifier = Modifier.padding(bottom = 4.dp, end = 100.dp)
+                modifier = Modifier.padding(bottom = 4.dp, end = 100.dp, top = 4.dp)
             )
             Text(
                 text = "문의 종류 : ${translateToKor(inquiry.category)}",
@@ -276,7 +276,7 @@ private fun InquiryCard(
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Gray200,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }

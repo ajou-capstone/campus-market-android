@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
@@ -58,12 +61,15 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
@@ -150,133 +156,6 @@ fun TradePostScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        TradePostScreenTopBar(navigateUp = { navController.safeNavigateUp() })
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "사진",
-                        style = Headline3,
-                    )
-                    Text(
-                        text = "(첫 번째 사진은 썸네일로 지정됩니다.)",
-                        style = Caption2,
-                        color = Gray600,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-                Row {
-                    TradePostScreenAddImageBox(
-                        onAddImageClicked = {
-                            isGalleryShowing = true
-                            hasImage = true
-                        }
-                    )
-                    Row(
-                        modifier = Modifier
-                            .horizontalScroll(rememberScrollState())
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        originalImageList = originalImageList.filter { it.isNotBlank() }
-                        originalImageList.forEachIndexed { index, url ->
-                            TradePostScreenImageBox(
-                                imagePath = url,
-                                isThumbnail = (index == 0),
-                                onDeleteImageClicked = { imageToBeDeleted ->
-                                    originalImageList =
-                                        originalImageList.filter { imageToBeDeleted != it }
-                                }
-                            )
-                            hasThumbnails = true
-                        }
-                        imageList.forEachIndexed { index, image ->
-                            TradePostScreenImageBox(
-                                imagePath = image.filePath,
-                                isThumbnail = (index == 0 && !hasThumbnails),
-                                onDeleteImageClicked = { imageToBeDeleted ->
-                                    imageList = imageList.filter { imageToBeDeleted != it.filePath }
-                                    isContentsChanged = true
-                                }
-                            )
-                            hasThumbnails = true
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.padding(8.dp))
-                TradePostScreenTradeInfo(
-                    title = title,
-                    price = price,
-                    category = category,
-                    description = description,
-                    categoryList = data.categoryList,
-                    changeTitle = { changedValue ->
-                        title = changedValue
-                        isContentsChanged = true
-                    },
-                    changeDescription = { changedValue ->
-                        description = changedValue
-                        isContentsChanged = true
-                    },
-                    changeCategory = { changedValue ->
-                        category = changedValue
-                        isContentsChanged = true
-                    },
-                    changePrice = { changedValue ->
-                        price = changedValue
-                        isContentsChanged = true
-                    }
-                )
-            }
-            Spacer(Modifier.padding(vertical = 32.dp))
-            TradePostScreenPostButton(
-                isPostAvailable = isPatchOrPostAvailable,
-                onPostButtonClicked = {
-                    validateContent()
-                    if (isValidContents && isPatchOrPostAvailable) {
-                        isPatchOrPostAvailable = false
-                        argument.intent(
-                            TradePostIntent.PostOrPatchTrade(
-                                title = title.trim(),
-                                description = description.trim(),
-                                price = price.toIntOrNull() ?: 0,
-                                category = category,
-                                originalImageList = originalImageList,
-                                imageList = imageList
-                            )
-                        )
-                    }
-                    if (!isValidContents && isPatchOrPostAvailable) {
-                        isPatchOrPostAvailable = false
-                        isValidationDialogVisible = true
-                    }
-                }
-            )
-        }
-    }
-
-    BackHandler(enabled = true) {
-        if (isContentsChanged) {
-            isBackButtonConfirmDialogVisible = true
-        } else {
-            navController.popBackStack()
-        }
-    }
-
     if (isGalleryShowing) {
         GalleryScreen(
             navController = navController,
@@ -319,6 +198,169 @@ fun TradePostScreen(
             onConfirmButtonClicked = { navController.popBackStack() },
             onDismissRequest = { isBackButtonConfirmDialogVisible = false }
         )
+    }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .background(White)
+            .fillMaxSize()
+    ) {
+        val (topBar, contents, button) = this.createRefs()
+        Row(
+            modifier = Modifier
+                .height(Space56)
+                .fillMaxWidth()
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RippleBox(
+                    onClick = {
+                        navController.safeNavigateUp()
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_chevron_left),
+                        contentDescription = "Navigate Up Button",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .padding(horizontal = 8.dp)
+                    )
+                }
+                Text(
+                    text = "상품 등록",
+                    style = Headline2.merge(Gray900),
+                    color = Black
+                )
+            }
+        }
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
+        ) {
+            Row(
+                modifier = Modifier.padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "사진",
+                    style = Headline3,
+                )
+                Text(
+                    text = "(첫 번째 사진은 썸네일로 지정됩니다.)",
+                    style = Caption2,
+                    color = Gray600,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Row {
+                TradePostScreenAddImageBox(
+                    onAddImageClicked = {
+                        isGalleryShowing = true
+                        hasImage = true
+                    }
+                )
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
+                ) {
+                    originalImageList = originalImageList.filter { it.isNotBlank() }
+                    originalImageList.forEachIndexed { index, url ->
+                        TradePostScreenImageBox(
+                            imagePath = url,
+                            isThumbnail = (index == 0),
+                            onDeleteImageClicked = { imageToBeDeleted ->
+                                originalImageList =
+                                    originalImageList.filter { imageToBeDeleted != it }
+                            }
+                        )
+                        hasThumbnails = true
+                    }
+                    imageList.forEachIndexed { index, image ->
+                        TradePostScreenImageBox(
+                            imagePath = image.filePath,
+                            isThumbnail = (index == 0 && !hasThumbnails),
+                            onDeleteImageClicked = { imageToBeDeleted ->
+                                imageList = imageList.filter { imageToBeDeleted != it.filePath }
+                                isContentsChanged = true
+                            }
+                        )
+                        hasThumbnails = true
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(8.dp))
+            TradePostScreenTradeInfo(
+                title = title,
+                price = price,
+                category = category,
+                description = description,
+                categoryList = data.categoryList,
+                changeTitle = { changedValue ->
+                    title = changedValue
+                    isContentsChanged = true
+                },
+                changeDescription = { changedValue ->
+                    description = changedValue
+                    isContentsChanged = true
+                },
+                changeCategory = { changedValue ->
+                    category = changedValue
+                    isContentsChanged = true
+                },
+                changePrice = { changedValue ->
+                    price = changedValue
+                    isContentsChanged = true
+                }
+            )
+            Spacer(modifier = Modifier.padding(16.dp))
+            TradePostScreenPostButton(
+                isPostAvailable = isPatchOrPostAvailable,
+                onPostButtonClicked = {
+                    validateContent()
+                    if (isValidContents && isPatchOrPostAvailable) {
+                        isPatchOrPostAvailable = false
+                        argument.intent(
+                            TradePostIntent.PostOrPatchTrade(
+                                title = title.trim(),
+                                description = description.trim(),
+                                price = price.toIntOrNull() ?: 0,
+                                category = category,
+                                originalImageList = originalImageList,
+                                imageList = imageList
+                            )
+                        )
+                    }
+                    if (!isValidContents && isPatchOrPostAvailable) {
+                        isPatchOrPostAvailable = false
+                        isValidationDialogVisible = true
+                    }
+                }
+            )
+        }
+    }
+
+    BackHandler(enabled = true) {
+        if (isContentsChanged) {
+            isBackButtonConfirmDialogVisible = true
+        } else {
+            navController.popBackStack()
+        }
     }
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {
@@ -441,33 +483,6 @@ private fun TradePostScreenImageBox(
 }
 
 @Composable
-private fun TradePostScreenTopBar(navigateUp: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .background(White)
-            .fillMaxWidth()
-            .height(56.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_chevron_left),
-            contentDescription = "Navigate Up Button",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable {
-                    navigateUp()
-                }
-                .padding(horizontal = 8.dp)
-        )
-        Text(
-            text = "상품 등록",
-            style = Headline2
-        )
-    }
-}
-
-@Composable
 private fun TradePostScreenTradeInfo(
     title: String,
     category: String,
@@ -479,10 +494,14 @@ private fun TradePostScreenTradeInfo(
     changePrice: (String) -> Unit,
     changeCategory: (String) -> Unit
 ) {
+    val MAX_TITLE_LENGTH = 100
+    val MAX_DESCRIPTION_LENGTH = 1000
+
+    var titleLength by remember { mutableIntStateOf(title.length) }
+    var descriptionLength by remember { mutableIntStateOf(description.length) }
+
     Column {
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
+        Column {
             Text(
                 text = "제목",
                 style = Headline3,
@@ -490,8 +509,13 @@ private fun TradePostScreenTradeInfo(
             )
             TypingTextField(
                 text = title,
-                onValueChange = { changeTitle(it) },
-                hintText = "제목을 입력하세요",
+                onValueChange = {
+                    if (titleLength <= MAX_TITLE_LENGTH) {
+                        changeTitle(it)
+                        titleLength = title.length
+                    }
+                },
+                hintText = "제목은 100자까지 가능해요",
                 maxLines = 1,
                 maxTextLength = 100,
                 trailingIconContent = {
@@ -505,12 +529,19 @@ private fun TradePostScreenTradeInfo(
                             }
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+            Text(
+                text = if (titleLength <= MAX_TITLE_LENGTH) "(${titleLength}/$MAX_TITLE_LENGTH)"
+                else "제목은 최대 100자까지 가능해요",
+                modifier = Modifier.align(Alignment.End),
+                style = Caption1,
+                color = if (titleLength <= MAX_TITLE_LENGTH) Gray900 else Red400
             )
         }
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
+        Column {
             Text(
                 text = "가격",
                 style = Headline3,
@@ -545,17 +576,15 @@ private fun TradePostScreenTradeInfo(
                             }
                     )
                 },
-                modifier = Modifier
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
+        Column {
             Text(
                 text = "분류",
                 style = Headline3,
                 color = Black,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
             TradePostScreenCategorySelector(
                 categoryList,
@@ -563,11 +592,11 @@ private fun TradePostScreenTradeInfo(
                 changeCategory = changeCategory
             )
         }
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
+        Column {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -588,13 +617,25 @@ private fun TradePostScreenTradeInfo(
             }
             TypingTextField(
                 text = description,
-                onValueChange = { changeDescription(it) },
+                onValueChange = {
+                    if (descriptionLength <= MAX_DESCRIPTION_LENGTH) {
+                        changeDescription(it)
+                        descriptionLength = description.length
+                    }
+                },
                 hintText = "상품 정보를 입력해주세요 (최대 1,000자)",
                 maxLines = 100,
                 maxTextLength = 1000,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
+            )
+            Text(
+                text = if (descriptionLength <= MAX_DESCRIPTION_LENGTH) "(${descriptionLength}/$MAX_DESCRIPTION_LENGTH)"
+                else "제목은 최대 100자까지 가능해요",
+                modifier = Modifier.align(Alignment.End),
+                style = Caption1,
+                color = if (descriptionLength <= MAX_DESCRIPTION_LENGTH) Gray900 else Red400
             )
         }
 
@@ -702,7 +743,7 @@ private fun TradePostScreenPostButton(
     ) {
         Text(
             text = buttonText,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(8.dp),
             style = Headline2,
             color = Color.White
         )

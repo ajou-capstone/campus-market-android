@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -82,7 +81,7 @@ fun ChangeProfileScreen(
     val originalNickname = data.myProfile.nickname
     var newProfileImage: GalleryImage? by rememberSaveable { mutableStateOf(null) }
     var newNickname: String? by remember { mutableStateOf(null) }
-    var nicknameLength by remember { mutableIntStateOf(originalNickname.length) }
+    var nicknameLength = newNickname?.length ?: originalNickname.length
 
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
     var isGalleryShowing by remember { mutableStateOf(false) }
@@ -194,27 +193,31 @@ fun ChangeProfileScreen(
                     )
                 }
                 Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                TypingTextField(
-                    text = newNickname ?: originalNickname,
-                    onValueChange = {
-                        nicknameLength = newNickname?.length ?: originalNickname.length
-                        if (nicknameLength <= 10) {
-                            newNickname = it
-                        }
-                    },
-                    maxLines = 100,
-                    hintText = "닉네임은 특수문자, 공백 없이 10자까지 가능해요",
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .padding(horizontal = Space20)
-                )
-                Text(
-                    text = if (nicknameLength <= 10) "(${nicknameLength}/10)"
-                    else "닉네임은 특수문자, 공백 없이 10자까지 가능해요",
-                    modifier = Modifier.align(Alignment.End),
-                    style = Caption1,
-                    color = if (nicknameLength <= 10) Gray900 else Red400
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TypingTextField(
+                        text = newNickname ?: originalNickname,
+                        onValueChange = {
+                            if (nicknameLength <= 10) {
+                                newNickname = it
+                                nicknameLength = newNickname?.length ?: originalNickname.length
+                            }
+                        },
+                        maxLines = 100,
+                        hintText = "닉네임은 특수문자, 공백 없이 10자까지 가능해요",
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    Text(
+                        text = if (nicknameLength <= 10) "(${nicknameLength}/10)"
+                        else "닉네임은 특수문자, 공백 없이 10자까지 가능해요",
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(end = 16.dp),
+                        style = Caption1,
+                        color = if (nicknameLength <= 10) Gray900 else Red400
+                    )
+                }
             }
         }
         Box(

@@ -187,9 +187,9 @@ fun ItemReportScreen(
                 TypingTextField(
                     text = userInquiryContent,
                     onValueChange = {
-                        descriptionLength = userInquiryContent.length
                         if (descriptionLength <= 500) {
                             userInquiryContent = it
+                            descriptionLength = userInquiryContent.length
                         }
                     },
                     maxLines = 100,

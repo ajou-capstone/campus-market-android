@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,9 +26,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,9 +42,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlin.system.exitProcess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
@@ -57,11 +64,11 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Error
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
+import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.campus.ChangeCampusConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.ChangeProfileConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.logout.LogoutConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal.WithdrawalConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.view.list.ReportListConstant
@@ -112,7 +119,29 @@ fun MyPageScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
+    var isLogoutDialogVisible by remember { mutableStateOf(false) }
     val userProfile = data.myProfile
+
+    val context = LocalContext.current
+    fun restartApp() {
+        context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { intent ->
+            context.startActivity(
+                Intent.makeRestartActivityTask(intent.component)
+            )
+        }
+        exitProcess(0)
+    }
+
+    if(isLogoutDialogVisible){
+        LogoutConfirmDialog(
+            onLogoutConfirmButtonClicked = {
+                argument.intent(MyPageIntent.LogOut)
+            },
+            onDismissRequest = {
+                isLogoutDialogVisible = false
+            }
+        )
+    }
     ConstraintLayout(
         modifier = Modifier
             .background(White)
@@ -391,7 +420,7 @@ fun MyPageScreen(
                     .padding(8.dp)
                     .fillMaxWidth()
                     .clickable {
-                        navController.safeNavigate(LogoutConstant.ROUTE)
+                        isLogoutDialogVisible = true
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -434,6 +463,14 @@ fun MyPageScreen(
     }
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         argument.intent(MyPageIntent.RefreshData)
+
+        event.eventObserve { event ->
+            when (event) {
+                is MyPageEvent.LogOutSuccess -> {
+                    restartApp()
+                }
+            }
+        }
     }
 }
 
@@ -457,7 +494,6 @@ private fun MyProfileUserInfo(
                 modifier = Modifier.fillMaxSize()
             )
         }
-
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -485,6 +521,22 @@ private fun MyProfileUserInfo(
             }
         }
     }
+}
+
+@Composable
+private fun LogoutConfirmDialog(
+    onLogoutConfirmButtonClicked: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "로그아웃 하시겠습니까?",
+        isCancelable = true,
+        onConfirm = { onLogoutConfirmButtonClicked() },
+        onCancel = { onDismissRequest() },
+        onDismissRequest = {
+            onDismissRequest()
+        }
+    )
 }
 
 @Preview

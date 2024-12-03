@@ -146,7 +146,7 @@ fun InquiryScreen(
                         painter = painterResource(R.drawable.ic_chevron_left),
                         contentDescription = "Navigate Up Button",
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(48.dp)
                             .padding(horizontal = 8.dp)
                     )
                 }
@@ -180,9 +180,9 @@ fun InquiryScreen(
                 TypingTextField(
                     text = userInquiryTitle,
                     onValueChange = {
-                        titleLength = userInquiryTitle.length
                         if (titleLength <= 50) {
                             userInquiryTitle = it
+                            titleLength = userInquiryTitle.length
                         }
                     },
                     maxLines = 100,

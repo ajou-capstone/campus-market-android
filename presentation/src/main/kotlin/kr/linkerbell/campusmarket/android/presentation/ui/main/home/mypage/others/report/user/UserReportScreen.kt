@@ -189,13 +189,13 @@ fun UserReportScreen(
                 TypingTextField(
                     text = userInquiryContent,
                     onValueChange = {
-                        descriptionLength = userInquiryContent.length
                         if (descriptionLength <= 500) {
                             userInquiryContent = it
+                            descriptionLength = userInquiryContent.length
                         }
                     },
                     maxLines = 100,
-                    hintText = "문의 내용은 최대 500자까지 작성할 수 있어요", //TODO(문의 사항 최대 길이)
+                    hintText = "문의 내용은 최대 500자까지 작성할 수 있어요",
                     modifier = Modifier
                         .heightIn(min = 140.dp)
                         .padding(vertical = 8.dp)

@@ -132,9 +132,9 @@ fun RatingScreen(
                 TypingTextField(
                     text = userDescription,
                     onValueChange = {
-                        descriptionLength = userDescription.length
                         if (descriptionLength <= 200) {
                             userDescription = it
+                            descriptionLength = userDescription.length
                         }
                     },
                     maxLines = 100,
