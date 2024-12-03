@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.logout
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.logout
 
 import androidx.compose.runtime.Immutable
 import kotlin.coroutines.CoroutineContext

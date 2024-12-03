@@ -1,6 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.view.info
 
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.list.ReportListConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.view.list.ReportListConstant
 
 object ReportInfoConstant {
     const val ROUTE: String = "${ReportListConstant.ROUTE}/info"

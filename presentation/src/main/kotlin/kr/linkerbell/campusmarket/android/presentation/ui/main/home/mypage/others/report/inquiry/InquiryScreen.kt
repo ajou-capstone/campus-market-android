@@ -174,7 +174,8 @@ fun InquiryScreen(
                 Text(
                     text = "문의 정보 (제목)",
                     style = Headline2.merge(Gray900),
-                    color = Black
+                    color = Black,
+                    modifier= Modifier.padding(bottom = 8.dp)
                 )
                 TypingTextField(
                     text = userInquiryTitle,
@@ -185,7 +186,7 @@ fun InquiryScreen(
                         }
                     },
                     maxLines = 100,
-                    hintText = "제목은 최대 50자까지 작성할 수 있어요", //TODO(문의 사항 제목 최대 길이)
+                    hintText = "제목은 최대 50자까지 작성할 수 있어요",
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
                 Text(
@@ -196,11 +197,12 @@ fun InquiryScreen(
                     color = if (descriptionLength <= 200) Gray900 else Red400
                 )
             }
-            Column{
+            Column {
                 Text(
                     text = "문의 종류",
                     style = Headline2.merge(Gray900),
-                    color = Black
+                    color = Black,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
                 CategorySelectBox(
                     inquiryCategoryList = data.inquiryCategoryList,
@@ -368,7 +370,6 @@ private fun PostButton(
     isPostAvailable: Boolean,
     onPostButtonClicked: () -> Unit
 ) {
-
     val backgroundColor = if (isPostAvailable) Blue400 else Gray200
     val buttonText = if (isPostAvailable) "등록하기" else "등록중입니다"
 

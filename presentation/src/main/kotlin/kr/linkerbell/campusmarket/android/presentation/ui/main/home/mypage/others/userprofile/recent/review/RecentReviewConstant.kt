@@ -1,6 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review
 
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.UserProfileConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.UserProfileConstant
 
 object RecentReviewConstant {
     const val ROUTE = "${UserProfileConstant.ROUTE}/recentReview"

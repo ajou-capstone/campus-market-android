@@ -6,8 +6,8 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.cha
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.homeDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.campus.changeCampusDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.changeProfileDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.logout.logoutDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.logout.withdrawal.withdrawalDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.logout.logoutDestination
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal.withdrawalDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.notificationDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.ratingDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.inquiry.inquiryDestination

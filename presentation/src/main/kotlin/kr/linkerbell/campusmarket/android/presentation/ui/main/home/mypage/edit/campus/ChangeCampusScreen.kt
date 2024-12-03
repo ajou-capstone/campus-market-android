@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -45,7 +46,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue700
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space12
@@ -93,7 +93,7 @@ fun ChangeCampusScreen(
             .background(White)
             .fillMaxSize()
     ) {
-        val (topBar, contents) = createRefs()
+        val (topBar, contents, button) = createRefs()
         Row(
             modifier = Modifier
                 .height(Space56)
@@ -116,7 +116,7 @@ fun ChangeCampusScreen(
                         painter = painterResource(R.drawable.ic_chevron_left),
                         contentDescription = "Navigate Up Button",
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(48.dp)
                             .padding(horizontal = 8.dp)
                     )
                 }
@@ -147,7 +147,7 @@ fun ChangeCampusScreen(
             ) {
                 Text(
                     text = "캠퍼스 변경",
-                    style = Headline0.merge(Gray900)
+                    style = Headline1
                 )
                 Spacer(modifier = Modifier.height(Space12))
                 Text(
@@ -223,41 +223,46 @@ fun ChangeCampusScreen(
 
                     }
                 }
-                Spacer(modifier = Modifier.padding(16.dp))
-                ConfirmButton(
-                    modifier = Modifier
-                        .padding(start = Space20, end = Space20, bottom = Space12)
-                        .fillMaxWidth(),
 
-                    properties = ConfirmButtonProperties(
-                        size = ConfirmButtonSize.Large,
-                        type = ConfirmButtonType.Primary
-                    ),
-                    isEnabled = isConfirmButtonEnabled,
-                    onClick = {
-                        val id = data.campusList.getOrNull(campusIndex)?.id ?: return@ConfirmButton
+            }
+        }
+        Box(
+            modifier = Modifier
+                .padding(Space20)
+                .constrainAs(button) {
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            ConfirmButton(
+                modifier = Modifier.fillMaxWidth(),
+                properties = ConfirmButtonProperties(
+                    size = ConfirmButtonSize.Large,
+                    type = ConfirmButtonType.Primary
+                ),
+                isEnabled = isConfirmButtonEnabled,
+                onClick = {
+                    val id = data.campusList.getOrNull(campusIndex)?.id ?: return@ConfirmButton
 
-                        isConfirmButtonLoading = true
-                        intent(
-                            ChangeCampusIntent.OnConfirm(
-                                id = id
-                            )
+                    isConfirmButtonLoading = true
+                    intent(
+                        ChangeCampusIntent.OnConfirm(
+                            id = id
                         )
-                    }
-                ) { style ->
-                    if (isConfirmButtonLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(Space24),
-                            color = White,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(
-                            text = "다음",
-                            style = style
-                        )
-                    }
+                    )
+                }
+            ) { style ->
+                if (isConfirmButtonLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(Space24),
+                        color = White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "변경",
+                        style = style
+                    )
                 }
             }
         }

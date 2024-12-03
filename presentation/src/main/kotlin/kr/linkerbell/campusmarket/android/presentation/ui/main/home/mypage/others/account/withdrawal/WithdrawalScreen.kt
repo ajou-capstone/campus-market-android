@@ -1,9 +1,10 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.logout
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal
 
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,8 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +23,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,29 +38,32 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
+import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.withdrawal.WithdrawalConstant
 
 @Composable
-fun LogoutScreen(
+fun WithdrawalScreen(
     navController: NavController,
-    argument: LogoutArgument
+    argument: WithdrawalArgument,
+    data: WithdrawalData
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
-    var isLogoutDialogVisible by remember { mutableStateOf(false) }
+    var isWithdrawalRequested by remember { mutableStateOf(false) }
+    var isWithdrawalSuccessDialogVisible by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -71,12 +76,11 @@ fun LogoutScreen(
         exitProcess(0)
     }
 
-    if (isLogoutDialogVisible) {
-        LogoutDialog(
-            onConfirm = {
-                argument.intent(LogoutIntent.LogOut)
-            },
-            onDismissRequest = { isLogoutDialogVisible = false }
+    if (isWithdrawalSuccessDialogVisible) {
+        WithdrawalSuccessDialog(
+            onDismissRequest = {
+                restartApp()
+            }
         )
     }
 
@@ -85,7 +89,7 @@ fun LogoutScreen(
             .background(White)
             .fillMaxSize()
     ) {
-        val (topBar, contents) = createRefs()
+        val (topBar, contents, button) = createRefs()
         Row(
             modifier = Modifier
                 .height(Space56)
@@ -113,7 +117,7 @@ fun LogoutScreen(
                     )
                 }
                 Text(
-                    text = "로그아웃 및 탈퇴",
+                    text = "탈퇴하기",
                     style = Headline2.merge(Gray900),
                     color = Black
                 )
@@ -121,8 +125,8 @@ fun LogoutScreen(
         }
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .fillMaxWidth()
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
                     start.linkTo(parent.start)
@@ -132,58 +136,73 @@ fun LogoutScreen(
                     height = Dimension.fillToConstraints
                 }
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        isLogoutDialogVisible = true
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(R.drawable.ic_error),
-                    contentDescription = null,
-                    tint = Blue400
-                )
-                Text(
-                    text = "로그아웃",
-                    style = Headline3,
-                    color = Black,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
+            Text(
+                text = "${data.myProfile.nickname} 님,",
+                style = Headline2,
+                color = Black,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = "Campus Market에서 정말 탈퇴하시겠습니까?",
+                style = Headline2,
+                color = Black,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = "내가 설정한 모든 정보가 사라져요",
+                style = Body1,
+                color = Black,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = "사라진 계정은 복구할 수 없어요",
+                style = Body1,
+                color = Black,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = "내가 작성한 글은 여전히 남아있어요",
+                style = Body1,
+                color = Black,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+        Box(modifier = Modifier
+            .padding(Space20)
+            .constrainAs(button) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(contents.bottom)
             }
+        ) {
             Row(
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Blue400)
                     .clickable {
-                        navController.navigate(WithdrawalConstant.ROUTE)
+                        if (!isWithdrawalRequested) {
+                            isWithdrawalRequested = true
+                            argument.intent(WithdrawalIntent.Withdrawal)
+                        }
                     },
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(R.drawable.ic_error),
-                    contentDescription = null,
-                    tint = Blue400
-                )
                 Text(
-                    text = "탈퇴하기",
-                    style = Headline3,
-                    color = Black,
-                    modifier = Modifier.padding(start = 8.dp)
+                    text = "탈퇴할게요",
+                    modifier = Modifier.padding(8.dp),
+                    style = Headline2,
+                    color = Color.White
                 )
             }
         }
-    }
 
-    LaunchedEffectWithLifecycle(event, coroutineContext) {
-        event.eventObserve { event ->
-            when(event){
-                is LogoutEvent.LogOutSuccess -> {
-                    restartApp()
+        LaunchedEffectWithLifecycle(event, coroutineContext) {
+            event.eventObserve { event ->
+                when (event) {
+                    is WithdrawalEvent.WithdrawalSuccess -> {
+                        isWithdrawalSuccessDialogVisible = true
+                    }
                 }
             }
         }
@@ -191,32 +210,29 @@ fun LogoutScreen(
 }
 
 @Composable
-private fun LogoutDialog(
-    onConfirm: () -> Unit,
+private fun WithdrawalSuccessDialog(
     onDismissRequest: () -> Unit
 ) {
     DialogScreen(
-        title = "로그아웃 하시겠습니까?",
-        isCancelable = true,
-        onConfirm = { onConfirm() },
-        onCancel = {},
-        onDismissRequest = {
-            onDismissRequest()
-        }
+        title = "탈퇴 완료",
+        message = "다음에 다시 만나요!",
+        isCancelable = false,
+        onDismissRequest = { onDismissRequest() }
     )
 }
 
 @Preview
 @Composable
-private fun LogoutScreenPreview() {
-    LogoutScreen(
+private fun WithdrawalScreenPreview() {
+    WithdrawalScreen(
         navController = rememberNavController(),
-        argument = LogoutArgument(
-            state = LogoutState.Init,
+        argument = WithdrawalArgument(
+            state = WithdrawalState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
             coroutineContext = Dispatchers.IO
-        )
+        ),
+        data = WithdrawalData(MyProfile.empty.copy(nickname = "siri22"))
     )
 }

@@ -130,8 +130,9 @@ fun TradePostScreen(
                 isValidContents = false
             }
 
-            (!hasImage) -> {
+            (imageList.isEmpty()) -> {
                 validationDialogContent = "한 장 이상의 이미지를 첨부해주세요"
+                hasImage = false
                 isValidContents = false
             }
         }
@@ -181,7 +182,10 @@ fun TradePostScreen(
                 }
                 Row {
                     TradePostScreenAddImageBox(
-                        onAddImageClicked = { isGalleryShowing = true }
+                        onAddImageClicked = {
+                            isGalleryShowing = true
+                            hasImage = true
+                        }
                     )
                     Row(
                         modifier = Modifier
@@ -213,6 +217,7 @@ fun TradePostScreen(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.padding(8.dp))
                 TradePostScreenTradeInfo(
                     title = title,
                     price = price,
@@ -549,6 +554,7 @@ private fun TradePostScreenTradeInfo(
             Text(
                 text = "분류",
                 style = Headline3,
+                color = Black,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             TradePostScreenCategorySelector(
@@ -631,9 +637,11 @@ private fun TradePostScreenCategorySelector(
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Search Button",
+                contentDescription = "Dropdown Button",
+                tint = White,
                 modifier = Modifier
-                    .size(24.dp)
+                    .padding(end = 8.dp)
+                    .size(28.dp)
             )
         }
         DropdownMenu(

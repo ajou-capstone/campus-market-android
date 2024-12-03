@@ -119,7 +119,7 @@ fun ReportInfoScreen(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Text(
-                    text = "문의 일시 : ${inquiryData.createdDate}",
+                    text = "문의 일시 : ${inquiryData.createdDate.date}",
                     style = Caption2,
                     color = Gray600,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -133,7 +133,7 @@ fun ReportInfoScreen(
                 HorizontalDivider(
                     thickness = 1.dp,
                     color = Gray900,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 2.dp, vertical = 16.dp)
                 )
             }
             if (inquiryData.isCompleted) {
@@ -150,7 +150,7 @@ fun ReportInfoScreen(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Text(
-                    text = "답변 일시 : ${inquiryData.answerDate}",
+                    text = "답변 일시 : ${inquiryData.answerDate.date}",
                     style = Caption2,
                     color = Gray600,
                     modifier = Modifier.padding(vertical = 4.dp)

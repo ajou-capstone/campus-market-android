@@ -54,7 +54,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeR
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.common.SummarizedTradeCard
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant

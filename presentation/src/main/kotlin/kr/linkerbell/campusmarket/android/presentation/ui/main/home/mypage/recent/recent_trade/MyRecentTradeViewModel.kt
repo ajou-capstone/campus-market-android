@@ -21,7 +21,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.MyRecentTrade.my_recent_trade.MyRecentTradeEvent
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.MyRecentTrade.my_recent_trade.MyRecentTradeIntent
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.MyRecentTrade.my_recent_trade.MyRecentTradeState
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent.trade.RecentTradeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.trade.RecentTradeConstant
 
 @HiltViewModel
 class MyRecentTradeViewModel @Inject constructor(

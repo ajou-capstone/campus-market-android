@@ -23,3 +23,4 @@ sealed interface MyPageEvent
 sealed interface MyPageIntent{
     data object RefreshData : MyPageIntent
 }
+

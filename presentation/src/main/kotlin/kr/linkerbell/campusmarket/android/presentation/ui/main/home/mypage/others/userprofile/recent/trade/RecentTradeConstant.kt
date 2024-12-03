@@ -1,6 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.trade
 
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.UserProfileConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.UserProfileConstant
 
 object RecentTradeConstant {
     const val ROUTE = "${UserProfileConstant.ROUTE}/recentTrade"

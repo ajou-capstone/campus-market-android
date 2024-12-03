@@ -35,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,7 +51,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
@@ -61,7 +59,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue300
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -84,6 +81,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.user.UserReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review.RecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.trade.RecentTradeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 
 @Composable
@@ -207,7 +205,7 @@ fun UserProfileScreen(
                             text = "아직 판매중인 물건이 없어요",
                             style = Caption2,
                             color = Gray600,
-                            modifier = Modifier.padding(start = 8.dp, top = 8.dp)
+                            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
                         )
                     } else {
                         LazyColumn(
@@ -273,7 +271,8 @@ fun UserProfileScreen(
                         Text(
                             text = "아직 작성된 리뷰가 없어요",
                             style = Caption2,
-                            modifier = Modifier.padding(start = 8.dp, top = 8.dp)
+                            color = Gray600,
+                            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
                         )
                     } else {
                         LazyColumn(
@@ -306,73 +305,6 @@ fun UserProfileScreen(
     LaunchedEffectWithLifecycle(coroutineContext) {
         argument.intent(UserProfileIntent.RefreshUserProfile)
         isNewScreenLoadingAvailable = true
-    }
-}
-
-@Composable
-private fun TradeHistoryCard(
-    recentTrade: RecentTrade,
-    onClicked: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .fillMaxWidth()
-            .clickable {
-                onClicked()
-            }
-    ) {
-        PostImage(
-            data = recentTrade.thumbnail,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
-        Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(
-                text = recentTrade.title,
-                style = Headline2,
-                color = Black,
-            )
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-            Text(
-                text = "${recentTrade.price} 원",
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(4.dp),
-            )
-        }
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            TradeItemStatus(recentTrade.isSold)
-        }
-    }
-    HorizontalDivider(
-        thickness = 1.dp,
-        color = Gray200,
-        modifier = Modifier.padding(horizontal = 2.dp)
-    )
-}
-
-@Composable
-private fun TradeItemStatus(isSold: Boolean) {
-    val backgroundColor = if (isSold) LightGray else Blue300
-    val text = if (isSold) "거래 완료" else "거래 가능"
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(5.dp))
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = Body1,
-            color = White,
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-        )
     }
 }
 
@@ -564,46 +496,48 @@ private fun OtherUserProfileScreenPreview() {
                 rating = 4.4
             ),
             recentReviews = MutableStateFlow(
-                PagingData.from(
-                    listOf(
-                        UserReview(
-                            userId = 0L,
-                            nickname = "reviewer_1",
-                            profileImage = "",
-                            description = "좋아요",
-                            rating = 7,
-                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
-                        ),
-                        UserReview(
-                            userId = 1L,
-                            nickname = "reviewer_2",
-                            profileImage = "",
-                            description = "아주 좋아요",
-                            rating = 10,
-                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
-                        )
-                    )
-                )
+                PagingData.empty<UserReview>()
+//                PagingData.from(
+//                    listOf(
+//                        UserReview(
+//                            userId = 0L,
+//                            nickname = "reviewer_1",
+//                            profileImage = "",
+//                            description = "좋아요",
+//                            rating = 7,
+//                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+//                        ),
+//                        UserReview(
+//                            userId = 1L,
+//                            nickname = "reviewer_2",
+//                            profileImage = "",
+//                            description = "아주 좋아요",
+//                            rating = 10,
+//                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
+//                        )
+//                    )
+//                )
             ).collectAsLazyPagingItems(),
             recentTrades = MutableStateFlow(
-                PagingData.from(
-                    listOf(
-                        RecentTrade(
-                            id = 1L,
-                            title = "Used Laptop",
-                            price = 150000,
-                            thumbnail = "https://example.com/image1.jpg",
-                            isSold = false
-                        ),
-                        RecentTrade(
-                            id = 2L,
-                            title = "Antique Vase",
-                            price = 20000,
-                            thumbnail = "https://example.com/image2.jpg",
-                            isSold = true
-                        )
-                    )
-                )
+                PagingData.empty<RecentTrade>()
+//                PagingData.from(
+//                    listOf(
+//                        RecentTrade(
+//                            id = 1L,
+//                            title = "Used Laptop",
+//                            price = 150000,
+//                            thumbnail = "https://example.com/image1.jpg",
+//                            isSold = false
+//                        ),
+//                        RecentTrade(
+//                            id = 2L,
+//                            title = "Antique Vase",
+//                            price = 20000,
+//                            thumbnail = "https://example.com/image2.jpg",
+//                            isSold = true
+//                        )
+//                    )
+//                )
             ).collectAsLazyPagingItems()
         )
     )

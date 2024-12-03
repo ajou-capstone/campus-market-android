@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,7 +43,9 @@ import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
@@ -57,8 +58,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeR
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.inquiry.InquiryConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.info.ReportInfoConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.inquiry.InquiryConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.view.info.ReportInfoConstant
 
 @Composable
 fun ReportListScreen(
@@ -115,12 +116,13 @@ fun ReportListScreen(
             }
             Text(
                 text = "문의/신고",
-                style = Headline2
+                style = Headline2.merge(Gray900),
+                color = Black
             )
         }
         Column(
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp, horizontal = 16.dp)
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
                     start.linkTo(parent.start)
@@ -131,12 +133,12 @@ fun ReportListScreen(
                 }
         ) {
             Text(
-                text = "전체 문의 내역이 표시됩니다.",
+                text = "나의 문의 내역",
                 style = Headline2,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 color = Black,
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
             if (inquiryList.isEmpty()) {
                 Box(
@@ -151,7 +153,6 @@ fun ReportListScreen(
                     )
                 }
             }
-
             LazyColumn {
                 items(
                     count = inquiryList.itemCount,
@@ -204,7 +205,6 @@ private fun InquiryCard(
     Box(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
             .clickable {
                 onClicked(inquiry.qaId)
             }
@@ -262,22 +262,21 @@ private fun InquiryCard(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = "문의 일자 : ${inquiry.createdDate}",
+                text = "문의 일자 : ${inquiry.createdDate.date}",
                 style = Caption2,
                 color = Gray600,
             )
             if (inquiry.isCompleted) {
                 Text(
-                    text = "답변 일자 : ${inquiry.answerDate}",
+                    text = "답변 일자 : ${inquiry.answerDate.date}",
                     style = Caption2,
                     color = Gray600,
                 )
             }
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
             HorizontalDivider(
                 thickness = 1.dp,
-                color = Gray600,
-                modifier = Modifier.padding(horizontal = 2.dp)
+                color = Gray200,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
     }

@@ -44,11 +44,11 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
@@ -59,15 +59,16 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeR
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.ChangeProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.campus.ChangeCampusConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.ChangeProfileConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.logout.LogoutConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal.WithdrawalConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.NotificationConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.view.list.ReportListConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.keyword.KeywordConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.likes.MyLikesConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_trade.MyRecentTradeConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.list.ReportListConstant
 
 @Composable
 fun MyPageScreen(
@@ -195,7 +196,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "프로필 수정",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -217,7 +218,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "캠퍼스 변경",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -229,7 +230,7 @@ fun MyPageScreen(
                     text = "나의 활동",
                     style = Headline2,
                     color = Black,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp, top = 12.dp)
                 )
                 Row(
                     modifier = Modifier
@@ -254,7 +255,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "최근 거래 목록",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -282,7 +283,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "최근 작성된 리뷰",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -304,7 +305,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "찜한 목록",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -326,7 +327,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "키워드 설정",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -335,33 +336,11 @@ fun MyPageScreen(
 
             Column(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
-                    text = "서비스/설정",
+                    text = "서비스",
                     style = Headline2,
                     color = Black,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp, top = 12.dp)
                 )
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            //(알림)설정 페이지로 이동
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_setting),
-                        contentDescription = null,
-                        tint = Blue400
-                    )
-                    Text(
-                        text = "설정",
-                        style = Headline3,
-                        color = Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
                 Row(
                     modifier = Modifier
                         .padding(8.dp)
@@ -379,7 +358,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "문의/신고",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -402,7 +381,7 @@ fun MyPageScreen(
                 )
                 Text(
                     text = "약관 보기",
-                    style = Headline3,
+                    style = Body0,
                     color = Black,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -418,13 +397,35 @@ fun MyPageScreen(
             ) {
                 Icon(
                     modifier = Modifier.size(16.dp),
+                    painter = painterResource(R.drawable.ic_logout_2),
+                    contentDescription = null,
+                    tint = Blue400
+                )
+                Text(
+                    text = "로그아웃",
+                    style = Body0,
+                    color = Black,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.safeNavigate(WithdrawalConstant.ROUTE)
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
                     painter = painterResource(R.drawable.ic_logout),
                     contentDescription = null,
                     tint = Blue400
                 )
                 Text(
-                    text = "로그아웃/탈퇴",
-                    style = Headline3,
+                    text = "탈퇴하기",
+                    style = Body0,
                     color = Black,
                     modifier = Modifier.padding(start = 8.dp)
                 )

@@ -1,4 +1,4 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.logout.withdrawal
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel

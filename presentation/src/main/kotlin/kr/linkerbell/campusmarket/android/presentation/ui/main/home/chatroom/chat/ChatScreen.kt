@@ -84,7 +84,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.rating.RatingConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
 
 @Composable

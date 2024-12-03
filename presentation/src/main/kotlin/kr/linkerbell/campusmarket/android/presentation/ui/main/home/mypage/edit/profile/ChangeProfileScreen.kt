@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,9 +53,11 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
@@ -82,6 +85,7 @@ fun ChangeProfileScreen(
     val originalNickname = data.myProfile.nickname
     var newProfileImage: GalleryImage? by rememberSaveable { mutableStateOf(null) }
     var newNickname: String? by remember { mutableStateOf(null) }
+    var nicknameLength by remember { mutableIntStateOf(originalNickname.length) }
 
     var isSuccessDialogVisible by remember { mutableStateOf(false) }
     var isGalleryShowing by remember { mutableStateOf(false) }
@@ -120,7 +124,6 @@ fun ChangeProfileScreen(
             }
         )
     }
-
     ConstraintLayout(
         modifier = Modifier
             .background(White)
@@ -196,14 +199,24 @@ fun ChangeProfileScreen(
                 Spacer(modifier = Modifier.padding(vertical = 16.dp))
                 TypingTextField(
                     text = newNickname ?: originalNickname,
-                    onValueChange = { newNickname = it },
-                    hintText = "닉네임을 입력하세요",
-                    maxLines = 1,
-                    maxTextLength = 50,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    onValueChange = {
+                        nicknameLength = newNickname?.length ?: originalNickname.length
+                        if (nicknameLength <= 10) {
+                            newNickname = it
+                        }
+                    },
+                    maxLines = 100,
+                    hintText = "닉네임은 특수문자, 공백 없이 10자까지 가능해요",
                     modifier = Modifier
+                        .padding(vertical = 8.dp)
                         .padding(horizontal = Space20)
-                        .focusRequester(focusRequester)
+                )
+                Text(
+                    text = if (nicknameLength <= 10) "(${nicknameLength}/10)"
+                    else "닉네임은 특수문자, 공백 없이 10자까지 가능해요",
+                    modifier = Modifier.align(Alignment.End),
+                    style = Caption1,
+                    color = if (nicknameLength <= 10) Gray900 else Red400
                 )
             }
         }
@@ -215,7 +228,7 @@ fun ChangeProfileScreen(
                     bottom.linkTo(parent.bottom)
                 }
         ) {
-            val nickname : String = newNickname ?: ""
+            val nickname: String = newNickname ?: ""
 
             PostNewProfile(
                 nickname.isNotEmpty() && newNickname != originalNickname,

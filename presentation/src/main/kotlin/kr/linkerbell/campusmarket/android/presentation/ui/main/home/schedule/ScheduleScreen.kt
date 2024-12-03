@@ -54,7 +54,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Error
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.NotificationConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.common.table.ScheduleTable
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.common.table.ScheduleTableData
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.edit.ScheduleEditScreen

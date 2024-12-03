@@ -77,8 +77,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom.chat.ChatConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.item.ItemReportConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.UserProfileConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.item.ItemReportConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.UserProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.post.TradePostConstant
 
 @Composable

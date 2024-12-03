@@ -18,7 +18,7 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerEx
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetUserReviewUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.userprofile.recent.review.RecentReviewConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review.RecentReviewConstant
 
 @HiltViewModel
 class MyRecentReviewViewModel @Inject constructor(

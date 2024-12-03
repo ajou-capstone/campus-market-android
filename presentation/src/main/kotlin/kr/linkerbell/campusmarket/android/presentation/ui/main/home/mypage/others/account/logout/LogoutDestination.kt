@@ -1,33 +1,25 @@
-package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.logout.withdrawal
+package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.logout
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
 
-fun NavGraphBuilder.withdrawalDestination(
+fun NavGraphBuilder.logoutDestination(
     navController: NavController
 ) {
     composable(
-        route = WithdrawalConstant.ROUTE,
-        arguments = listOf(
-            navArgument(WithdrawalConstant.ROUTE) {
-                type = NavType.StringType
-                defaultValue = ""
-            }
-        )
+        route = LogoutConstant.ROUTE
     ) {
-        val viewModel: WithdrawalViewModel = hiltViewModel()
+        val viewModel: LogoutViewModel = hiltViewModel()
 
-        val argument: WithdrawalArgument = let {
+        val argument: LogoutArgument = let {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            WithdrawalArgument(
+            LogoutArgument(
                 state = state,
                 event = viewModel.event,
                 intent = viewModel::onIntent,
@@ -36,19 +28,10 @@ fun NavGraphBuilder.withdrawalDestination(
             )
         }
 
-        val data: WithdrawalData = let {
-            val myProfile by viewModel.myProfile.collectAsStateWithLifecycle()
-
-            WithdrawalData(
-                myProfile = myProfile
-            )
-        }
-
         ErrorObserver(viewModel)
-        WithdrawalScreen(
+        LogoutScreen(
             navController = navController,
             argument = argument,
-            data = data
         )
     }
 }
