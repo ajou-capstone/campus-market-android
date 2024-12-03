@@ -12,7 +12,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 
@@ -53,6 +52,6 @@ internal fun RatingStars(
 private fun RatingStarsPreview() {
     RatingStars(
         rating = 5,
-        starSize =20.dp
+        starSize = 20.dp
     )
 }
