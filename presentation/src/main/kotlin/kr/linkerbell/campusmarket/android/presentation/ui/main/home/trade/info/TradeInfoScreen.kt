@@ -654,7 +654,8 @@ private fun TradeInfoScreenPreview() {
                 id = 2001L,
                 nickname = "SampleUser",
                 profileImage = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EB%25AA%25B0%253F%25EB%25A3%25A8&psig=AOvVaw0ZvXnvVvoooyjWzrpOLFTi&ust=1731290975363000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCOj6oM_X0IkDFQAAAAAdAAAAABAE",
-                rating = 4.5
+                rating = 4.5,
+                isDeleted = false
             ),
             tradeInfo = TradeInfo(
                 campusId = 1L,

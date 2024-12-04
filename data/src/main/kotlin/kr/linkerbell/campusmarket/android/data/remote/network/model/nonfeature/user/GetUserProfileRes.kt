@@ -14,14 +14,17 @@ data class GetUserProfileRes(
     @SerialName("profileImage")
     val profileImage: String,
     @SerialName("rating")
-    val rating: Double
+    val rating: Double,
+    @SerialName("isDeleted")
+    val isDeleted: Boolean,
 ) : DataMapper<UserProfile> {
     override fun toDomain(): UserProfile {
         return UserProfile(
             id = id,
             nickname = nickname,
             profileImage = profileImage,
-            rating = rating
+            rating = rating,
+            isDeleted = isDeleted
         )
     }
 }

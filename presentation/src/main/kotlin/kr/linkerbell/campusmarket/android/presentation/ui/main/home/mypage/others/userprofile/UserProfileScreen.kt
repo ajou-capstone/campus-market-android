@@ -493,7 +493,8 @@ private fun OtherUserProfileScreenPreview() {
                 id = 959L,
                 nickname = "user3205",
                 profileImage = "https://picsum.photos/200",
-                rating = 4.4
+                rating = 4.4,
+                isDeleted = false
             ),
             recentReviews = MutableStateFlow(
                 PagingData.empty<UserReview>()

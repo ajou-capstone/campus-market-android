@@ -19,13 +19,11 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Session
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ConnectRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetMessageListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetRoomListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.QuitRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.SetRoomNotificationUseCase
-import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 
@@ -35,7 +33,6 @@ class ChatRoomViewModel @Inject constructor(
     private val getRoomListUseCase: GetRoomListUseCase,
     private val setRoomNotificationUseCase: SetRoomNotificationUseCase,
     private val quitRoomUseCase: QuitRoomUseCase,
-    private val getUserProfileUseCase: GetUserProfileUseCase,
     private val getMessageListUseCase: GetMessageListUseCase,
     private val connectRoomUseCase: ConnectRoomUseCase
 ) : BaseViewModel() {
@@ -48,10 +45,6 @@ class ChatRoomViewModel @Inject constructor(
 
     private val _roomList: MutableStateFlow<List<Room>> = MutableStateFlow(emptyList())
     val roomList: StateFlow<List<Room>> = _roomList.asStateFlow()
-
-    private val _userProfileList: MutableStateFlow<List<UserProfile>> =
-        MutableStateFlow(emptyList())
-    val userProfileList: StateFlow<List<UserProfile>> = _userProfileList.asStateFlow()
 
     private val _messageList: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
     val messageList: StateFlow<List<Message>> = _messageList.asStateFlow()
@@ -225,16 +218,6 @@ class ChatRoomViewModel @Inject constructor(
                         onIntent(ChatRoomIntent.Session.Subscribe(id))
                     }
                     _roomList.value = roomList
-
-                    _userProfileList.value = roomList.filter { room ->
-                        userProfileList.value.none { userProfile ->
-                            room.userId == userProfile.id
-                        }
-                    }.mapNotNull { room ->
-                        getUserProfileUseCase(
-                            id = room.userId
-                        ).getOrNull()
-                    }
                 }
         }
         launch {

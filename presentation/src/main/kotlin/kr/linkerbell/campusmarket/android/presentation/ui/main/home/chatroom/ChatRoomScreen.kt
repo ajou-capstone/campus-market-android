@@ -46,7 +46,6 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Room
-import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -89,12 +88,10 @@ fun ChatRoomScreen(
 
     val data: ChatRoomData = Unit.let {
         val roomList by viewModel.roomList.collectAsStateWithLifecycle()
-        val userProfileList by viewModel.userProfileList.collectAsStateWithLifecycle()
         val messageList by viewModel.messageList.collectAsStateWithLifecycle()
 
         ChatRoomData(
             roomList = roomList,
-            userProfileList = userProfileList,
             messageList = messageList
         )
     }
@@ -392,14 +389,6 @@ private fun ChatRoomScreenPreview() {
                     isAlarm = false,
                     readLatestMessageId = 2L,
                     thumbnail = "https://placehold.co/600x400"
-                )
-            ),
-            userProfileList = listOf(
-                UserProfile(
-                    id = 1L,
-                    nickname = "장성혁",
-                    profileImage = "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
-                    rating = 4.5
                 )
             ),
             messageList = listOf(

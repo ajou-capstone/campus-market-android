@@ -468,150 +468,185 @@ fun ChatScreen(
                 .background(White)
                 .fillMaxWidth(),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.width(Space20))
-                if (isMessageMenuOpen) {
-                    RippleBox(
-                        onClick = {
-                            isMessageMenuOpen = false
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space24),
-                            painter = painterResource(R.drawable.ic_close),
-                            contentDescription = null,
-                            tint = Gray900
-                        )
-                    }
-                } else {
-                    RippleBox(
-                        onClick = {
-                            isMessageMenuOpen = true
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space24),
-                            painter = painterResource(R.drawable.ic_plus),
-                            contentDescription = null,
-                            tint = Gray900
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.width(Space20))
-                TypingTextField(
-                    text = message,
-                    modifier = Modifier
-                        .heightIn(max = Space80)
-                        .padding(vertical = Space12)
-                        .weight(1f),
-                    onValueChange = { message = it },
-                    maxLines = Int.MAX_VALUE,
-                    maxTextLength = 1000
-                )
-                Spacer(modifier = Modifier.width(Space20))
-                if (message.isEmpty()) {
+            if (data.userProfile.isDeleted) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(Space20))
+                    Icon(
+                        modifier = Modifier.size(Space24),
+                        painter = painterResource(R.drawable.ic_plus),
+                        contentDescription = null,
+                        tint = Gray400
+                    )
+                    Spacer(modifier = Modifier.width(Space20))
+                    TypingTextField(
+                        text = message,
+                        modifier = Modifier
+                            .heightIn(max = Space80)
+                            .padding(vertical = Space12)
+                            .weight(1f),
+                        isEnabled = false,
+                        onValueChange = { message = it },
+                        maxLines = Int.MAX_VALUE,
+                        maxTextLength = 1000
+                    )
+                    Spacer(modifier = Modifier.width(Space20))
                     Icon(
                         modifier = Modifier.size(Space24),
                         painter = painterResource(R.drawable.ic_send),
                         contentDescription = null,
                         tint = Gray400
                     )
-                } else {
-                    RippleBox(
-                        onClick = {
-                            intent(ChatIntent.Session.SendText(message))
-                            message = ""
+                    Spacer(modifier = Modifier.width(Space20))
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(Space20))
+                    if (isMessageMenuOpen) {
+                        RippleBox(
+                            onClick = {
+                                isMessageMenuOpen = false
+                            }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(Space24),
+                                painter = painterResource(R.drawable.ic_close),
+                                contentDescription = null,
+                                tint = Gray900
+                            )
                         }
-                    ) {
+                    } else {
+                        RippleBox(
+                            onClick = {
+                                isMessageMenuOpen = true
+                            }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(Space24),
+                                painter = painterResource(R.drawable.ic_plus),
+                                contentDescription = null,
+                                tint = Gray900
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(Space20))
+                    TypingTextField(
+                        text = message,
+                        modifier = Modifier
+                            .heightIn(max = Space80)
+                            .padding(vertical = Space12)
+                            .weight(1f),
+                        onValueChange = { message = it },
+                        maxLines = Int.MAX_VALUE,
+                        maxTextLength = 1000
+                    )
+                    Spacer(modifier = Modifier.width(Space20))
+                    if (message.isEmpty()) {
                         Icon(
                             modifier = Modifier.size(Space24),
                             painter = painterResource(R.drawable.ic_send),
                             contentDescription = null,
-                            tint = Gray900
+                            tint = Gray400
                         )
+                    } else {
+                        RippleBox(
+                            onClick = {
+                                intent(ChatIntent.Session.SendText(message))
+                                message = ""
+                            }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(Space24),
+                                painter = painterResource(R.drawable.ic_send),
+                                contentDescription = null,
+                                tint = Gray900
+                            )
+                        }
                     }
-                }
-                Spacer(modifier = Modifier.width(Space20))
-            }
-            if (isMessageMenuOpen) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Space20)
-                ) {
                     Spacer(modifier = Modifier.width(Space20))
-                    Column {
-                        Spacer(modifier = Modifier.height(Space20))
-                        RippleBox(
-                            onClick = {
-                                isGalleryShowing = true
-                                isMessageMenuOpen = false
-                            }
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
+                }
+                if (isMessageMenuOpen) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Space20)
+                    ) {
+                        Spacer(modifier = Modifier.width(Space20))
+                        Column {
+                            Spacer(modifier = Modifier.height(Space20))
+                            RippleBox(
+                                onClick = {
+                                    isGalleryShowing = true
+                                    isMessageMenuOpen = false
+                                }
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(Space52)
-                                        .clip(CircleShape)
-                                        .background(Green400, CircleShape),
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Icon(
+                                    Box(
                                         modifier = Modifier
-                                            .size(Space32)
-                                            .align(Alignment.Center),
-                                        painter = painterResource(R.drawable.ic_image),
-                                        contentDescription = null,
-                                        tint = White
+                                            .size(Space52)
+                                            .clip(CircleShape)
+                                            .background(Green400, CircleShape),
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier
+                                                .size(Space32)
+                                                .align(Alignment.Center),
+                                            painter = painterResource(R.drawable.ic_image),
+                                            contentDescription = null,
+                                            tint = White
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(Space8))
+                                    Text(
+                                        text = "사진",
+                                        style = Body1.merge(Gray900)
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(Space8))
-                                Text(
-                                    text = "사진",
-                                    style = Body1.merge(Gray900)
-                                )
                             }
+                            Spacer(modifier = Modifier.height(Space60))
                         }
-                        Spacer(modifier = Modifier.height(Space60))
-                    }
-                    Column {
-                        Spacer(modifier = Modifier.height(Space20))
-                        RippleBox(
-                            onClick = {
-                                intent(ChatIntent.Session.SendSchedule)
-                                isMessageMenuOpen = false
-                            }
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
+                        Column {
+                            Spacer(modifier = Modifier.height(Space20))
+                            RippleBox(
+                                onClick = {
+                                    intent(ChatIntent.Session.SendSchedule)
+                                    isMessageMenuOpen = false
+                                }
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(Space52)
-                                        .clip(CircleShape)
-                                        .background(Teal400, CircleShape),
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Icon(
+                                    Box(
                                         modifier = Modifier
-                                            .size(Space32)
-                                            .align(Alignment.Center),
-                                        painter = painterResource(R.drawable.ic_calendar),
-                                        contentDescription = null,
-                                        tint = White
+                                            .size(Space52)
+                                            .clip(CircleShape)
+                                            .background(Teal400, CircleShape),
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier
+                                                .size(Space32)
+                                                .align(Alignment.Center),
+                                            painter = painterResource(R.drawable.ic_calendar),
+                                            contentDescription = null,
+                                            tint = White
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(Space8))
+                                    Text(
+                                        text = "시간표",
+                                        style = Body1.merge(Gray900)
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(Space8))
-                                Text(
-                                    text = "시간표",
-                                    style = Body1.merge(Gray900)
-                                )
                             }
+                            Spacer(modifier = Modifier.height(Space60))
                         }
-                        Spacer(modifier = Modifier.height(Space60))
                     }
                 }
             }
@@ -650,7 +685,7 @@ fun ChatScreen(
 
 @Preview
 @Composable
-private fun ChatScreenPreview() {
+private fun ChatScreenPreview1() {
     val currentTime = System.currentTimeMillis()
     ChatScreen(
         navController = rememberNavController(),
@@ -716,7 +751,117 @@ private fun ChatScreenPreview() {
                 id = 1L,
                 nickname = "정은재",
                 profileImage = "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+                rating = 4.5,
+                isDeleted = false
+            ),
+            myProfile = MyProfile(
+                id = 2L,
+                campusId = 1L,
+                loginEmail = "lorenzo.ballard@example.com",
+                schoolEmail = "selena.weaver@example.com",
+                nickname = "장성혁",
+                profileImage = "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
                 rating = 4.5
+            ),
+            room = Room(
+                id = 1L,
+                userId = 1L,
+                tradeId = 1L,
+                title = "title1",
+                isAlarm = true,
+                readLatestMessageId = 1L,
+                thumbnail = "https://placehold.co/600x400"
+            ),
+            trade = TradeInfo(
+                itemId = 1L,
+                userId = 1L,
+                campusId = 1L,
+                nickname = "정은재",
+                title = "title1",
+                description = "description1",
+                price = 10000,
+                category = "category1",
+                thumbnail = "https://placehold.co/600x400",
+                images = listOf("https://placehold.co/600x400"),
+                chatCount = 1,
+                likeCount = 1,
+                isLiked = true,
+                isSold = false
+            )
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun ChatScreenPreview2() {
+    val currentTime = System.currentTimeMillis()
+    ChatScreen(
+        navController = rememberNavController(),
+        argument = ChatArgument(
+            state = ChatState.Init,
+            event = MutableEventFlow(),
+            intent = {},
+            logEvent = { _, _ -> },
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
+        ),
+        data = ChatData(
+            messageList = listOf(
+                Message.Schedule(
+                    id = 0L,
+                    chatRoomId = 1L,
+                    userId = 1L,
+                    createdAt = currentTime - 6L
+                ),
+                Message.Text(
+                    id = 1L,
+                    chatRoomId = 1L,
+                    userId = 1L,
+                    content = "안녕하세요.",
+                    createdAt = currentTime - 5L
+                ),
+                Message.Image(
+                    id = 2L,
+                    chatRoomId = 1L,
+                    userId = 1L,
+                    content = "https://placehold.co/600x400",
+                    createdAt = currentTime - 4L
+                ),
+                Message.Text(
+                    id = 3L,
+                    chatRoomId = 1L,
+                    userId = 1L,
+                    content = "해당 물품 구매 희망합니다.",
+                    createdAt = currentTime - 3L
+                ),
+                Message.Text(
+                    id = 4L,
+                    chatRoomId = 1L,
+                    userId = 2L,
+                    content = "이거 말씀하시는 건가요?",
+                    createdAt = currentTime - 2L
+                ),
+                Message.Image(
+                    id = 5L,
+                    chatRoomId = 1L,
+                    userId = 2L,
+                    content = "https://placehold.co/600x400",
+                    createdAt = currentTime - 1L
+                ),
+                Message.Text(
+                    id = 6L,
+                    chatRoomId = 1L,
+                    userId = 2L,
+                    content = "엄청나게 긴 메세지를 엄청나게 보내는데 ".repeat(5),
+                    createdAt = currentTime
+                ),
+            ),
+            userProfile = UserProfile(
+                id = 1L,
+                nickname = "정은재",
+                profileImage = "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+                rating = 4.5,
+                isDeleted = true
             ),
             myProfile = MyProfile(
                 id = 2L,
