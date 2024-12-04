@@ -6,7 +6,8 @@ data class Room(
     val tradeId: Long,
     val readLatestMessageId: Long,
     val title: String,
-    val isAlarm: Boolean
+    val isAlarm: Boolean,
+    val thumbnail: String
 ) {
     companion object {
         val empty = Room(
@@ -15,7 +16,8 @@ data class Room(
             tradeId = -1,
             readLatestMessageId = -1,
             title = "",
-            isAlarm = false
+            isAlarm = false,
+            thumbnail = ""
         )
     }
 }

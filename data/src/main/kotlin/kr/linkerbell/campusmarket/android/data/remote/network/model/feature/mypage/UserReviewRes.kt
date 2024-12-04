@@ -34,8 +34,8 @@ data class UserReviewSortRes(
 
 @Serializable
 data class ReviewItemRes(
-    @SerialName("userId")
-    val userId: Long,
+    @SerialName("reviewId")
+    val reviewId: Long,
     @SerialName("nickname")
     val nickname: String,
     @SerialName("profileImage")
@@ -49,7 +49,7 @@ data class ReviewItemRes(
 ) : DataMapper<UserReview> {
     override fun toDomain(): UserReview {
         return UserReview(
-            userId = userId,
+            reviewId = reviewId,
             nickname = nickname,
             profileImage = profileImage,
             description = description,

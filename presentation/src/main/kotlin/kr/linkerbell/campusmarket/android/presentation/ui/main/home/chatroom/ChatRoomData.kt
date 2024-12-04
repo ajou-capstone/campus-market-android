@@ -8,6 +8,5 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfi
 @Immutable
 data class ChatRoomData(
     val roomList: List<Room>,
-    val userProfileList: List<UserProfile>,
     val messageList: List<Message>
 )

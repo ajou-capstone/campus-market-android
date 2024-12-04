@@ -11,6 +11,7 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
+import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.authentication.LogoutUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
@@ -18,7 +19,8 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getMyProfileUseCase: GetMyProfileUseCase
+    private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<MyPageState> = MutableStateFlow(MyPageState.Init)
@@ -37,16 +39,22 @@ class MyPageViewModel @Inject constructor(
     }
 
     fun onIntent(intent: MyPageIntent) {
-        when(intent){
+        when (intent) {
             is MyPageIntent.RefreshData -> {
-                launch{
+                launch {
                     getMyProfile()
+                }
+            }
+
+            is MyPageIntent.LogOut -> {
+                launch {
+                    userLogOut()
                 }
             }
         }
     }
 
-    private suspend fun getMyProfile(){
+    private suspend fun getMyProfile() {
         getMyProfileUseCase().onSuccess {
             _state.value = MyPageState.Init
             _myProfile.value = it
@@ -62,6 +70,22 @@ class MyPageViewModel @Inject constructor(
                 }
             }
             _myProfile.value = MyProfile.empty
+        }
+    }
+
+    private suspend fun userLogOut() {
+        logoutUseCase().onSuccess {
+            _event.emit(MyPageEvent.LogOutSuccess)
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
         }
     }
 }

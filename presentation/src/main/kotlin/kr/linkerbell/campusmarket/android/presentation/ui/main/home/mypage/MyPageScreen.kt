@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,9 +26,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,18 +42,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlin.system.exitProcess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.MyProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
@@ -57,17 +64,18 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.Error
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
+import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.change_profile.ChangeProfileConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.changecampus.ChangeCampusConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.keyword.KeywordConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.likes.MyLikesConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.logout.LogoutConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.notification.NotificationConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_review.MyRecentReviewConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent_trade.MyRecentTradeConstant
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.report.view.list.ReportListConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.campus.ChangeCampusConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.ChangeProfileConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal.WithdrawalConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.NotificationConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.view.list.ReportListConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.keyword.KeywordConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.likes.MyLikesConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_review.MyRecentReviewConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_trade.MyRecentTradeConstant
 
 @Composable
 fun MyPageScreen(
@@ -111,7 +119,29 @@ fun MyPageScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
+    var isLogoutDialogVisible by remember { mutableStateOf(false) }
     val userProfile = data.myProfile
+
+    val context = LocalContext.current
+    fun restartApp() {
+        context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { intent ->
+            context.startActivity(
+                Intent.makeRestartActivityTask(intent.component)
+            )
+        }
+        exitProcess(0)
+    }
+
+    if(isLogoutDialogVisible){
+        LogoutConfirmDialog(
+            onLogoutConfirmButtonClicked = {
+                argument.intent(MyPageIntent.LogOut)
+            },
+            onDismissRequest = {
+                isLogoutDialogVisible = false
+            }
+        )
+    }
     ConstraintLayout(
         modifier = Modifier
             .background(White)
@@ -195,7 +225,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "프로필 수정",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -217,7 +247,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "캠퍼스 변경",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -229,7 +259,7 @@ fun MyPageScreen(
                     text = "나의 활동",
                     style = Headline2,
                     color = Black,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp, top = 12.dp)
                 )
                 Row(
                     modifier = Modifier
@@ -254,7 +284,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "최근 거래 목록",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -282,7 +312,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "최근 작성된 리뷰",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -304,7 +334,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "찜한 목록",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -326,7 +356,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "키워드 설정",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -335,33 +365,11 @@ fun MyPageScreen(
 
             Column(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
-                    text = "서비스/설정",
+                    text = "서비스",
                     style = Headline2,
                     color = Black,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp, top = 12.dp)
                 )
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            //(알림)설정 페이지로 이동
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_setting),
-                        contentDescription = null,
-                        tint = Blue400
-                    )
-                    Text(
-                        text = "설정",
-                        style = Headline3,
-                        color = Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
                 Row(
                     modifier = Modifier
                         .padding(8.dp)
@@ -379,7 +387,7 @@ fun MyPageScreen(
                     )
                     Text(
                         text = "문의/신고",
-                        style = Headline3,
+                        style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -402,7 +410,7 @@ fun MyPageScreen(
                 )
                 Text(
                     text = "약관 보기",
-                    style = Headline3,
+                    style = Body0,
                     color = Black,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -412,7 +420,29 @@ fun MyPageScreen(
                     .padding(8.dp)
                     .fillMaxWidth()
                     .clickable {
-                        navController.safeNavigate(LogoutConstant.ROUTE)
+                        isLogoutDialogVisible = true
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(R.drawable.ic_logout_2),
+                    contentDescription = null,
+                    tint = Blue400
+                )
+                Text(
+                    text = "로그아웃",
+                    style = Body0,
+                    color = Black,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.safeNavigate(WithdrawalConstant.ROUTE)
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -423,8 +453,8 @@ fun MyPageScreen(
                     tint = Blue400
                 )
                 Text(
-                    text = "로그아웃/탈퇴",
-                    style = Headline3,
+                    text = "탈퇴하기",
+                    style = Body0,
                     color = Black,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -433,6 +463,14 @@ fun MyPageScreen(
     }
     LaunchedEffectWithLifecycle(event, coroutineContext) {
         argument.intent(MyPageIntent.RefreshData)
+
+        event.eventObserve { event ->
+            when (event) {
+                is MyPageEvent.LogOutSuccess -> {
+                    restartApp()
+                }
+            }
+        }
     }
 }
 
@@ -456,7 +494,6 @@ private fun MyProfileUserInfo(
                 modifier = Modifier.fillMaxSize()
             )
         }
-
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -484,6 +521,22 @@ private fun MyProfileUserInfo(
             }
         }
     }
+}
+
+@Composable
+private fun LogoutConfirmDialog(
+    onLogoutConfirmButtonClicked: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DialogScreen(
+        title = "로그아웃 하시겠습니까?",
+        isCancelable = true,
+        onConfirm = { onLogoutConfirmButtonClicked() },
+        onCancel = { onDismissRequest() },
+        onDismissRequest = {
+            onDismissRequest()
+        }
+    )
 }
 
 @Preview

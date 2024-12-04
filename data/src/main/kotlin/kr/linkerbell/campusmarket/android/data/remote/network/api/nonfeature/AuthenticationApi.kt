@@ -1,7 +1,7 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.api.nonfeature
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.patch
+import io.ktor.client.request.delete
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import javax.inject.Inject
@@ -53,7 +53,7 @@ class AuthenticationApi @Inject constructor(
     }
 
     suspend fun withdraw(): Result<Unit> {
-        return client.patch("$baseUrl/api/v1/auth/withdraw")
+        return client.delete("$baseUrl/api/v1/auth/withdraw")
             .convert(errorMessageMapper::map)
     }
 }

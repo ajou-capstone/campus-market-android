@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,34 +29,35 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.presentation.R
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space4
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButton
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonProperties
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
-import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.result.TradeSearchResultConstant
 
@@ -99,30 +101,32 @@ fun TradeSearchScreen(
         )
 
         Column {
-            Spacer(modifier = Modifier.height(Space8))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Space20),
+                    .padding(horizontal = Space20, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "최근 검색 내역",
-                    style = Headline3.merge(Gray900)
+                    style = Headline3.merge(Gray900),
+                    color = Black,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-                ConfirmButton(
-                    properties = ConfirmButtonProperties(
-                        size = ConfirmButtonSize.Small,
-                        type = ConfirmButtonType.Secondary
-                    ),
-                    onClick = {
-                        argument.intent(TradeSearchIntent.DeleteAll)
-                    }
-                ) { style ->
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Gray200)
+                        .clickable {
+                            argument.intent(TradeSearchIntent.DeleteAll)
+                        }
+                ) {
                     Text(
                         text = "전체 삭제",
-                        style = style
+                        style = Body2,
+                        color = Gray600,
+                        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
                     )
                 }
             }
@@ -236,49 +240,44 @@ private fun TradeSearchScreenSearchHistoryCard(
     onClearIconClick: () -> Unit,
     onTextClick: (String) -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable {
                 onTextClick(history)
-            }
+            },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(modifier = Modifier.height(Space8))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(Space20))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_clock),
-                    contentDescription = "Clock Image",
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(12.dp)
-                )
-                Text(
-                    text = history,
-                    fontSize = 12.sp
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            RippleBox(
-                onClick = {
-                    onClearIconClick()
-                }
-            ) {
-                Icon(
-                    modifier = Modifier.size(Space24),
-                    painter = painterResource(R.drawable.ic_close),
-                    contentDescription = null,
-                    tint = Gray900
-                )
-            }
-            Spacer(modifier = Modifier.width(Space20))
+            Image(
+                painter = painterResource(id = R.drawable.ic_clock),
+                contentDescription = "Clock Image",
+                modifier = Modifier.size(12.dp),
+                colorFilter = ColorFilter.tint(Gray900)
+            )
+            Text(
+                text = history,
+                style = Body1,
+                color = Gray900,
+                modifier = Modifier.padding(start = 12.dp)
+            )
         }
-        Spacer(modifier = Modifier.height(Space8))
+        Spacer(modifier = Modifier.weight(1f))
+        RippleBox(
+            onClick = {
+                onClearIconClick()
+            }
+        ) {
+            Icon(
+                modifier = Modifier.size(Space24),
+                painter = painterResource(R.drawable.ic_close),
+                contentDescription = null,
+                tint = Gray900
+            )
+        }
     }
 }
 

@@ -13,7 +13,8 @@ data class RoomEntity(
     @ColumnInfo(name = "trade_id") val tradeId: Long,
     @ColumnInfo(name = "read_latest_message_id") val readLatestMessageId: Long,
     @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "is_alarm") val isAlarm: Boolean
+    @ColumnInfo(name = "is_alarm") val isAlarm: Boolean,
+    @ColumnInfo(name = "thumbnail") val thumbnail: String
 ) : DataMapper<Room> {
     override fun toDomain(): Room {
         return Room(
@@ -22,7 +23,8 @@ data class RoomEntity(
             tradeId = tradeId,
             readLatestMessageId = readLatestMessageId,
             title = title,
-            isAlarm = isAlarm
+            isAlarm = isAlarm,
+            thumbnail = thumbnail
         )
     }
 }
@@ -34,6 +36,7 @@ fun Room.toEntity(): RoomEntity {
         tradeId = tradeId,
         readLatestMessageId = readLatestMessageId,
         title = title,
-        isAlarm = isAlarm
+        isAlarm = isAlarm,
+        thumbnail = thumbnail
     )
 }

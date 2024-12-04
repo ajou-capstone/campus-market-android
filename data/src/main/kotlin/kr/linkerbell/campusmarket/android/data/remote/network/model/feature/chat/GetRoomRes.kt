@@ -28,7 +28,9 @@ data class GetRoomListItemRes(
     @SerialName("isAlarm")
     val isAlarm: Boolean,
     @SerialName("messageId")
-    val readLatestMessageId: Long
+    val readLatestMessageId: Long,
+    @SerialName("thumbnail")
+    val thumbnail: String
 ) : DataMapper<Room> {
     override fun toDomain(): Room {
         return Room(
@@ -37,7 +39,8 @@ data class GetRoomListItemRes(
             tradeId = itemId,
             readLatestMessageId = readLatestMessageId,
             title = title,
-            isAlarm = isAlarm
+            isAlarm = isAlarm,
+            thumbnail = thumbnail
         )
     }
 }

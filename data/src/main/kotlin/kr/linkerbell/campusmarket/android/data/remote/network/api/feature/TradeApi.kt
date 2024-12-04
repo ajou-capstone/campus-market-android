@@ -138,7 +138,7 @@ class TradeApi @Inject constructor(
         description: String,
         rating: Int
     ): Result<Unit> {
-        return client.post("$baseUrl/api/v1/users/{$targetUserId}/reviews") {
+        return client.post("$baseUrl/api/v1/users/${targetUserId}/reviews") {
             setBody(
                 UserRatingReq(
                     itemId = itemId,

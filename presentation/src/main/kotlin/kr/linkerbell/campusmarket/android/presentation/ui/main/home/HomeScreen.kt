@@ -1,5 +1,9 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -14,6 +18,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,6 +81,12 @@ fun HomeScreen(
         )
     }
 
+    val permission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,6 +131,14 @@ fun HomeScreen(
                 }
             }
         )
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permission.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
     }
 
     LaunchedEffectWithLifecycle(event, coroutineContext) {

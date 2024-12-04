@@ -18,8 +18,12 @@ sealed interface MyPageState {
     data object Loading : MyPageState
 }
 
-sealed interface MyPageEvent
-
-sealed interface MyPageIntent{
-    data object RefreshData : MyPageIntent
+sealed interface MyPageEvent {
+    data object LogOutSuccess : MyPageEvent
 }
+
+sealed interface MyPageIntent {
+    data object RefreshData : MyPageIntent
+    data object LogOut : MyPageIntent
+}
+
