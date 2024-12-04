@@ -156,7 +156,7 @@ private fun TradeScreen(
                                     TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
                                 )
                             )
-                            navController.navigate(tradeInfoRoute)
+                            navController.safeNavigate(tradeInfoRoute)
                         }
                     )
                 }
