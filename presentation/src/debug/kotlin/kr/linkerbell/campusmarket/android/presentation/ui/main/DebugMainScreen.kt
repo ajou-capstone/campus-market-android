@@ -16,8 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import kotlin.math.roundToInt
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.CampusMarketTheme
@@ -31,11 +31,10 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.splash.SplashCons
 
 @Composable
 fun DebugMainScreen(
+    navController: NavHostController,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     CampusMarketTheme {
-        val navController = rememberNavController()
-
         NavHost(
             navController = navController,
             startDestination = SplashConstant.ROUTE

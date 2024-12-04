@@ -46,7 +46,7 @@ class CampusMarketFcmService : FirebaseMessagingService() {
                     )
                 }?.let { intent ->
                     TaskStackBuilder.create(this@CampusMarketFcmService)
-                        .addNextIntentWithParentStack(intent)
+                        .addNextIntent(intent)
                         .getPendingIntent(
                             0,
                             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
