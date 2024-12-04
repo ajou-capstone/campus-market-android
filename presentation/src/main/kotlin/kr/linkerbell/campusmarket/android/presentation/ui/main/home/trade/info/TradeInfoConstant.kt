@@ -7,5 +7,5 @@ object TradeInfoConstant {
     const val ROUTE = "${TradeConstant.ROUTE}/info"
     const val ROUTE_ARGUMENT_ITEM_ID = "itemId"
 
-    const val ROUTE_STRUCTURE = "$ROUTE?$ROUTE_ARGUMENT_ITEM_ID=${ROUTE_ARGUMENT_ITEM_ID}"
+    const val ROUTE_STRUCTURE = "$ROUTE?$ROUTE_ARGUMENT_ITEM_ID={$ROUTE_ARGUMENT_ITEM_ID}"
 }
