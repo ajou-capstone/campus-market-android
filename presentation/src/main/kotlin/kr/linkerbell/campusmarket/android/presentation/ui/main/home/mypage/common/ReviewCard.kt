@@ -38,7 +38,6 @@ internal fun ReviewCard(review: UserReview) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-
             .background(White)
     ) {
         Row {
@@ -118,7 +117,7 @@ internal fun ReviewCard(review: UserReview) {
 private fun ReviewCardPreview() {
     ReviewCard(
         review = UserReview(
-            userId = 0L,
+            reviewId = 0L,
             nickname = "reviewer_1",
             profileImage = "",
             description = "좋아요",

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,25 +30,19 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
-import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
-import kr.linkerbell.campusmarket.android.presentation.common.util.compose.isEmpty
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.ReviewCard
@@ -134,10 +127,7 @@ fun MyRecentReviewScreen(
                 items(
                     count = recentReviewList.itemCount,
                     key = { index ->
-                        ("${recentReviewList[index]?.userId ?: -1}_${
-                            recentReviewList[index]?.createdAt?.date ?: Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault())
-                        }")
+                        recentReviewList[index]?.reviewId ?: -1L
                     }
                 ) { index ->
                     val review = recentReviewList[index] ?: return@items
@@ -145,50 +135,6 @@ fun MyRecentReviewScreen(
                     Spacer(modifier = Modifier.padding(8.dp))
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun MyRecentReviewListScreen(
-    recentReviewList: LazyPagingItems<UserReview>
-) {
-    if (recentReviewList.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "보여줄 항목이 없어요",
-                style = Caption2,
-                color = Gray600,
-                modifier = Modifier.padding(start = 8.dp, top = 8.dp)
-            )
-        }
-    }
-    HorizontalDivider(
-        thickness = 1.dp,
-        color = Gray200,
-        modifier = Modifier.padding(horizontal = 2.dp)
-    )
-
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp)
-    ) {
-        items(
-            count = recentReviewList.itemCount,
-            key = { index ->
-                ("${recentReviewList[index]?.userId ?: -1}_${
-                    recentReviewList[index]?.createdAt?.date ?: Clock.System.now()
-                        .toLocalDateTime(TimeZone.currentSystemDefault())
-                }")
-            }
-        ) { index ->
-            val review = recentReviewList[index] ?: return@items
-            ReviewCard(review)
-            Spacer(modifier = Modifier.padding(8.dp))
         }
     }
 }
@@ -210,7 +156,7 @@ private fun RecentReviewScreenPreview() {
                 PagingData.from(
                     listOf(
                         UserReview(
-                            userId = 0L,
+                            reviewId = 0L,
                             nickname = "reviewer_1",
                             profileImage = "",
                             description = "좋아요",
@@ -218,7 +164,7 @@ private fun RecentReviewScreenPreview() {
                             createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
                         ),
                         UserReview(
-                            userId = 1L,
+                            reviewId = 1L,
                             nickname = "reviewer_2",
                             profileImage = "",
                             description = "아주 좋아요",

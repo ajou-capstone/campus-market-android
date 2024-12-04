@@ -31,10 +31,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -127,10 +124,7 @@ fun RecentReviewScreen(
                 items(
                     count = recentReviewList.itemCount,
                     key = { index ->
-                        ("${recentReviewList[index]?.userId ?: -1}_${
-                            recentReviewList[index]?.createdAt?.date ?: Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault())
-                        }")
+                        recentReviewList[index]?.reviewId ?: -1L
                     }
                 ) { index ->
                     val review = recentReviewList[index] ?: return@items
@@ -159,7 +153,7 @@ private fun RecentReviewScreenPreview() {
                 PagingData.from(
                     listOf(
                         UserReview(
-                            userId = 0L,
+                            reviewId = 0L,
                             nickname = "reviewer_1",
                             profileImage = "",
                             description = "좋아요",
@@ -167,7 +161,7 @@ private fun RecentReviewScreenPreview() {
                             createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
                         ),
                         UserReview(
-                            userId = 0L,
+                            reviewId = 0L,
                             nickname = "reviewer_2",
                             profileImage = "",
                             description = "아주 좋아요",
