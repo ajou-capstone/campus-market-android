@@ -23,7 +23,8 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                         tradeId = 1L,
                         title = "title1",
                         isAlarm = true,
-                        readLatestMessageId = 1L
+                        readLatestMessageId = 1L,
+                        thumbnail = "https://placehold.co/600x400"
                     ),
                     Room(
                         id = 2L,
@@ -31,7 +32,8 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                         tradeId = 2L,
                         title = "title2",
                         isAlarm = false,
-                        readLatestMessageId = 2L
+                        readLatestMessageId = 2L,
+                        thumbnail = "https://placehold.co/600x400"
                     )
                 )
             )
@@ -51,7 +53,8 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                     tradeId = 1L,
                     title = "title1",
                     isAlarm = true,
-                    readLatestMessageId = 1L
+                    readLatestMessageId = 1L,
+                    thumbnail = "https://placehold.co/600x400"
                 )
             )
         }
@@ -78,7 +81,8 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                 tradeId = 1L,
                 title = "title1",
                 isAlarm = true,
-                readLatestMessageId = 1L
+                readLatestMessageId = 1L,
+                thumbnail = "https://placehold.co/600x400"
             )
         )
     }

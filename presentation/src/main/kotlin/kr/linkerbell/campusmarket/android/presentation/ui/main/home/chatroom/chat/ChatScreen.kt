@@ -733,7 +733,8 @@ private fun ChatScreenPreview() {
                 tradeId = 1L,
                 title = "title1",
                 isAlarm = true,
-                readLatestMessageId = 1L
+                readLatestMessageId = 1L,
+                thumbnail = "https://placehold.co/600x400"
             ),
             trade = TradeInfo(
                 itemId = 1L,

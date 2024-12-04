@@ -23,6 +23,7 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfi
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ConnectRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetMessageListUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetRoomListUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.QuitRoomUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.SetRoomNotificationUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
@@ -33,6 +34,7 @@ class ChatRoomViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getRoomListUseCase: GetRoomListUseCase,
     private val setRoomNotificationUseCase: SetRoomNotificationUseCase,
+    private val quitRoomUseCase: QuitRoomUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val getMessageListUseCase: GetMessageListUseCase,
     private val connectRoomUseCase: ConnectRoomUseCase
@@ -142,6 +144,12 @@ class ChatRoomViewModel @Inject constructor(
                 )
             }
 
+            is ChatRoomIntent.QuitRoom -> {
+                quitRoom(
+                    id = intent.id,
+                )
+            }
+
             ChatRoomIntent.Refresh -> {
                 refresh()
             }
@@ -162,6 +170,24 @@ class ChatRoomViewModel @Inject constructor(
             setRoomNotificationUseCase(
                 id = id,
                 isAlarm = isNotification
+            ).onFailure { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun quitRoom(id: Long) {
+        launch {
+            quitRoomUseCase(
+                id = id
             ).onFailure { exception ->
                 when (exception) {
                     is ServerException -> {

@@ -16,7 +16,9 @@ data class MakeRoomRes(
     @SerialName("title")
     val title: String,
     @SerialName("isAlarm")
-    val isAlarm: Boolean
+    val isAlarm: Boolean,
+    @SerialName("thumbnail")
+    val thumbnail: String
 ) : DataMapper<Room> {
     override fun toDomain(): Room {
         return Room(
@@ -25,7 +27,8 @@ data class MakeRoomRes(
             tradeId = itemId,
             readLatestMessageId = -1,
             title = title,
-            isAlarm = isAlarm
+            isAlarm = isAlarm,
+            thumbnail = thumbnail
         )
     }
 }

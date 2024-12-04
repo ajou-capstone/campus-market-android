@@ -1,26 +1,40 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.chatroom
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,12 +50,16 @@ import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfi
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space12
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space4
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space40
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space8
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ComposableLifecycle
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.ErrorObserver
@@ -89,6 +107,7 @@ fun ChatRoomScreen(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ChatRoomScreen(
     navController: NavController,
@@ -98,6 +117,8 @@ private fun ChatRoomScreen(
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
 
+    var showingRoomMenu: Room? by remember { mutableStateOf(null) }
+
     fun navigateToChatScreen(
         id: Long
     ) {
@@ -106,6 +127,64 @@ private fun ChatRoomScreen(
 
     fun navigateToNotificationScreen() {
         navController.safeNavigate(NotificationConstant.ROUTE)
+    }
+
+    if (showingRoomMenu != null) {
+        val isAlarm = showingRoomMenu?.isAlarm ?: return
+        Dialog(
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            ),
+            onDismissRequest = {
+                showingRoomMenu = null
+            }
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = MaterialTheme.shapes.large
+            ) {
+                Column(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(vertical = Space12),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (isAlarm) "알람 끄기" else "알람 켜기",
+                        style = Body1.merge(Gray900),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Space20, vertical = Space8)
+                            .clickable {
+                                intent(
+                                    ChatRoomIntent.SetRoomNotification(
+                                        id = showingRoomMenu?.id ?: -1L,
+                                        isNotification = !isAlarm
+                                    )
+                                )
+                                showingRoomMenu = null
+                            }
+                    )
+
+                    Text(
+                        text = "채팅방 나가기",
+                        style = Body1.merge(Gray900),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Space20, vertical = Space8)
+                            .clickable {
+                                intent(
+                                    ChatRoomIntent.QuitRoom(
+                                        id = showingRoomMenu?.id ?: -1L
+                                    )
+                                )
+                                showingRoomMenu = null
+                            }
+                    )
+                }
+            }
+        }
     }
 
     Column(
@@ -151,7 +230,6 @@ private fun ChatRoomScreen(
                 items = data.roomList,
                 key = { room -> room.id }
             ) { room ->
-                val profile = data.userProfileList.firstOrNull { it.id == room.userId }
                 val latestMessage = data.messageList.maxByOrNull { message ->
                     when (message) {
                         is Message.Text -> {
@@ -209,15 +287,21 @@ private fun ChatRoomScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            navigateToChatScreen(
-                                id = room.id
-                            )
-                        },
+                        .combinedClickable(
+                            onClick = {
+                                navigateToChatScreen(
+                                    id = room.id
+                                )
+                            },
+                            onLongClick = {
+                                showingRoomMenu = room
+                            },
+                            onLongClickLabel = null
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PostImage(
-                        data = profile?.profileImage,
+                        data = room.thumbnail,
                         modifier = Modifier
                             .padding(Space20)
                             .size(Space40)
@@ -227,10 +311,24 @@ private fun ChatRoomScreen(
                             .padding(end = Space20)
                             .weight(1f)
                     ) {
-                        Text(
-                            text = room.title,
-                            style = Body1.merge(Gray900)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = room.title,
+                                style = Body1.merge(Gray900)
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            if (!room.isAlarm) {
+                                Icon(
+                                    modifier = Modifier.size(Space12),
+                                    painter = painterResource(R.drawable.ic_notification_off),
+                                    contentDescription = null,
+                                    tint = Gray400
+                                )
+                            }
+                        }
                         Text(
                             text = latestMessage,
                             style = Body2.merge(Gray900)
@@ -283,7 +381,8 @@ private fun ChatRoomScreenPreview() {
                     tradeId = 1L,
                     title = "title1",
                     isAlarm = true,
-                    readLatestMessageId = 1L
+                    readLatestMessageId = 1L,
+                    thumbnail = "https://placehold.co/600x400"
                 ),
                 Room(
                     id = 2L,
@@ -291,7 +390,8 @@ private fun ChatRoomScreenPreview() {
                     tradeId = 2L,
                     title = "title2",
                     isAlarm = false,
-                    readLatestMessageId = 2L
+                    readLatestMessageId = 2L,
+                    thumbnail = "https://placehold.co/600x400"
                 )
             ),
             userProfileList = listOf(

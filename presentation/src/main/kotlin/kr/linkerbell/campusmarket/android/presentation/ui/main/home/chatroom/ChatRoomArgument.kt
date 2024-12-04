@@ -21,6 +21,7 @@ sealed interface ChatRoomEvent
 
 sealed interface ChatRoomIntent {
     data class SetRoomNotification(val id: Long, val isNotification: Boolean) : ChatRoomIntent
+    data class QuitRoom(val id: Long) : ChatRoomIntent
     data object Refresh : ChatRoomIntent
     sealed interface Session : ChatRoomIntent {
         data object Connect : Session
