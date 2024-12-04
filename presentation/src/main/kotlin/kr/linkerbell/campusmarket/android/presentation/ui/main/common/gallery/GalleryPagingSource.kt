@@ -37,6 +37,6 @@ class GalleryPagingSource(
 
     companion object {
         const val STARTING_PAGE_IDX = 1
-        const val PAGING_SIZE = 30
+        const val PAGING_SIZE = 10
     }
 }
