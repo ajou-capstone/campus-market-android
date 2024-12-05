@@ -14,14 +14,16 @@ class SearchTradeListUseCase @Inject constructor(
         category: String,
         minPrice: Int,
         maxPrice: Int,
-        sorted: String
+        sorted: String,
+        itemStatus: String
     ): Flow<PagingData<SummarizedTrade>> {
         return tradeRepository.searchTradeList(
             name = name,
             category = category,
             minPrice = minPrice,
             maxPrice = maxPrice,
-            sorted = sorted
+            sorted = sorted,
+            itemStatus = itemStatus
         )
     }
 }

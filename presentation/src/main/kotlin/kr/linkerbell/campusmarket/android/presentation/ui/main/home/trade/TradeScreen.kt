@@ -37,6 +37,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -279,7 +280,9 @@ private fun TradeScreenPreview() {
                             chatCount = 5,
                             likeCount = 2,
                             itemStatus = "",
-                            isLiked = true
+                            isLiked = true,
+                            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
                         ),
                         SummarizedTrade(
                             itemId = 2L,
@@ -291,7 +294,9 @@ private fun TradeScreenPreview() {
                             chatCount = 5,
                             likeCount = 2,
                             itemStatus = "",
-                            isLiked = false
+                            isLiked = false,
+                            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
                         )
                     )
                 )

@@ -56,6 +56,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
@@ -219,7 +220,7 @@ fun UserProfileScreen(
                     LazyColumn(
                         state = childLazyListState,
                         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp)
                     ) {
                         items(
                             count = minOf(recentTrades.itemCount, 3),
@@ -288,7 +289,7 @@ fun UserProfileScreen(
                     LazyColumn(
                         state = childLazyListState,
                         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp)
                     ) {
                         items(
                             count = minOf(recentReview.itemCount, 3),
@@ -505,48 +506,72 @@ private fun OtherUserProfileScreenPreview() {
                 isDeleted = false
             ),
             recentReviews = MutableStateFlow(
-                PagingData.empty<UserReview>()
-//                PagingData.from(
-//                    listOf(
-//                        UserReview(
-//                            userId = 0L,
-//                            nickname = "reviewer_1",
-//                            profileImage = "",
-//                            description = "좋아요",
-//                            rating = 7,
-//                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
-//                        ),
-//                        UserReview(
-//                            userId = 1L,
-//                            nickname = "reviewer_2",
-//                            profileImage = "",
-//                            description = "아주 좋아요",
-//                            rating = 10,
-//                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
-//                        )
-//                    )
-//                )
+//                PagingData.empty<UserReview>()
+                PagingData.from(
+                    listOf(
+                        UserReview(
+                            reviewId = 0L,
+                            nickname = "reviewer_1",
+                            profileImage = "",
+                            description = "좋아요",
+                            rating = 7,
+                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+                        ),
+                        UserReview(
+                            reviewId = 1L,
+                            nickname = "reviewer_2",
+                            profileImage = "",
+                            description = "아주 좋아요",
+                            rating = 10,
+                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
+                        ),
+                        UserReview(
+                            reviewId = 2L,
+                            nickname = "reviewer_1",
+                            profileImage = "",
+                            description = "좋아요",
+                            rating = 7,
+                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+                        )
+                    )
+                )
             ).collectAsLazyPagingItems(),
             recentTrades = MutableStateFlow(
-                PagingData.empty<RecentTrade>()
-//                PagingData.from(
-//                    listOf(
-//                        RecentTrade(
-//                            id = 1L,
-//                            title = "Used Laptop",
-//                            price = 150000,
-//                            thumbnail = "https://example.com/image1.jpg",
-//                            isSold = false
-//                        ),
-//                        RecentTrade(
-//                            id = 2L,
-//                            title = "Antique Vase",
-//                            price = 20000,
-//                            thumbnail = "https://example.com/image2.jpg",
-//                            isSold = true
-//                        )
-//                    )
-//                )
+//                PagingData.empty<RecentTrade>()
+                PagingData.from(
+                    listOf(
+                        RecentTrade(
+                            id = 1L,
+                            title = "Used Laptop",
+                            price = 150000,
+                            thumbnail = "https://example.com/image1.jpg",
+                            isSold = false,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            isReviewed = true
+                        ),
+                        RecentTrade(
+                            id = 2L,
+                            title = "Antique Vase",
+                            price = 20000,
+                            thumbnail = "https://example.com/image2.jpg",
+                            isSold = true,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            isReviewed = false
+                        ),
+                        RecentTrade(
+                            id = 3L,
+                            title = "Antique Vase",
+                            price = 20000,
+                            thumbnail = "https://example.com/image2.jpg",
+                            isSold = true,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            isReviewed = false
+                        )
+                    )
+                )
             ).collectAsLazyPagingItems()
         )
     )

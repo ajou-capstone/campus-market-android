@@ -58,7 +58,8 @@ class TradeViewModel @Inject constructor(
             category = "",
             minPrice = 0,
             maxPrice = Int.MAX_VALUE,
-            sorted = ""
+            sorted = "",
+            itemStatus = ""
         )
             .cachedIn(viewModelScope)
             .catch { exception ->

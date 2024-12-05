@@ -20,8 +20,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.text.DecimalFormat
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
@@ -59,14 +62,18 @@ internal fun TradeHistoryCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
-            Column{
+            Column {
                 Text(
                     text = "${DecimalFormat("#,###").format(recentTrade.price)} 원",
                     style = Body1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(modifier = Modifier.padding(4.dp))
                 TradeItemStatus(isSold = recentTrade.isSold)
+                Text(
+                    text = creationOrModifiedDate(recentTrade.createdAt, recentTrade.modifiedAt),
+                    style = Caption2,
+                    color = Black
+                )
             }
         }
     }
@@ -75,6 +82,13 @@ internal fun TradeHistoryCard(
         color = Gray200,
         modifier = Modifier.padding(vertical = 8.dp)
     )
+}
+
+private fun creationOrModifiedDate(createdAt: LocalDateTime, modifiedAt: LocalDateTime): String {
+    return if (createdAt == modifiedAt)
+        "작성 일자 : ${createdAt.date}"
+    else
+        "최종 수정 일자 : ${modifiedAt.date}"
 }
 
 @Preview
@@ -86,7 +100,10 @@ private fun TradeHistoryCardPreview() {
             title = "Example Title",
             price = 5000,
             thumbnail = "",
-            isSold = false
+            isSold = false,
+            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+            modifiedAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+            isReviewed = false
         ),
         onClicked = {}
     )

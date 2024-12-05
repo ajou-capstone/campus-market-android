@@ -25,7 +25,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 class TradeSearchResultViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val searchTradeListUseCase: SearchTradeListUseCase,
-    private val getCategoryListUseCase: GetCategoryListUseCase
+    private val getCategoryListUseCase : GetCategoryListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<TradeSearchResultState> =
@@ -87,7 +87,8 @@ class TradeSearchResultViewModel @Inject constructor(
             category = _tradeSearchQuery.value.category,
             minPrice = _tradeSearchQuery.value.minPrice,
             maxPrice = _tradeSearchQuery.value.maxPrice,
-            sorted = _tradeSearchQuery.value.sorted
+            sorted = _tradeSearchQuery.value.sorted,
+            itemStatus = _tradeSearchQuery.value.itemStatus
         )
             .cachedIn(viewModelScope)
             .catch { exception ->

@@ -31,6 +31,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -167,14 +168,20 @@ private fun RecentTradeScreenPreview() {
                             title = "Used Laptop",
                             price = 150000,
                             thumbnail = "https://example.com/image1.jpg",
-                            isSold = false
+                            isSold = false,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            isReviewed = true
                         ),
                         RecentTrade(
                             id = 2L,
                             title = "Antique Vase",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
-                            isSold = true
+                            isSold = true,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 2, 0, 0, 0),
+                            isReviewed = false
                         )
                     )
                 )

@@ -17,5 +17,6 @@ data class TradeSearchQuery(
     val category: String = "",
     val minPrice: Int = 0,
     val maxPrice: Int = Int.MAX_VALUE,
-    val sorted: String = "createdDate,desc"
+    val sorted: String = "createdDate,desc",
+    val itemStatus: String = ""
 )
