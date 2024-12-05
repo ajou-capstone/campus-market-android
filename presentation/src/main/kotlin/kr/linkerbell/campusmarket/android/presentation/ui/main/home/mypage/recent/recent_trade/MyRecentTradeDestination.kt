@@ -42,11 +42,13 @@ fun NavGraphBuilder.myRecentTradeDestination(
             val recentTradeList = viewModel.recentTrades.collectAsLazyPagingItems()
             val recentBuyTradeList = viewModel.recentBuyTrades.collectAsLazyPagingItems()
             val recentSellTradeList = viewModel.recentSellTrades.collectAsLazyPagingItems()
+            val myId by viewModel.userId.collectAsStateWithLifecycle()
 
             MyRecentTradeData(
                 recentTrades = recentTradeList,
                 recentBuyTrades = recentBuyTradeList,
-                recentSellTrades = recentSellTradeList
+                recentSellTrades = recentSellTradeList,
+                myId = myId
             )
         }
 

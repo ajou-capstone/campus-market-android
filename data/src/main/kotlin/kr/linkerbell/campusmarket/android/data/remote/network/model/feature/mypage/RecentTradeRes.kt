@@ -38,6 +38,10 @@ data class RecentTradeItemRes(
     val itemId: Long,
     @SerialName("title")
     val title: String,
+    @SerialName("userId")
+    val userId: Long,
+    @SerialName("nickname")
+    val nickname: String,
     @SerialName("price")
     val price: Int,
     @SerialName("thumbnail")
@@ -53,8 +57,10 @@ data class RecentTradeItemRes(
 ) : DataMapper<RecentTrade> {
     override fun toDomain(): RecentTrade {
         return RecentTrade(
-            id = itemId,
+            itemId = itemId,
             title = title,
+            userId = userId,
+            nickname = nickname,
             price = price,
             thumbnail = thumbnail,
             isSold = (itemStatus == "SOLDOUT"),

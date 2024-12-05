@@ -41,11 +41,13 @@ fun NavGraphBuilder.userProfileDestination(
             val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
             val recentReviews = viewModel.recentReviews.collectAsLazyPagingItems()
             val recentTrades = viewModel.recentTrades.collectAsLazyPagingItems()
+            val userSchedule by viewModel.scheduleList.collectAsStateWithLifecycle()
 
             UserProfileData(
                 userProfile = userProfile,
                 recentReviews = recentReviews,
-                recentTrades = recentTrades
+                recentTrades = recentTrades,
+                userSchedule = userSchedule,
             )
         }
 

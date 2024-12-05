@@ -161,7 +161,7 @@ private fun RecentReviewScreenPreview() {
                             createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
                         ),
                         UserReview(
-                            reviewId = 0L,
+                            reviewId = 1L,
                             nickname = "reviewer_2",
                             profileImage = "",
                             description = "아주 좋아요",

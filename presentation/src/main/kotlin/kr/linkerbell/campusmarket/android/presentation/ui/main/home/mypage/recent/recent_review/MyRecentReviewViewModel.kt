@@ -15,7 +15,8 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetUserReviewUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetReviewsToMeUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetUserReviewHistoryUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review.RecentReviewConstant
@@ -23,7 +24,8 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.other
 @HiltViewModel
 class MyRecentReviewViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getUserReviewUseCase: GetUserReviewUseCase
+    private val getReviewsToMeUseCase: GetReviewsToMeUseCase,
+    private val getUserReviewHistoryUseCase: GetUserReviewHistoryUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<MyRecentReviewState> =
@@ -33,28 +35,42 @@ class MyRecentReviewViewModel @Inject constructor(
     private val _event: MutableEventFlow<MyRecentReviewEvent> = MutableEventFlow()
     val event: EventFlow<MyRecentReviewEvent> = _event.asEventFlow()
 
-    private val _recentReviews: MutableStateFlow<PagingData<UserReview>> =
+    private val _reviewsToMe: MutableStateFlow<PagingData<UserReview>> =
         MutableStateFlow(PagingData.empty())
-    val recentReviews: StateFlow<PagingData<UserReview>> =
-        _recentReviews.asStateFlow()
+    val reviewsToMe: StateFlow<PagingData<UserReview>> =
+        _reviewsToMe.asStateFlow()
 
+    private val _myReviews: MutableStateFlow<PagingData<UserReview>> =
+        MutableStateFlow(PagingData.empty())
+    val myReviews: StateFlow<PagingData<UserReview>> =
+        _myReviews.asStateFlow()
 
     private val _userId: MutableStateFlow<Long> = MutableStateFlow(
-        savedStateHandle.get<Long>(RecentReviewConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
+        savedStateHandle.get<Long>(
+            RecentReviewConstant.ROUTE_ARGUMENT_USER_ID
+        ) ?: -1L
     )
 
     init {
         launch {
-            getRecentReviewHistory(_userId.value)
+            getMyRecentReviewHistory()
+            getUserReviewHistory()
         }
     }
 
     fun onIntent(intent: MyRecentReviewIntent) {
-
+        when (intent) {
+            is MyRecentReviewIntent.RefreshReviewData -> {
+                launch {
+                    getMyRecentReviewHistory()
+                    getUserReviewHistory()
+                }
+            }
+        }
     }
 
-    private suspend fun getRecentReviewHistory(userId: Long) {
-        getUserReviewUseCase(userId)
+    private suspend fun getMyRecentReviewHistory() {
+        getReviewsToMeUseCase(_userId.value)
             .cachedIn(viewModelScope)
             .catch { exception ->
                 when (exception) {
@@ -67,7 +83,25 @@ class MyRecentReviewViewModel @Inject constructor(
                     }
                 }
             }.collect {
-                _recentReviews.value = it
+                _reviewsToMe.value = it
+            }
+    }
+
+    private suspend fun getUserReviewHistory() {
+        getUserReviewHistoryUseCase()
+            .cachedIn(viewModelScope)
+            .catch { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }.collect {
+                _reviewsToMe.value = it
             }
     }
 }

@@ -12,6 +12,7 @@ import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.MyLikesPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.NotificationPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.RecentTradePagingSource
+import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.ReviewHistoryPagingSource
 import kr.linkerbell.campusmarket.android.data.repository.feature.mypage.paging.ReviewPagingSource
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
@@ -29,7 +30,7 @@ class RealMyPageRepository @Inject constructor(
     private val myPageApi: MyPageApi,
 ) : MyPageRepository {
 
-    override suspend fun getUserReviews(userId: Long): Flow<PagingData<UserReview>> {
+    override suspend fun getReviewsToMe(userId: Long): Flow<PagingData<UserReview>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGING_SIZE,
@@ -39,6 +40,20 @@ class RealMyPageRepository @Inject constructor(
                 ReviewPagingSource(
                     myPageApi = myPageApi,
                     userId = userId
+                )
+            },
+        ).flow
+    }
+
+    override suspend fun getUserReviewHistory(): Flow<PagingData<UserReview>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGING_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                ReviewHistoryPagingSource(
+                    myPageApi = myPageApi
                 )
             },
         ).flow

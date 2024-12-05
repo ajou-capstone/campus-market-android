@@ -1,7 +1,6 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,13 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -57,12 +54,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
+import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
@@ -73,6 +73,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Space52
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -82,10 +83,14 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.RatingStars
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.user.UserReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review.RecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.trade.RecentTradeConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.common.table.ScheduleTable
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.common.table.ScheduleTableData
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 
 @Composable
@@ -98,6 +103,11 @@ fun UserProfileScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     val userprofile = data.userProfile
+    val recentReview = data.recentReviews
+    val recentTrades = data.recentTrades
+
+    val startTime = LocalTime(9, 0)
+    val endTime = LocalTime(22, 0)
 
     var isNewScreenLoadingAvailable by remember { mutableStateOf(false) }
 
@@ -167,7 +177,7 @@ fun UserProfileScreen(
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Gray900,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
             val parentScrollState = rememberScrollState()
             val childLazyListState = rememberLazyListState()
@@ -207,8 +217,6 @@ fun UserProfileScreen(
                         }
                     )
                 }
-
-                val recentTrades = data.recentTrades
                 if (recentTrades.isEmpty()) {
                     Text(
                         text = "아직 판매중인 물건이 없어요",
@@ -220,32 +228,44 @@ fun UserProfileScreen(
                     LazyColumn(
                         state = childLazyListState,
                         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 400.dp)
                     ) {
                         items(
                             count = minOf(recentTrades.itemCount, 3),
-                            key = { index -> recentTrades[index]?.id ?: -1 }
+                            key = { index -> recentTrades[index]?.itemId ?: -1 }
                         ) { index ->
                             val trade = recentTrades[index] ?: return@items
                             TradeHistoryCard(
+                                isAddReviewIconVisible = false,
+                                isOwnerOfThisTrade = false,
                                 recentTrade = trade,
                                 onClicked = {
                                     val tradeInfoRoute = makeRoute(
                                         route = TradeInfoConstant.ROUTE,
                                         arguments = mapOf(
                                             TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID
-                                                    to trade.id.toString()
+                                                    to trade.itemId.toString()
                                         )
                                     )
-                                    navController.navigate(tradeInfoRoute)
+                                    navController.safeNavigate(tradeInfoRoute)
+                                },
+                                onAddReviewClicked = { userId, itemId ->
+                                    val reviewRoute = makeRoute(
+                                        route = RatingConstant.ROUTE,
+                                        arguments = mapOf(
+                                            RatingConstant.ROUTE_ARGUMENT_USER_ID to userId,
+                                            RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
+                                        )
+                                    )
+                                    navController.safeNavigate(reviewRoute)
                                 }
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.padding(8.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,7 +297,6 @@ fun UserProfileScreen(
                     )
                 }
 
-                val recentReview = data.recentReviews
                 if (recentReview.isEmpty()) {
                     Text(
                         text = "아직 작성된 리뷰가 없어요",
@@ -289,7 +308,9 @@ fun UserProfileScreen(
                     LazyColumn(
                         state = childLazyListState,
                         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 400.dp)
                     ) {
                         items(
                             count = minOf(recentReview.itemCount, 3),
@@ -306,6 +327,34 @@ fun UserProfileScreen(
                             )
                         }
                     }
+                }
+                Spacer(modifier = Modifier.padding(8.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "시간표",
+                        style = Headline1,
+                        color = Black,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    ScheduleTable(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(Space52 * (endTime.hour - startTime.hour + 1))
+                            .fillMaxWidth(),
+                        dataList = listOf(
+                            ScheduleTableData(
+                                color = Blue200,
+                                scheduleList = data.userSchedule
+                            )
+                        ),
+                        startTime = startTime,
+                        endTime = endTime
+                    )
+
                 }
             }
         }
@@ -394,38 +443,6 @@ private fun ReviewCard(review: UserReview) {
 }
 
 @Composable
-private fun RatingStars(
-    rating: Int = 0,
-    starSize: Dp = 20.dp,
-    interval: Dp = 4.dp
-) {
-    val adjustedRating = rating.coerceIn(0, 10)
-
-    @Composable
-    fun StarImage(resourceId: Int, size: Dp) {
-        Image(
-            painter = painterResource(id = resourceId),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(Blue400),
-            modifier = Modifier.size(size)
-        )
-    }
-
-    Row {
-        repeat(5) { index ->
-            val starPoints = (index + 1) * 2
-            val resource = when {
-                adjustedRating >= starPoints -> R.drawable.filled_star
-                adjustedRating >= starPoints - 1 -> R.drawable.half_filled_star
-                else -> R.drawable.empty_star
-            }
-            StarImage(resource, starSize)
-            Spacer(modifier = Modifier.padding(end = interval))
-        }
-    }
-}
-
-@Composable
 private fun UserProfileInfo(
     userProfile: UserProfile,
     onReportUserClicked: () -> Unit
@@ -467,7 +484,7 @@ private fun UserProfileInfo(
                     tint = Blue400
                 )
                 Text(
-                    text = " (${userProfile.rating}/10)",
+                    text = " (${String.format("%.1f",userProfile.rating)})",
                     style = Body1,
                     color = Black,
                 )
@@ -506,43 +523,45 @@ private fun OtherUserProfileScreenPreview() {
                 isDeleted = false
             ),
             recentReviews = MutableStateFlow(
-//                PagingData.empty<UserReview>()
-                PagingData.from(
-                    listOf(
-                        UserReview(
-                            reviewId = 0L,
-                            nickname = "reviewer_1",
-                            profileImage = "",
-                            description = "좋아요",
-                            rating = 7,
-                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
-                        ),
-                        UserReview(
-                            reviewId = 1L,
-                            nickname = "reviewer_2",
-                            profileImage = "",
-                            description = "아주 좋아요",
-                            rating = 10,
-                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
-                        ),
-                        UserReview(
-                            reviewId = 2L,
-                            nickname = "reviewer_1",
-                            profileImage = "",
-                            description = "좋아요",
-                            rating = 7,
-                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
-                        )
-                    )
-                )
+                PagingData.empty<UserReview>()
+//                PagingData.from(
+//                    listOf(
+//                        UserReview(
+//                            reviewId = 0L,
+//                            nickname = "reviewer_1",
+//                            profileImage = "",
+//                            description = "좋아요",
+//                            rating = 7,
+//                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+//                        ),
+//                        UserReview(
+//                            reviewId = 1L,
+//                            nickname = "reviewer_2",
+//                            profileImage = "",
+//                            description = "아주 좋아요",
+//                            rating = 10,
+//                            createdAt = LocalDateTime(2024, 10, 22, 15, 30, 0)
+//                        ),
+//                        UserReview(
+//                            reviewId = 2L,
+//                            nickname = "reviewer_1",
+//                            profileImage = "",
+//                            description = "좋아요",
+//                            rating = 7,
+//                            createdAt = LocalDateTime(2024, 11, 22, 15, 30, 0)
+//                        )
+//                    )
+//                )
             ).collectAsLazyPagingItems(),
             recentTrades = MutableStateFlow(
 //                PagingData.empty<RecentTrade>()
                 PagingData.from(
                     listOf(
                         RecentTrade(
-                            id = 1L,
+                            itemId = 1L,
                             title = "Used Laptop",
+                            userId = 1L,
+                            nickname = "author_01",
                             price = 150000,
                             thumbnail = "https://example.com/image1.jpg",
                             isSold = false,
@@ -551,8 +570,10 @@ private fun OtherUserProfileScreenPreview() {
                             isReviewed = true
                         ),
                         RecentTrade(
-                            id = 2L,
+                            itemId = 2L,
                             title = "Antique Vase",
+                            userId = 2L,
+                            nickname = "author_22",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
                             isSold = true,
@@ -561,8 +582,10 @@ private fun OtherUserProfileScreenPreview() {
                             isReviewed = false
                         ),
                         RecentTrade(
-                            id = 3L,
+                            itemId = 3L,
                             title = "Antique Vase",
+                            userId = 3L,
+                            nickname = "author_333",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
                             isSold = true,
@@ -572,7 +595,19 @@ private fun OtherUserProfileScreenPreview() {
                         )
                     )
                 )
-            ).collectAsLazyPagingItems()
+            ).collectAsLazyPagingItems(),
+            userSchedule = listOf(
+                Schedule(
+                    dayOfWeek = 1,
+                    startTime = LocalTime(9, 0),
+                    endTime = LocalTime(12, 0)
+                ),
+                Schedule(
+                    dayOfWeek = 1,
+                    startTime = LocalTime(15, 0),
+                    endTime = LocalTime(16, 30)
+                ),
+            )
         )
     )
 }

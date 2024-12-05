@@ -6,9 +6,8 @@ import kr.linkerbell.campusmarket.android.data.common.DEFAULT_PAGE_START
 import kr.linkerbell.campusmarket.android.data.remote.network.api.feature.MyPageApi
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 
-class ReviewPagingSource(
+class ReviewHistoryPagingSource(
     private val myPageApi: MyPageApi,
-    private val userId: Long
 ) : PagingSource<Int, UserReview>() {
 
     override fun getRefreshKey(state: PagingState<Int, UserReview>): Int? {
@@ -22,8 +21,7 @@ class ReviewPagingSource(
         val pageNum = params.key ?: DEFAULT_PAGE_START
         val pageSize = params.loadSize
 
-        return myPageApi.getReviewsToMe(
-            userId = userId,
+        return myPageApi.getUserReviewHistory(
             page = pageNum,
             size = pageSize
         ).map { data ->

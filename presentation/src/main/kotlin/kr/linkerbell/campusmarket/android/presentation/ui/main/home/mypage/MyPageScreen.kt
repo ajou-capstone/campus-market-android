@@ -329,7 +329,7 @@ fun MyPageScreen(
                         tint = Blue400
                     )
                     Text(
-                        text = "최근 작성된 리뷰",
+                        text = "나의 리뷰",
                         style = Body0,
                         color = Black,
                         modifier = Modifier.padding(start = 8.dp)
@@ -533,7 +533,7 @@ private fun MyProfileUserInfo(
                     tint = Blue400
                 )
                 Text(
-                    text = " (${userProfile.rating})",
+                    text = " (${String.format("%.1f", userProfile.rating)})",
                     style = Body1,
                     color = Black,
                 )

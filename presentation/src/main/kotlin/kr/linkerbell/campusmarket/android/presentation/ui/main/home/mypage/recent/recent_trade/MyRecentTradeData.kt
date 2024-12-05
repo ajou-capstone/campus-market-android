@@ -8,5 +8,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrad
 data class MyRecentTradeData(
     val recentTrades: LazyPagingItems<RecentTrade>,
     val recentBuyTrades: LazyPagingItems<RecentTrade>,
-    val recentSellTrades: LazyPagingItems<RecentTrade>
+    val recentSellTrades: LazyPagingItems<RecentTrade>,
+    val myId: Long
 )
