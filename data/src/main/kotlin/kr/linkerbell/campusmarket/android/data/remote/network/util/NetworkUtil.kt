@@ -54,7 +54,7 @@ suspend inline fun HttpResponse.toThrowable(
         }
 
         return@runCatching this.body<ErrorRes?>()?.let { errorRes ->
-            BadRequestServerException(errorRes.code, errorMessageMapper(errorRes.code))
+            BadRequestServerException(errorRes.code, errorRes.message)
         } ?: InvalidStandardResponseException("Response Empty Body")
     }.getOrElse { exception ->
         exception
