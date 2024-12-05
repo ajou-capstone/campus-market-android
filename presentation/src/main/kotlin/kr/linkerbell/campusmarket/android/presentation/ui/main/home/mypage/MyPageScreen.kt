@@ -1,6 +1,7 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,10 +39,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlin.system.exitProcess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
@@ -76,6 +80,7 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.likes.MyLikesConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_review.MyRecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.recent.recent_trade.MyRecentTradeConstant
+import timber.log.Timber
 
 @Composable
 fun MyPageScreen(
@@ -123,6 +128,7 @@ fun MyPageScreen(
     val userProfile = data.myProfile
 
     val context = LocalContext.current
+
     fun restartApp() {
         context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { intent ->
             context.startActivity(
@@ -132,7 +138,19 @@ fun MyPageScreen(
         exitProcess(0)
     }
 
-    if(isLogoutDialogVisible){
+    fun navigateToTermLink() {
+        runCatching {
+            val link =
+                Uri.parse("https://www.notion.so/Campus-Market-test-29c07360035e4f6589e17e06324f7b23")
+            val browserIntent = Intent(Intent.ACTION_VIEW, link)
+            ContextCompat.startActivity(context, browserIntent, null)
+        }.onFailure { exception ->
+            Timber.d(exception)
+            Firebase.crashlytics.recordException(exception)
+        }
+    }
+
+    if (isLogoutDialogVisible) {
         LogoutConfirmDialog(
             onLogoutConfirmButtonClicked = {
                 argument.intent(MyPageIntent.LogOut)
@@ -398,7 +416,7 @@ fun MyPageScreen(
                     .padding(8.dp)
                     .fillMaxWidth()
                     .clickable {
-                        //약관 페이지로 이동 (Notion)
+                        navigateToTermLink()
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -412,7 +430,8 @@ fun MyPageScreen(
                     text = "약관 보기",
                     style = Body0,
                     color = Black,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier
+                        .padding(start = 8.dp)
                 )
             }
             Row(

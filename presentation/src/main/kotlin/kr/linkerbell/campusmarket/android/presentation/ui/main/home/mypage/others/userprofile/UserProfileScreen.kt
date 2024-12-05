@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -146,7 +150,6 @@ fun UserProfileScreen(
         }
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .constrainAs(contents) {
                     top.linkTo(topBar.bottom)
                     start.linkTo(parent.start)
@@ -165,8 +168,13 @@ fun UserProfileScreen(
                 color = Gray900,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
             )
+            val parentScrollState = rememberScrollState()
+            val childLazyListState = rememberLazyListState()
             Column(
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(parentScrollState)
+                    .nestedScroll(rememberNestedScrollInteropConnection())
             ) {
                 Row(
                     modifier = Modifier
@@ -198,42 +206,44 @@ fun UserProfileScreen(
                         }
                     )
                 }
-                Column {
-                    val recentTrades = data.recentTrades
-                    if (recentTrades.isEmpty()) {
-                        Text(
-                            text = "아직 판매중인 물건이 없어요",
-                            style = Caption2,
-                            color = Gray600,
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-                        )
-                    } else {
-                        LazyColumn(
-                            contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
-                        ) {
-                            items(
-                                count = minOf(recentTrades.itemCount, 3),
-                                key = { index -> recentTrades[index]?.id ?: -1 }
-                            ) { index ->
-                                val trade = recentTrades[index] ?: return@items
-                                TradeHistoryCard(
-                                    recentTrade = trade,
-                                    onClicked = {
-                                        val tradeInfoRoute = makeRoute(
-                                            route = TradeInfoConstant.ROUTE,
-                                            arguments = mapOf(
-                                                TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID
-                                                        to trade.id.toString()
-                                            )
+
+                val recentTrades = data.recentTrades
+                if (recentTrades.isEmpty()) {
+                    Text(
+                        text = "아직 판매중인 물건이 없어요",
+                        style = Caption2,
+                        color = Gray600,
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                    )
+                } else {
+                    LazyColumn(
+                        state = childLazyListState,
+                        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp)
+                    ) {
+                        items(
+                            count = minOf(recentTrades.itemCount, 3),
+                            key = { index -> recentTrades[index]?.id ?: -1 }
+                        ) { index ->
+                            val trade = recentTrades[index] ?: return@items
+                            TradeHistoryCard(
+                                recentTrade = trade,
+                                onClicked = {
+                                    val tradeInfoRoute = makeRoute(
+                                        route = TradeInfoConstant.ROUTE,
+                                        arguments = mapOf(
+                                            TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID
+                                                    to trade.id.toString()
                                         )
-                                        navController.navigate(tradeInfoRoute)
-                                    }
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                                    )
+                                    navController.navigate(tradeInfoRoute)
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.padding(8.dp))
                 Row(
                     modifier = Modifier
@@ -265,33 +275,34 @@ fun UserProfileScreen(
                         }
                     )
                 }
-                Column {
-                    val recentReview = data.recentReviews
-                    if (recentReview.isEmpty()) {
-                        Text(
-                            text = "아직 작성된 리뷰가 없어요",
-                            style = Caption2,
-                            color = Gray600,
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-                        )
-                    } else {
-                        LazyColumn(
-                            contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
-                        ) {
-                            items(
-                                count = minOf(recentReview.itemCount, 3),
-                                key = { index ->
-                                    recentReview[index]?.reviewId ?: -1L
-                                }
-                            ) { index ->
-                                val review = recentReview[index] ?: return@items
-                                ReviewCard(review)
-                                HorizontalDivider(
-                                    thickness = 1.dp,
-                                    color = Gray200,
-                                    modifier = Modifier.padding(horizontal = 2.dp)
-                                )
+
+                val recentReview = data.recentReviews
+                if (recentReview.isEmpty()) {
+                    Text(
+                        text = "아직 작성된 리뷰가 없어요",
+                        style = Caption2,
+                        color = Gray600,
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                    )
+                } else {
+                    LazyColumn(
+                        state = childLazyListState,
+                        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp)
+                    ) {
+                        items(
+                            count = minOf(recentReview.itemCount, 3),
+                            key = { index ->
+                                recentReview[index]?.reviewId ?: -1L
                             }
+                        ) { index ->
+                            val review = recentReview[index] ?: return@items
+                            ReviewCard(review)
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = Gray200,
+                                modifier = Modifier.padding(horizontal = 2.dp)
+                            )
                         }
                     }
                 }
