@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,8 +46,10 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.Keyword
 import kr.linkerbell.campusmarket.android.presentation.R
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -65,6 +68,7 @@ fun KeywordScreen(
     val scope = rememberCoroutineScope() + coroutineContext
 
     val keywordList = data.myKeywords
+    var keywordLength by remember { mutableIntStateOf(0) }
 
     var newKeyword by remember { mutableStateOf("") }
     var isKeywordDuplicatedDialogVisible by remember { mutableStateOf(false) }
@@ -134,10 +138,17 @@ fun KeywordScreen(
                 )
                 TypingTextField(
                     text = newKeyword,
-                    onValueChange = { newKeyword = it },
+                    onValueChange = {
+                        if (keywordLength <= 25) {
+                            newKeyword = it
+                            keywordLength = newKeyword.length
+                        }
+                        newKeyword = it
+
+                    },
                     maxLines = 1,
-                    hintText = "추가할 키워드를 입력하세요",
-                    maxTextLength = 100,
+                    hintText = "키워드는 25자까지 입력 가능해요",
+                    maxTextLength = 25,
                     trailingIconContent = {
                         if (newKeyword.isNotEmpty()) {
                             Icon(
@@ -149,6 +160,7 @@ fun KeywordScreen(
                                     .clickable {
                                         argument.intent(KeywordIntent.PostKeyword(newKeyword))
                                         newKeyword = ""
+                                        keywordLength = 0
                                     }
                             )
                         }
@@ -160,6 +172,15 @@ fun KeywordScreen(
                             newKeyword = ""
                         }
                     ),
+                )
+                Text(
+                    text = if (keywordLength <= 25) "(${keywordLength}/25)"
+                    else "키워드는 최대 25자까지 입력할 수 있어요!",
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 4.dp),
+                    style = Caption1,
+                    color = if (keywordLength <= 25) Gray900 else Red400
                 )
             }
             Spacer(modifier = Modifier.padding(16.dp))
