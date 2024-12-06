@@ -53,23 +53,27 @@ class MyRecentReviewViewModel @Inject constructor(
 
     init {
         launch {
-            getMyRecentReviewHistory()
-            getUserReviewHistory()
+            getReviewsToMe()
         }
     }
 
     fun onIntent(intent: MyRecentReviewIntent) {
         when (intent) {
-            is MyRecentReviewIntent.RefreshReviewData -> {
+            is MyRecentReviewIntent.RefreshReviewToMe -> {
                 launch {
-                    getMyRecentReviewHistory()
-                    getUserReviewHistory()
+                    getReviewsToMe()
+                }
+            }
+
+            is MyRecentReviewIntent.RefreshMyReview -> {
+                launch {
+                    getMyReviewHistory()
                 }
             }
         }
     }
 
-    private suspend fun getMyRecentReviewHistory() {
+    private suspend fun getReviewsToMe() {
         getReviewsToMeUseCase(_userId.value)
             .cachedIn(viewModelScope)
             .catch { exception ->
@@ -87,7 +91,7 @@ class MyRecentReviewViewModel @Inject constructor(
             }
     }
 
-    private suspend fun getUserReviewHistory() {
+    private suspend fun getMyReviewHistory() {
         getUserReviewHistoryUseCase()
             .cachedIn(viewModelScope)
             .catch { exception ->
@@ -101,7 +105,7 @@ class MyRecentReviewViewModel @Inject constructor(
                     }
                 }
             }.collect {
-                _reviewsToMe.value = it
+                _myReviews.value = it
             }
     }
 }
