@@ -124,7 +124,7 @@ fun MyRecentReviewScreen(
                     isSelected = (selectedTab == 0),
                     onClicked = {
                         selectedTab = 0
-                        argument.intent(MyRecentReviewIntent.RefreshReviewData)
+                        argument.intent(MyRecentReviewIntent.RefreshReviewToMe)
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -133,7 +133,7 @@ fun MyRecentReviewScreen(
                     isSelected = (selectedTab == 1),
                     onClicked = {
                         selectedTab = 1
-                        argument.intent(MyRecentReviewIntent.RefreshReviewData)
+                        argument.intent(MyRecentReviewIntent.RefreshMyReview)
                     },
                     modifier = Modifier.weight(1f)
                 )
