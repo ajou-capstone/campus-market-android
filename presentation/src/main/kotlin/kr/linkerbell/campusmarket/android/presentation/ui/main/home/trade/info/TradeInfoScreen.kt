@@ -244,6 +244,10 @@ fun TradeInfoScreen(
                         navigateToChatRoom(id = event.id)
                     }
                 }
+
+                is TradeInfoEvent.NavigateUp -> {
+                    navController.safeNavigateUp()
+                }
             }
         }
     }
@@ -450,7 +454,7 @@ private fun TradeInfoAuthor(
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = "${String.format("%.1f",authorInfo.rating)}",
+                text = "${String.format("%.1f", authorInfo.rating)}",
                 color = Black,
                 style = Headline3,
                 modifier = Modifier.padding(start = 4.dp)
@@ -481,28 +485,26 @@ private fun TradeInfoContent(
         Spacer(Modifier.padding(Space4))
 
         Text(
-            text = creationOrModifiedDate(tradeInfo.createdDate, tradeInfo.lastModifiedDate),
+            text = "작성 일자 : ${tradeInfo.createdDate.toString().replace("T", ", ")}",
             color = Gray600,
-            style = Caption2
+            style = Caption2,
+            modifier = Modifier.padding(bottom = 4.dp)
         )
-
+        if (tradeInfo.createdDate != tradeInfo.lastModifiedDate) {
+            Text(
+                text = "최종 수정 일자 : ${tradeInfo.lastModifiedDate.toString().replace("T", ", ")}",
+                color = Gray600,
+                style = Caption2
+            )
+        }
         HorizontalDivider(
             thickness = (0.4).dp,
             color = Gray900,
         )
-
         Spacer(Modifier.padding(Space4))
         Text(text = tradeInfo.description, color = Black, style = Body1)
     }
 }
-
-private fun creationOrModifiedDate(createdAt: LocalDateTime, modifiedAt: LocalDateTime): String {
-    return if (createdAt == modifiedAt)
-        "작성 일자 : ${createdAt.date}"
-    else
-        "최종 수정 일자 : ${modifiedAt.date}"
-}
-
 
 @Composable
 private fun TradeInfoBottomBar(

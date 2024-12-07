@@ -13,5 +13,5 @@ data class ChatData(
     val userProfile: UserProfile,
     val myProfile: MyProfile,
     val room: Room,
-    val trade: TradeInfo
+    val trade: TradeInfo?
 )

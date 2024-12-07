@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.comm
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +44,7 @@ internal fun TradeHistoryCard(
     isOwnerOfThisTrade: Boolean,
     recentTrade: RecentTrade,
     onClicked: () -> Unit,
-    onAddReviewClicked: (Long, Long) -> Unit
+    onAddReviewClicked: () -> Unit
 ) {
     Column {
         Row(
@@ -76,14 +77,25 @@ internal fun TradeHistoryCard(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                     )
-                    if (recentTrade.isSold && !isOwnerOfThisTrade) {
-                        ReviewStatusIcon(
-                            isVisible = isAddReviewIconVisible,
-                            isReviewed = recentTrade.isReviewed,
-                            navigateToReview = {
-                                onAddReviewClicked(recentTrade.userId, recentTrade.itemId)
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        if (recentTrade.isSold) {
+                            if (isOwnerOfThisTrade) {
+                                ReviewStatusIcon(
+                                    isVisible = isAddReviewIconVisible,
+                                    isReviewed = recentTrade.isReviewed,
+                                    isReviewDialogVisible = { onAddReviewClicked() }
+                                )
+                            } else {
+                                ReviewStatusIcon(
+                                    isVisible = isAddReviewIconVisible,
+                                    isReviewed = recentTrade.isReviewed,
+                                    isReviewDialogVisible = { onAddReviewClicked() }
+                                )
                             }
-                        )
+                        }
                     }
                 }
                 Text(
@@ -103,7 +115,7 @@ internal fun TradeHistoryCard(
                         )
                     }
                     Text(
-                        text = creationOrModifiedDate(recentTrade),
+                        text = "작성 일자 : ${recentTrade.createdAt.toString().replace("T", ", ")}",
                         style = Caption2,
                         color = Black
                     )
@@ -116,25 +128,14 @@ internal fun TradeHistoryCard(
             modifier = Modifier.padding(vertical = 8.dp)
         )
     }
-}
 
-private fun creationOrModifiedDate(recentTrade: RecentTrade): String {
-    return if (recentTrade.createdAt == recentTrade.modifiedAt)
-        "작성 일자 : ${recentTrade.createdAt.date}"
-    else {
-        if (recentTrade.isSold) {
-            "거래 일자 : ${recentTrade.modifiedAt.date}"
-        } else {
-            "최종 수정 일자 : ${recentTrade.modifiedAt.date}"
-        }
-    }
 }
 
 @Composable
 private fun ReviewStatusIcon(
     isVisible: Boolean,
     isReviewed: Boolean,
-    navigateToReview: () -> Unit,
+    isReviewDialogVisible: () -> Unit,
 ) {
     if (isVisible) {
         if (isReviewed) {
@@ -159,7 +160,7 @@ private fun ReviewStatusIcon(
         } else {
             Row(
                 modifier = Modifier.clickable {
-                    navigateToReview()
+                    isReviewDialogVisible()
                 },
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -187,11 +188,12 @@ private fun ReviewStatusIcon(
 private fun TradeHistoryCardPreview() {
     TradeHistoryCard(
         isAddReviewIconVisible = true,
-        isOwnerOfThisTrade = false,
+        isOwnerOfThisTrade = true,
         RecentTrade(
             itemId = 123L,
             title = "Example Title",
             userId = 0L,
+            buyerId = 1L,
             nickname = "authorNickname",
             price = 5000,
             thumbnail = "",
@@ -201,6 +203,6 @@ private fun TradeHistoryCardPreview() {
             isReviewed = false
         ),
         onClicked = {},
-        onAddReviewClicked = { _, _ -> }
+        onAddReviewClicked = {}
     )
 }

@@ -95,7 +95,7 @@ internal fun SummarizedTradeCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = creationOrModifiedDate(item),
+                        text = "작성 일자 : ${item.createdDate.toString().replace("T",", ")}",
                         style = Caption2,
                         color = Black
                     )
@@ -123,13 +123,6 @@ internal fun SummarizedTradeCard(
         color = Gray200,
         modifier = Modifier.padding(vertical = 8.dp)
     )
-}
-
-private fun creationOrModifiedDate(item: SummarizedTrade): String {
-    return if (item.createdDate == item.lastModifiedDate)
-        "작성 일자 : ${item.createdDate.date}"
-    else
-        "최종 수정 일자 : ${item.lastModifiedDate.date}"
 }
 
 @Preview

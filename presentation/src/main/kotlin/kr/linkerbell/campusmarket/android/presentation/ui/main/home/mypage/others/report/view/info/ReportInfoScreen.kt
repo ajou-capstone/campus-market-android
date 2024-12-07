@@ -119,7 +119,7 @@ fun ReportInfoScreen(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Text(
-                    text = "문의 일시 : ${inquiryData.createdDate.date}",
+                    text = "문의 일시 : ${inquiryData.createdDate.toString().replace("T",", ")}",
                     style = Caption2,
                     color = Gray600,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -150,7 +150,7 @@ fun ReportInfoScreen(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Text(
-                    text = "답변 일시 : ${inquiryData.answerDate.date}",
+                    text = "답변 일시 : ${inquiryData.answerDate.toString().replace("T",", ")}",
                     style = Caption2,
                     color = Gray600,
                     modifier = Modifier.padding(vertical = 4.dp)

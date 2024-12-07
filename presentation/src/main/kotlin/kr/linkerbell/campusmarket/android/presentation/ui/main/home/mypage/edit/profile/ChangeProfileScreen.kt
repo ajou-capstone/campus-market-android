@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -74,8 +73,6 @@ fun ChangeProfileScreen(
 ) {
     val (state, event, intent, logEvent, coroutineContext) = argument
     val scope = rememberCoroutineScope() + coroutineContext
-
-    val focusRequester = remember { FocusRequester() }
 
     val originalProfileImage = data.myProfile.profileImage
     val originalNickname = data.myProfile.nickname
@@ -184,7 +181,7 @@ fun ChangeProfileScreen(
                     border = BorderStroke(3.dp, Blue400)
                 ) {
                     PostImage(
-                        data = newProfileImage ?: originalProfileImage,
+                        data = newProfileImage?.filePath ?: originalProfileImage,
                         modifier = Modifier
                             .fillMaxSize()
                             .clickable {
@@ -231,7 +228,8 @@ fun ChangeProfileScreen(
             val nickname: String = newNickname ?: ""
 
             PostNewProfile(
-                nickname.isNotEmpty() && newNickname != originalNickname,
+                isPostAvailable = (nickname.isNotEmpty() && newNickname != originalNickname) ||
+                        (newProfileImage != null),
                 onClicked = {
                     if (nicknameValidation()) {
                         argument.intent(

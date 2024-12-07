@@ -136,7 +136,7 @@ fun TradePostScreen(
                 isValidContents = false
             }
 
-            (imageList.isEmpty()) -> {
+            (imageList.isEmpty() && originalImageList.isEmpty()) -> {
                 validationDialogContent = "한 장 이상의 이미지를 첨부해주세요"
                 hasImage = false
                 isValidContents = false
@@ -509,10 +509,10 @@ private fun TradePostScreenTradeInfo(
             )
             TypingTextField(
                 text = title,
-                onValueChange = {
+                onValueChange = { newValue ->
+                    titleLength = newValue.length
                     if (titleLength <= MAX_TITLE_LENGTH) {
-                        changeTitle(it)
-                        titleLength = title.length
+                        changeTitle(newValue)
                     }
                 },
                 hintText = "제목은 100자까지 가능해요",
@@ -526,6 +526,7 @@ private fun TradePostScreenTradeInfo(
                             .size(20.dp)
                             .clickable {
                                 changeTitle("")
+                                titleLength = title.length
                             }
                     )
                 },
@@ -550,7 +551,7 @@ private fun TradePostScreenTradeInfo(
             TypingTextField(
                 text = price,
                 onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() }) {
+                    if (newValue.all { it.isDigit() } && newValue.length < 10) {
                         var sanitizedValue = newValue
                             .trimStart('0')
                         if (sanitizedValue == "0") {
@@ -617,10 +618,10 @@ private fun TradePostScreenTradeInfo(
             }
             TypingTextField(
                 text = description,
-                onValueChange = {
+                onValueChange = { newValue ->
+                    descriptionLength = description.length
                     if (descriptionLength <= MAX_DESCRIPTION_LENGTH) {
-                        changeDescription(it)
-                        descriptionLength = description.length
+                        changeDescription(newValue)
                     }
                 },
                 hintText = "상품 정보를 입력해주세요 (최대 1,000자)",

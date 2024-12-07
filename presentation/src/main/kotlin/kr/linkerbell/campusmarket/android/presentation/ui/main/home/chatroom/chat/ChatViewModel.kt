@@ -28,6 +28,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetRoomUse
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ReadMessageUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.ChangeTradeStatusUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetTradeInfoUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.RateUserUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.GetPreSignedUrlUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadImageUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
@@ -48,7 +49,8 @@ class ChatViewModel @Inject constructor(
     private val getPreSignedUrlUseCase: GetPreSignedUrlUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
     private val changeTradeStatusUseCase: ChangeTradeStatusUseCase,
-    private val getTradeInfoUseCase: GetTradeInfoUseCase
+    private val getTradeInfoUseCase: GetTradeInfoUseCase,
+    private val rateUserUseCase: RateUserUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<ChatState> = MutableStateFlow(ChatState.Init)
@@ -73,8 +75,8 @@ class ChatViewModel @Inject constructor(
     private val _room: MutableStateFlow<Room> = MutableStateFlow(Room.empty)
     val room: StateFlow<Room> = _room.asStateFlow()
 
-    private val _trade: MutableStateFlow<TradeInfo> = MutableStateFlow(TradeInfo.empty)
-    val trade: StateFlow<TradeInfo> = _trade.asStateFlow()
+    private val _trade: MutableStateFlow<TradeInfo?> = MutableStateFlow(null)
+    val trade: StateFlow<TradeInfo?> = _trade.asStateFlow()
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private val sessionAction = viewModelScope.actor<ChatIntent.Session>(coroutineContext) {
@@ -83,36 +85,26 @@ class ChatViewModel @Inject constructor(
         suspend fun connect() {
             if (session != null) throw IllegalStateException("Session is already connected")
 
-            var retryCount = 0
-            do {
-                val result = connectRoomUseCase()
-                    .onSuccess {
-                        session = it
-                    }.onFailure {
-                        retryCount++
-                    }
+            connectRoomUseCase()
+                .onSuccess {
+                    session = it
+                }.onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-                if (retryCount >= 100) {
-                    result.onFailure { exception ->
-                        when (exception) {
-                            is ServerException -> {
-                                _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                            }
-
-                            else -> {
-                                _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                            }
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                         }
                     }
                 }
-            } while (result.isFailure && retryCount < 100)
         }
 
         suspend fun subscribe(
             id: Long
         ) {
             session?.let {
-                // TODO : Refresh / Unsubscribe 등의 구독 취소 시 Cancel 로직 없음
                 launch {
                     it.subscribe(id).catch { exception ->
                         when (exception) {
@@ -231,6 +223,12 @@ class ChatViewModel @Inject constructor(
             ChatIntent.OnSell -> {
                 sell()
             }
+
+            is ChatIntent.RateUser -> {
+                launch {
+                    rateUser(intent.description, intent.rating)
+                }
+            }
         }
     }
 
@@ -271,7 +269,7 @@ class ChatViewModel @Inject constructor(
                     }
                 }
 
-                if (trade.value == TradeInfo.empty) {
+                if (trade.value == null) {
                     getTradeInfoUseCase(
                         itemId = it.tradeId
                     ).onSuccess {
@@ -279,7 +277,11 @@ class ChatViewModel @Inject constructor(
                     }.onFailure { exception ->
                         when (exception) {
                             is ServerException -> {
-                                _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                                if (exception.id == "4027") {
+                                    _trade.value = null
+                                } else {
+                                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                                }
                             }
 
                             else -> {
@@ -345,6 +347,32 @@ class ChatViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun rateUser(
+        description: String,
+        rating: Int
+    ) {
+        rateUserUseCase(
+            targetUserId = _trade.value?.userId ?: -1L,
+            itemId = _trade.value?.itemId ?: -1L,
+            description = description,
+            rating = rating
+        ).onSuccess {
+            _state.value = ChatState.Init
+            _event.emit(ChatEvent.RateSuccess)
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
+            _event.emit(ChatEvent.RateFail)
         }
     }
 }

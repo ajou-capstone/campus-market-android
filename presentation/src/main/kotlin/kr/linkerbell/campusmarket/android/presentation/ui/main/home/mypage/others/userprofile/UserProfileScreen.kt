@@ -85,7 +85,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.RatingStars
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.user.UserReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review.RecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.trade.RecentTradeConstant
@@ -251,16 +250,7 @@ fun UserProfileScreen(
                                     )
                                     navController.safeNavigate(tradeInfoRoute)
                                 },
-                                onAddReviewClicked = { userId, itemId ->
-                                    val reviewRoute = makeRoute(
-                                        route = RatingConstant.ROUTE,
-                                        arguments = mapOf(
-                                            RatingConstant.ROUTE_ARGUMENT_USER_ID to userId,
-                                            RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
-                                        )
-                                    )
-                                    navController.safeNavigate(reviewRoute)
-                                }
+                                onAddReviewClicked = {}
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -484,7 +474,7 @@ private fun UserProfileInfo(
                     tint = Blue400
                 )
                 Text(
-                    text = " (${String.format("%.1f",userProfile.rating)})",
+                    text = " (${String.format("%.1f", userProfile.rating)})",
                     style = Body1,
                     color = Black,
                 )
@@ -561,6 +551,7 @@ private fun OtherUserProfileScreenPreview() {
                             itemId = 1L,
                             title = "Used Laptop",
                             userId = 1L,
+                            buyerId = 2L,
                             nickname = "author_01",
                             price = 150000,
                             thumbnail = "https://example.com/image1.jpg",
@@ -573,6 +564,7 @@ private fun OtherUserProfileScreenPreview() {
                             itemId = 2L,
                             title = "Antique Vase",
                             userId = 2L,
+                            buyerId = 1L,
                             nickname = "author_22",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
@@ -585,6 +577,7 @@ private fun OtherUserProfileScreenPreview() {
                             itemId = 3L,
                             title = "Antique Vase",
                             userId = 3L,
+                            buyerId = 5L,
                             nickname = "author_333",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",

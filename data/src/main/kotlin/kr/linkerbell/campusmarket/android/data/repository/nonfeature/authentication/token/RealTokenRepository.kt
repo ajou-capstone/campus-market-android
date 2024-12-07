@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.map
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
+import kr.linkerbell.campusmarket.android.data.remote.local.database.message.MessageDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.room.RoomDao
+import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.network.api.nonfeature.TokenApi
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.authentication.JwtToken
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
@@ -17,7 +20,10 @@ import kr.linkerbell.campusmarket.android.domain.repository.nonfeature.TokenRepo
 
 class RealTokenRepository @Inject constructor(
     private val tokenApi: TokenApi,
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val roomDao: RoomDao,
+    private val messageDao: MessageDao,
+    private val searchHistoryDao: SearchHistoryDao
 ) : TokenRepository {
 
     private val _refreshFailEvent: MutableEventFlow<Unit> = MutableEventFlow()
@@ -30,12 +36,15 @@ class RealTokenRepository @Inject constructor(
         return tokenApi.login(
             idToken = idToken,
             firebaseToken = firebaseToken,
-        ).onSuccess { token ->
+        ).map { token ->
             dataStore.edit { preferences ->
                 preferences[stringPreferencesKey(REFRESH_TOKEN)] = token.refreshToken
                 preferences[stringPreferencesKey(ACCESS_TOKEN)] = token.accessToken
             }
-        }.map { }
+            roomDao.deleteAll()
+            messageDao.deleteAll()
+            searchHistoryDao.deleteAll()
+        }
     }
 
     override suspend fun getRefreshToken(): String {

@@ -8,7 +8,6 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.edit.profile.changeProfileDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.account.withdrawal.withdrawalDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.notification.notificationDestination
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.ratingDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.inquiry.inquiryDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.item.itemReportDestination
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.user.userReportDestination
@@ -41,7 +40,6 @@ fun NavGraphBuilder.mainDestination(
     tradePostDestination(navController = navController)
     tradeInfoDestination(navController = navController)
 
-    ratingDestination(navController = navController)
     userProfileDestination(navController = navController)
     recentTradeDestination(navController = navController)
     recentReviewDestination(navController = navController)

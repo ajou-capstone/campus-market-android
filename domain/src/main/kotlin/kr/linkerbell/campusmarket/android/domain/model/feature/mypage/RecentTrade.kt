@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDateTime
 data class RecentTrade(
     val itemId: Long,
     val userId: Long,
+    val buyerId: Long,
     val nickname: String,
     val title: String,
     val price: Int,

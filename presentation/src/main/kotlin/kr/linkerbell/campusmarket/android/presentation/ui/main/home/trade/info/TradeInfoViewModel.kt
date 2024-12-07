@@ -166,6 +166,7 @@ class TradeInfoViewModel @Inject constructor(
                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                     }
                 }
+                _event.emit(TradeInfoEvent.NavigateUp)
             }
         }
     }
