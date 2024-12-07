@@ -37,7 +37,7 @@ class RealAuthenticationRepository @Inject constructor(
 
     override suspend fun logout(): Result<Unit> {
         return authenticationApi.logout()
-            .onSuccess {
+            .map {
                 tokenRepository.removeToken()
                 roomDao.deleteAll()
                 messageDao.deleteAll()
@@ -47,7 +47,7 @@ class RealAuthenticationRepository @Inject constructor(
 
     override suspend fun withdraw(): Result<Unit> {
         return authenticationApi.withdraw()
-            .onSuccess {
+            .map {
                 tokenRepository.removeToken()
                 roomDao.deleteAll()
                 messageDao.deleteAll()
