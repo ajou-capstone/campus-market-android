@@ -40,10 +40,9 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.common
 @Composable
 internal fun TradeHistoryCard(
     isAddReviewIconVisible: Boolean = true,
-    isOwnerOfThisTrade: Boolean,
     recentTrade: RecentTrade,
     onClicked: () -> Unit,
-    onAddReviewClicked: (Long, Long) -> Unit
+    onAddReviewClicked: () -> Unit
 ) {
     Column {
         Row(
@@ -76,12 +75,14 @@ internal fun TradeHistoryCard(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                     )
-                    if (recentTrade.isSold && !isOwnerOfThisTrade) {
+                    if (recentTrade.isSold) {
+
+
                         ReviewStatusIcon(
                             isVisible = isAddReviewIconVisible,
                             isReviewed = recentTrade.isReviewed,
                             navigateToReview = {
-                                onAddReviewClicked(recentTrade.userId, recentTrade.itemId)
+                                onAddReviewClicked()
                             }
                         )
                     }
@@ -103,7 +104,7 @@ internal fun TradeHistoryCard(
                         )
                     }
                     Text(
-                        text = creationOrModifiedDate(recentTrade),
+                        text = "작성 일자 : ${recentTrade.createdAt.date}",
                         style = Caption2,
                         color = Black
                     )
@@ -115,18 +116,6 @@ internal fun TradeHistoryCard(
             color = Gray200,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-    }
-}
-
-private fun creationOrModifiedDate(recentTrade: RecentTrade): String {
-    return if (recentTrade.createdAt == recentTrade.modifiedAt)
-        "작성 일자 : ${recentTrade.createdAt.date}"
-    else {
-        if (recentTrade.isSold) {
-            "거래 일자 : ${recentTrade.modifiedAt.date}"
-        } else {
-            "최종 수정 일자 : ${recentTrade.modifiedAt.date}"
-        }
     }
 }
 
@@ -187,7 +176,6 @@ private fun ReviewStatusIcon(
 private fun TradeHistoryCardPreview() {
     TradeHistoryCard(
         isAddReviewIconVisible = true,
-        isOwnerOfThisTrade = false,
         RecentTrade(
             itemId = 123L,
             title = "Example Title",
@@ -201,6 +189,6 @@ private fun TradeHistoryCardPreview() {
             isReviewed = false
         ),
         onClicked = {},
-        onAddReviewClicked = { _, _ -> }
+        onAddReviewClicked = {}
     )
 }

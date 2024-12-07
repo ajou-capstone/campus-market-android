@@ -143,12 +143,12 @@ fun RecentTradeScreen(
                             )
                             navController.navigate(tradeInfoRoute)
                         },
-                        onAddReviewClicked = { userId, itemId ->
+                        onAddReviewClicked = {
                             val reviewRoute = makeRoute(
                                 route = RatingConstant.ROUTE,
                                 arguments = mapOf(
-                                    RatingConstant.ROUTE_ARGUMENT_USER_ID to userId,
-                                    RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
+                                    RatingConstant.ROUTE_ARGUMENT_USER_ID to trade.userId,
+                                    RatingConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId
                                 )
                             )
                             navController.safeNavigate(reviewRoute)

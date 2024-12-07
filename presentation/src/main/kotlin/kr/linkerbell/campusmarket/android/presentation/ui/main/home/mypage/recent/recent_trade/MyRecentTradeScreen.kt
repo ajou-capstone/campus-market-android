@@ -85,11 +85,11 @@ fun MyRecentTradeScreen(
         navController.navigate(tradeInfoRoute)
     }
 
-    fun onAddReviewClicked(itemId: Long, userId: Long) {
+    fun onAddReviewClicked(itemId: Long, targetUserId: Long) {
         val reviewRoute = makeRoute(
             route = RatingConstant.ROUTE,
             arguments = mapOf(
-                RatingConstant.ROUTE_ARGUMENT_USER_ID to userId,
+                RatingConstant.ROUTE_ARGUMENT_USER_ID to targetUserId,
                 RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
             )
         )
@@ -203,13 +203,15 @@ fun MyRecentTradeScreen(
                 ) { index ->
                     val trade = visibleTradeList[index] ?: return@items
                     TradeHistoryCard(
-                        isOwnerOfThisTrade = (trade.userId == data.myId),
                         recentTrade = trade,
                         onClicked = {
                             onItemClicked(trade.itemId)
                         },
-                        onAddReviewClicked = { itemId, myId ->
-                            onAddReviewClicked(trade.itemId, data.myId)
+                        onAddReviewClicked = {
+                            onAddReviewClicked(
+                                itemId = trade.itemId,
+                                targetUserId = trade.userId
+                            )
                         }
                     )
                 }

@@ -1,8 +1,8 @@
 package kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info
 
 import androidx.compose.runtime.Immutable
-import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 import kotlin.coroutines.CoroutineContext
+import kr.linkerbell.campusmarket.android.common.util.coroutine.event.EventFlow
 
 @Immutable
 data class TradeInfoArgument(
@@ -21,6 +21,7 @@ sealed interface TradeInfoState {
 
 sealed interface TradeInfoEvent {
     data class NavigateToChatRoom(val id: Long) : TradeInfoEvent
+    data object NavigateUp : TradeInfoEvent
 }
 
 sealed interface TradeInfoIntent {

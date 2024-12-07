@@ -86,6 +86,7 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostIma
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.UserProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
 
 @Composable
@@ -106,7 +107,11 @@ fun ChatScreen(
     var isSellCompleteDialogShowing by remember { mutableStateOf(false) }
 
     fun navigateToUserProfile(id: Long) {
-
+        val userProfileRoute = makeRoute(
+            UserProfileConstant.ROUTE,
+            listOf(UserProfileConstant.ROUTE_ARGUMENT_USER_ID to id)
+        )
+        navController.safeNavigate(userProfileRoute)
     }
 
     fun navigateToScheduleCompare(id: Long) {
