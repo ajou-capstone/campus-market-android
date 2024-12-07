@@ -228,7 +228,8 @@ fun ChangeProfileScreen(
             val nickname: String = newNickname ?: ""
 
             PostNewProfile(
-                nickname.isNotEmpty() && newNickname != originalNickname,
+                isPostAvailable = (nickname.isNotEmpty() && newNickname != originalNickname) ||
+                        (newProfileImage != null),
                 onClicked = {
                     if (nicknameValidation()) {
                         argument.intent(
