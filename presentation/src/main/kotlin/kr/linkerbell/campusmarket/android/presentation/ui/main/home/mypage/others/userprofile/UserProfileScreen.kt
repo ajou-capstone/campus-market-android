@@ -251,15 +251,15 @@ fun UserProfileScreen(
                                     )
                                     navController.safeNavigate(tradeInfoRoute)
                                 },
-                                onAddReviewClicked = {
-                                    val reviewRoute = makeRoute(
-                                        route = RatingConstant.ROUTE,
+                                onAddReviewClicked = { targetUserId, itemId ->
+                                    val reviewInfoRoute = makeRoute(
+                                        route = TradeInfoConstant.ROUTE,
                                         arguments = mapOf(
-                                            RatingConstant.ROUTE_ARGUMENT_USER_ID to trade.userId,
-                                            RatingConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId
+                                            RatingConstant.ROUTE_ARGUMENT_USER_ID to targetUserId,
+                                            RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
                                         )
                                     )
-                                    navController.safeNavigate(reviewRoute)
+                                    navController.safeNavigate(reviewInfoRoute)
                                 }
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -484,7 +484,7 @@ private fun UserProfileInfo(
                     tint = Blue400
                 )
                 Text(
-                    text = " (${String.format("%.1f",userProfile.rating)})",
+                    text = " (${String.format("%.1f", userProfile.rating)})",
                     style = Body1,
                     color = Black,
                 )
@@ -561,6 +561,7 @@ private fun OtherUserProfileScreenPreview() {
                             itemId = 1L,
                             title = "Used Laptop",
                             userId = 1L,
+                            buyerId = 2L,
                             nickname = "author_01",
                             price = 150000,
                             thumbnail = "https://example.com/image1.jpg",
@@ -573,6 +574,7 @@ private fun OtherUserProfileScreenPreview() {
                             itemId = 2L,
                             title = "Antique Vase",
                             userId = 2L,
+                            buyerId = 1L,
                             nickname = "author_22",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
@@ -585,6 +587,7 @@ private fun OtherUserProfileScreenPreview() {
                             itemId = 3L,
                             title = "Antique Vase",
                             userId = 3L,
+                            buyerId = 5L,
                             nickname = "author_333",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",

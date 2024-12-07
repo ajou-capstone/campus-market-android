@@ -40,9 +40,10 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.common
 @Composable
 internal fun TradeHistoryCard(
     isAddReviewIconVisible: Boolean = true,
+    isOwnerOfThisTrade: Boolean,
     recentTrade: RecentTrade,
     onClicked: () -> Unit,
-    onAddReviewClicked: () -> Unit
+    onAddReviewClicked: (Long, Long) -> Unit
 ) {
     Column {
         Row(
@@ -76,15 +77,29 @@ internal fun TradeHistoryCard(
                         maxLines = 1,
                     )
                     if (recentTrade.isSold) {
-
-
-                        ReviewStatusIcon(
-                            isVisible = isAddReviewIconVisible,
-                            isReviewed = recentTrade.isReviewed,
-                            navigateToReview = {
-                                onAddReviewClicked()
-                            }
-                        )
+                        if (isOwnerOfThisTrade) {
+                            ReviewStatusIcon(
+                                isVisible = isAddReviewIconVisible,
+                                isReviewed = recentTrade.isReviewed,
+                                navigateToReview = {
+                                    onAddReviewClicked(
+                                        recentTrade.buyerId,
+                                        recentTrade.itemId
+                                    )
+                                }
+                            )
+                        } else {
+                            ReviewStatusIcon(
+                                isVisible = isAddReviewIconVisible,
+                                isReviewed = recentTrade.isReviewed,
+                                navigateToReview = {
+                                    onAddReviewClicked(
+                                        recentTrade.userId,
+                                        recentTrade.itemId
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
                 Text(
@@ -176,10 +191,12 @@ private fun ReviewStatusIcon(
 private fun TradeHistoryCardPreview() {
     TradeHistoryCard(
         isAddReviewIconVisible = true,
+        isOwnerOfThisTrade = true,
         RecentTrade(
             itemId = 123L,
             title = "Example Title",
             userId = 0L,
+            buyerId = 1L,
             nickname = "authorNickname",
             price = 5000,
             thumbnail = "",
@@ -189,6 +206,6 @@ private fun TradeHistoryCardPreview() {
             isReviewed = false
         ),
         onClicked = {},
-        onAddReviewClicked = {}
+        onAddReviewClicked = { _, _ -> }
     )
 }

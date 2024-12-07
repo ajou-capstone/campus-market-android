@@ -40,6 +40,8 @@ data class RecentTradeItemRes(
     val title: String,
     @SerialName("userId")
     val userId: Long,
+    @SerialName("buyerId")
+    val buyerId: Long,
     @SerialName("nickname")
     val nickname: String,
     @SerialName("price")
@@ -60,6 +62,7 @@ data class RecentTradeItemRes(
             itemId = itemId,
             title = title,
             userId = userId,
+            buyerId = buyerId,
             nickname = nickname,
             price = price,
             thumbnail = thumbnail,

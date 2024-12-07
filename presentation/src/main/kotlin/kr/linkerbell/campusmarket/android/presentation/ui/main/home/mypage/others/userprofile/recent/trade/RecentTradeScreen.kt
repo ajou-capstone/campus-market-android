@@ -138,20 +138,21 @@ fun RecentTradeScreen(
                             val tradeInfoRoute = makeRoute(
                                 route = TradeInfoConstant.ROUTE,
                                 arguments = mapOf(
-                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
+                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID
+                                            to trade.itemId.toString()
                                 )
                             )
-                            navController.navigate(tradeInfoRoute)
+                            navController.safeNavigate(tradeInfoRoute)
                         },
-                        onAddReviewClicked = {
-                            val reviewRoute = makeRoute(
-                                route = RatingConstant.ROUTE,
+                        onAddReviewClicked = { targetUserId, itemId ->
+                            val reviewInfoRoute = makeRoute(
+                                route = TradeInfoConstant.ROUTE,
                                 arguments = mapOf(
-                                    RatingConstant.ROUTE_ARGUMENT_USER_ID to trade.userId,
-                                    RatingConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId
+                                    RatingConstant.ROUTE_ARGUMENT_USER_ID to targetUserId,
+                                    RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
                                 )
                             )
-                            navController.safeNavigate(reviewRoute)
+                            navController.safeNavigate(reviewInfoRoute)
                         }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -181,6 +182,7 @@ private fun RecentTradeScreenPreview() {
                             itemId = 1L,
                             title = "Used Laptop",
                             userId = 0L,
+                            buyerId = 1L,
                             nickname = "author_1",
                             price = 150000,
                             thumbnail = "https://example.com/image1.jpg",
@@ -193,6 +195,7 @@ private fun RecentTradeScreenPreview() {
                             itemId = 2L,
                             title = "Antique Vase",
                             userId = 2L,
+                            buyerId = 3L,
                             nickname = "author_2",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
