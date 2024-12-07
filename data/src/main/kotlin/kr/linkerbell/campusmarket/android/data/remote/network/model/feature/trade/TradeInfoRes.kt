@@ -62,8 +62,8 @@ data class TradeInfoRes(
             likeCount = likeCount,
             isLiked = isLiked,
             isSold = isSold,
-            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
-            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
+            createdDate = createdDate,
+            lastModifiedDate = lastModifiedDate
         )
     }
 }
