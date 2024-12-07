@@ -73,8 +73,8 @@ class ChatViewModel @Inject constructor(
     private val _room: MutableStateFlow<Room> = MutableStateFlow(Room.empty)
     val room: StateFlow<Room> = _room.asStateFlow()
 
-    private val _trade: MutableStateFlow<TradeInfo> = MutableStateFlow(TradeInfo.empty)
-    val trade: StateFlow<TradeInfo> = _trade.asStateFlow()
+    private val _trade: MutableStateFlow<TradeInfo?> = MutableStateFlow(null)
+    val trade: StateFlow<TradeInfo?> = _trade.asStateFlow()
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private val sessionAction = viewModelScope.actor<ChatIntent.Session>(coroutineContext) {
@@ -261,7 +261,7 @@ class ChatViewModel @Inject constructor(
                     }
                 }
 
-                if (trade.value == TradeInfo.empty) {
+                if (trade.value == null) {
                     getTradeInfoUseCase(
                         itemId = it.tradeId
                     ).onSuccess {
@@ -269,7 +269,11 @@ class ChatViewModel @Inject constructor(
                     }.onFailure { exception ->
                         when (exception) {
                             is ServerException -> {
-                                _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                                if (exception.id == "4027") {
+                                    _trade.value = null
+                                } else {
+                                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                                }
                             }
 
                             else -> {

@@ -134,7 +134,7 @@ fun ChatScreen(
         )
     }
 
-    if (isSellCompleteDialogShowing) {
+    if (isSellCompleteDialogShowing && data.trade != null) {
         DialogScreen(
             title = "거래 완료",
             message = "상대방과의 거래를 완료했습니다.",
@@ -189,7 +189,13 @@ fun ChatScreen(
                     .padding(horizontal = Space20)
                     .weight(1f)
             )
-            if (data.trade.userId == data.myProfile.id && !data.trade.isSold) {
+            if (data.trade == null) {
+                Text(
+                    text = "삭제된 게시글",
+                    modifier = Modifier.padding(end = Space20),
+                    style = Body0.merge(Gray400)
+                )
+            } else if (data.trade.userId == data.myProfile.id && !data.trade.isSold) {
                 RippleBox(
                     modifier = Modifier.padding(end = Space20),
                     onClick = {
