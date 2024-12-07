@@ -83,36 +83,26 @@ class ChatViewModel @Inject constructor(
         suspend fun connect() {
             if (session != null) throw IllegalStateException("Session is already connected")
 
-            var retryCount = 0
-            do {
-                val result = connectRoomUseCase()
-                    .onSuccess {
-                        session = it
-                    }.onFailure {
-                        retryCount++
-                    }
+            connectRoomUseCase()
+                .onSuccess {
+                    session = it
+                }.onFailure { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-                if (retryCount >= 100) {
-                    result.onFailure { exception ->
-                        when (exception) {
-                            is ServerException -> {
-                                _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                            }
-
-                            else -> {
-                                _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                            }
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                         }
                     }
                 }
-            } while (result.isFailure && retryCount < 100)
         }
 
         suspend fun subscribe(
             id: Long
         ) {
             session?.let {
-                // TODO : Refresh / Unsubscribe 등의 구독 취소 시 Cancel 로직 없음
                 launch {
                     it.subscribe(id).catch { exception ->
                         when (exception) {
