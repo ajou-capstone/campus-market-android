@@ -32,4 +32,7 @@ interface MessageDao {
 
     @Delete
     suspend fun delete(vararg users: MessageEntity)
+
+    @Query("DELETE FROM message")
+    suspend fun deleteAll()
 }

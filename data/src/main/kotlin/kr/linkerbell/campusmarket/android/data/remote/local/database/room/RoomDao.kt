@@ -23,4 +23,7 @@ interface RoomDao {
 
     @Query("DELETE FROM room WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("DELETE FROM room")
+    suspend fun deleteAll()
 }
