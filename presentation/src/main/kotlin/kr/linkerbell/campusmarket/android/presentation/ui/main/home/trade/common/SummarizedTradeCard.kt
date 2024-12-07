@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.text.DecimalFormat
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
@@ -66,17 +67,26 @@ internal fun SummarizedTradeCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
+            Text(
+                text = item.nickname,
+                style = Caption2,
+                color = Black
+            )
             Column {
-                Text(
-                    text = item.nickname,
-                    style = Caption2,
-                    color = Black
-                )
                 Text(
                     text = "${item.chatCount} 명이 대화중",
                     style = Caption2,
                     color = Black
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TradeItemStatus(isSold = item.itemStatus == "SOLDOUT")
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    Text(
+                        text = "${DecimalFormat("#,###").format(item.price)} 원",
+                        style = Body1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -84,15 +94,11 @@ internal fun SummarizedTradeCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TradeItemStatus(isSold = item.itemStatus == "SOLDOUT")
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                            text = "${DecimalFormat("#,###").format(item.price)} 원",
-                            style = Body1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
+                    Text(
+                        text = creationOrModifiedDate(item),
+                        style = Caption2,
+                        color = Black
+                    )
                     Row(
                         modifier = Modifier.padding(start = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -119,6 +125,13 @@ internal fun SummarizedTradeCard(
     )
 }
 
+private fun creationOrModifiedDate(item: SummarizedTrade): String {
+    return if (item.createdDate == item.lastModifiedDate)
+        "작성 일자 : ${item.createdDate.date}"
+    else
+        "최종 수정 일자 : ${item.lastModifiedDate.date}"
+}
+
 @Preview
 @Composable
 private fun SummarizedTradeCardPreview() {
@@ -133,7 +146,9 @@ private fun SummarizedTradeCardPreview() {
             chatCount = 5,
             likeCount = 2,
             itemStatus = "",
-            isLiked = false
+            isLiked = false,
+            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
         ),
         onItemCardClicked = {}
     )

@@ -34,12 +34,22 @@ class MyPageApi @Inject constructor(
     private val baseUrl: String
         get() = baseUrlProvider.get()
 
-    suspend fun getUserReviews(
+    suspend fun getReviewsToMe(
         userId: Long,
         page: Int,
         size: Int
     ): Result<UserReviewRes> {
-        return client.get("$baseUrl/api/v1/users/$userId/reviews") {
+        return client.get("$baseUrl/api/v1/users/$userId/reviews-to-me") {
+            parameter("page", page.toString())
+            parameter("size", size.toString())
+        }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun getUserReviewHistory(
+        page: Int,
+        size: Int
+    ): Result<UserReviewRes> {
+        return client.get("$baseUrl/api/v1/users/reviews") {
             parameter("page", page.toString())
             parameter("size", size.toString())
         }.convert(errorMessageMapper::map)
@@ -175,4 +185,5 @@ class MyPageApi @Inject constructor(
         return client.delete("$baseUrl/api/v1/notification-history/${notificationId}")
             .convert(errorMessageMapper::map)
     }
+
 }

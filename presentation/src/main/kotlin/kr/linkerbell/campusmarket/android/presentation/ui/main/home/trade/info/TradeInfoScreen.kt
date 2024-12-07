@@ -52,6 +52,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.TradeInfo
@@ -62,7 +63,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Black
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.BlueGray200
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray100
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray600
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline3
@@ -205,13 +208,7 @@ fun TradeInfoScreen(
                     navigateToAuthorProfileScreen(authorId)
                 }
             )
-            TradeInfoContent(
-                title = tradeInfo.title,
-                description = tradeInfo.description,
-                category = tradeInfo.category,
-                likeCount = tradeInfo.likeCount,
-                chatCount = tradeInfo.chatCount
-            )
+            TradeInfoContent(tradeInfo)
         }
         Box(
             modifier = Modifier
@@ -453,7 +450,7 @@ private fun TradeInfoAuthor(
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = "${authorInfo.rating}",
+                text = "${String.format("%.1f",authorInfo.rating)}",
                 color = Black,
                 style = Headline3,
                 modifier = Modifier.padding(start = 4.dp)
@@ -464,28 +461,30 @@ private fun TradeInfoAuthor(
 
 @Composable
 private fun TradeInfoContent(
-    title: String,
-    description: String,
-    category: String,
-    likeCount: Int,
-    chatCount: Int
+    tradeInfo: TradeInfo
 ) {
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Text(text = title, color = Black, style = Headline2)
+        Text(text = tradeInfo.title, color = Black, style = Headline2)
         Spacer(Modifier.padding(Space4))
 
-        Text(text = translateToKor(category), color = Black, style = Body1)
+        Text(text = translateToKor(tradeInfo.category), color = Black, style = Body1)
         Spacer(Modifier.padding(Space4))
 
-        Text(text = "$likeCount 명이 좋아함", color = Black, style = Body1)
+        Text(text = "${tradeInfo.likeCount} 명이 좋아함", color = Black, style = Body1)
         Spacer(Modifier.padding(Space4))
 
-        Text(text = "$chatCount 명이 대화중", color = Black, style = Body1)
+        Text(text = "${tradeInfo.chatCount} 명이 대화중", color = Black, style = Body1)
         Spacer(Modifier.padding(Space4))
+
+        Text(
+            text = creationOrModifiedDate(tradeInfo.createdDate, tradeInfo.lastModifiedDate),
+            color = Gray600,
+            style = Caption2
+        )
 
         HorizontalDivider(
             thickness = (0.4).dp,
@@ -493,9 +492,17 @@ private fun TradeInfoContent(
         )
 
         Spacer(Modifier.padding(Space4))
-        Text(text = description, color = Black, style = Body1)
+        Text(text = tradeInfo.description, color = Black, style = Body1)
     }
 }
+
+private fun creationOrModifiedDate(createdAt: LocalDateTime, modifiedAt: LocalDateTime): String {
+    return if (createdAt == modifiedAt)
+        "작성 일자 : ${createdAt.date}"
+    else
+        "최종 수정 일자 : ${modifiedAt.date}"
+}
+
 
 @Composable
 private fun TradeInfoBottomBar(
@@ -674,7 +681,9 @@ private fun TradeInfoScreenPreview() {
                 likeCount = 20,
                 price = 15000,
                 isLiked = true,
-                isSold = true
+                isSold = true,
+                createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                lastModifiedDate = LocalDateTime(2000, 2, 1, 0, 0, 0)
             ),
             userInfo = MyProfile.empty
         )

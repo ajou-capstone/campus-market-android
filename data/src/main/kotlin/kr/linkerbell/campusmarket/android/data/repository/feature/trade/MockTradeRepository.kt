@@ -5,6 +5,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryDao
 import kr.linkerbell.campusmarket.android.data.remote.local.database.searchhistory.SearchHistoryEntity
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
@@ -25,7 +26,8 @@ class MockTradeRepository @Inject constructor(
         category: String,
         minPrice: Int,
         maxPrice: Int,
-        sorted: String
+        sorted: String,
+        itemStatus: String
     ): Flow<PagingData<SummarizedTrade>> {
         randomShortDelay()
 
@@ -42,7 +44,9 @@ class MockTradeRepository @Inject constructor(
                         chatCount = 5,
                         likeCount = 2,
                         itemStatus = "",
-                        isLiked = true
+                        isLiked = true,
+                        createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                        lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
                     )
                 )
             )

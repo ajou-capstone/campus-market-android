@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
@@ -52,7 +53,11 @@ data class SearchTradeListItemRes(
     @SerialName("itemStatus")
     val itemStatus: String,
     @SerialName("isLiked")
-    val isLiked: Boolean
+    val isLiked: Boolean,
+    @SerialName("createdDate")
+    val createdDate: LocalDateTime,
+    @SerialName("lastModifiedDate")
+    val lastModifiedDate: LocalDateTime
 ) : DataMapper<SummarizedTrade> {
     override fun toDomain(): SummarizedTrade {
         return SummarizedTrade(
@@ -65,7 +70,9 @@ data class SearchTradeListItemRes(
             chatCount = chatCount,
             likeCount = likeCount,
             itemStatus = itemStatus,
-            isLiked = isLiked
+            isLiked = isLiked,
+            createdDate = createdDate,
+            lastModifiedDate = lastModifiedDate
         )
     }
 }

@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.eventObserve
 import kr.linkerbell.campusmarket.android.domain.model.feature.chat.Message
@@ -786,7 +787,9 @@ private fun ChatScreenPreview1() {
                 chatCount = 1,
                 likeCount = 1,
                 isLiked = true,
-                isSold = false
+                isSold = false,
+                createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
             )
         )
     )
@@ -895,7 +898,9 @@ private fun ChatScreenPreview2() {
                 chatCount = 1,
                 likeCount = 1,
                 isLiked = true,
-                isSold = false
+                isSold = false,
+                createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
             )
         )
     )

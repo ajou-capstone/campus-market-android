@@ -1,5 +1,6 @@
 package kr.linkerbell.campusmarket.android.data.remote.network.model.feature.trade
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.linkerbell.campusmarket.android.data.remote.mapper.DataMapper
@@ -34,7 +35,11 @@ data class TradeInfoRes(
     @SerialName("isLiked")
     val isLiked: Boolean,
     @SerialName("itemStatus")
-    val itemStatus: String
+    val itemStatus: String,
+    @SerialName("createdDate")
+    val createdDate: LocalDateTime,
+    @SerialName("lastModifiedDate")
+    val lastModifiedDate: LocalDateTime
 ) : DataMapper<TradeInfo> {
     override fun toDomain(): TradeInfo {
         val isSold = when (itemStatus) {
@@ -56,7 +61,9 @@ data class TradeInfoRes(
             chatCount = chatCount,
             likeCount = likeCount,
             isLiked = isLiked,
-            isSold = isSold
+            isSold = isSold,
+            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
         )
     }
 }

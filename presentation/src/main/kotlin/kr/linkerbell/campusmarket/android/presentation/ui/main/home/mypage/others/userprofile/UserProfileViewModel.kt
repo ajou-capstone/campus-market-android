@@ -17,10 +17,12 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
+import kr.linkerbell.campusmarket.android.domain.model.feature.schedule.Schedule
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.user.UserProfile
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetRecentTradeListUseCase
-import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetUserReviewUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetReviewsToMeUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.schedule.GetScheduleUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetUserProfileUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
@@ -29,8 +31,9 @@ import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
 class UserProfileViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getUserProfileUseCase: GetUserProfileUseCase,
-    private val getUserReviewUseCase: GetUserReviewUseCase,
-    private val getRecentTradeListUseCase: GetRecentTradeListUseCase
+    private val getReviewsToMeUseCase: GetReviewsToMeUseCase,
+    private val getRecentTradeListUseCase: GetRecentTradeListUseCase,
+    private val getScheduleUseCase: GetScheduleUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<UserProfileState> =
@@ -43,6 +46,9 @@ class UserProfileViewModel @Inject constructor(
     private val _userProfile: MutableStateFlow<UserProfile> = MutableStateFlow(UserProfile.empty)
     val userProfile: StateFlow<UserProfile> = _userProfile.asStateFlow()
 
+    private val _scheduleList: MutableStateFlow<List<Schedule>> = MutableStateFlow(emptyList())
+    val scheduleList: StateFlow<List<Schedule>> = _scheduleList.asStateFlow()
+
     private val _recentReviews: MutableStateFlow<PagingData<UserReview>> =
         MutableStateFlow(PagingData.empty())
     val recentReviews: StateFlow<PagingData<UserReview>> = _recentReviews.asStateFlow()
@@ -53,10 +59,12 @@ class UserProfileViewModel @Inject constructor(
 
     private val _userId: MutableStateFlow<Long> = MutableStateFlow(-1)
 
+
     init {
         launch {
             _userId.value =
                 savedStateHandle.get<Long>(UserProfileConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
+            getSchedule(_userId.value)
             updateUserProfile(_userId.value)
         }
     }
@@ -100,7 +108,7 @@ class UserProfileViewModel @Inject constructor(
     }
 
     private suspend fun getOtherUserReviews(userId: Long) {
-        getUserReviewUseCase(userId)
+        getReviewsToMeUseCase(userId)
             .cachedIn(viewModelScope)
             .catch { exception ->
                 when (exception) {
@@ -133,5 +141,23 @@ class UserProfileViewModel @Inject constructor(
             }.collect {
                 _recentTrades.value = it
             }
+    }
+
+    private suspend fun getSchedule(userId: Long) {
+        getScheduleUseCase(id = userId).onSuccess {
+            _state.value = UserProfileState.Init
+            _scheduleList.value = it
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
+            _scheduleList.value = emptyList()
+        }
     }
 }

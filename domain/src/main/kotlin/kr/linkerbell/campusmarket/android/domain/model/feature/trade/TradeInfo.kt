@@ -1,5 +1,7 @@
 package kr.linkerbell.campusmarket.android.domain.model.feature.trade
 
+import kotlinx.datetime.LocalDateTime
+
 data class TradeInfo(
     val itemId: Long,
     val userId: Long,
@@ -15,6 +17,8 @@ data class TradeInfo(
     val likeCount: Int,
     val isLiked: Boolean,
     val isSold: Boolean,
+    val createdDate: LocalDateTime,
+    val lastModifiedDate: LocalDateTime,
 ) {
     companion object {
         val empty = TradeInfo(
@@ -32,6 +36,8 @@ data class TradeInfo(
             likeCount = 0,
             isLiked = false,
             isSold = false,
+            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0)
         )
     }
 }

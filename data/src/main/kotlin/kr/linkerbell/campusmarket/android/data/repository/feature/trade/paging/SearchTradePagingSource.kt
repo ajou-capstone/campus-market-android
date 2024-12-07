@@ -13,6 +13,7 @@ class SearchTradePagingSource(
     private val minPrice: Int,
     private val maxPrice: Int,
     private val sorted: String,
+    private val itemStatus: String
 ) : PagingSource<Int, SummarizedTrade>() {
 
     override fun getRefreshKey(state: PagingState<Int, SummarizedTrade>): Int? {
@@ -33,7 +34,8 @@ class SearchTradePagingSource(
             maxPrice = maxPrice,
             sort = sorted,
             page = pageNum,
-            size = pageSize
+            size = pageSize,
+            itemStatus = itemStatus
         ).map { data ->
             val nextPage = if (data.hasNext) pageNum + 1 else null
             val previousPage = if (data.hasPrevious) pageNum - 1 else null

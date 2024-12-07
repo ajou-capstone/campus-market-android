@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,15 +15,14 @@ import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEve
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.asEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 import kr.linkerbell.campusmarket.android.domain.model.nonfeature.error.ServerException
-import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetUserReviewUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.myprofile.GetReviewsToMeUseCase
 import kr.linkerbell.campusmarket.android.presentation.common.base.BaseViewModel
 import kr.linkerbell.campusmarket.android.presentation.common.base.ErrorEvent
-import javax.inject.Inject
 
 @HiltViewModel
 class RecentReviewViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getUserReviewUseCase: GetUserReviewUseCase,
+    private val getReviewsToMeUseCase: GetReviewsToMeUseCase,
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<RecentReviewState> =
@@ -49,7 +49,7 @@ class RecentReviewViewModel @Inject constructor(
     }
 
     private suspend fun getOtherUserReviews(userId: Long) {
-        getUserReviewUseCase(userId)
+        getReviewsToMeUseCase(userId)
             .cachedIn(viewModelScope)
             .catch { exception ->
                 when (exception) {

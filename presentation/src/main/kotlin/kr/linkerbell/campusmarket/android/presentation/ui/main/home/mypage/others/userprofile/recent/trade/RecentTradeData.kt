@@ -6,5 +6,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrad
 
 @Immutable
 data class RecentTradeData(
-    val recentTrades: LazyPagingItems<RecentTrade>
+    val recentTrades: LazyPagingItems<RecentTrade>,
+    val userId: Long
 )

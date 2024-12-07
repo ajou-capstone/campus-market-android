@@ -31,6 +31,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.RecentTrade
 import kr.linkerbell.campusmarket.android.presentation.R
@@ -40,9 +41,11 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space56
 import kr.linkerbell.campusmarket.android.presentation.common.theme.White
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.makeRoute
+import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigate
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 
 @Composable
@@ -124,19 +127,31 @@ fun RecentTradeScreen(
             ) {
                 items(
                     count = recentTradeList.itemCount,
-                    key = { index -> recentTradeList[index]?.id ?: -1 }
+                    key = { index -> recentTradeList[index]?.itemId ?: -1 }
                 ) { index ->
                     val trade = recentTradeList[index] ?: return@items
                     TradeHistoryCard(
+                        isAddReviewIconVisible = false,
+                        isOwnerOfThisTrade = (data.userId == trade.userId),
                         recentTrade = trade,
                         onClicked = {
                             val tradeInfoRoute = makeRoute(
                                 route = TradeInfoConstant.ROUTE,
                                 arguments = mapOf(
-                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.id.toString()
+                                    TradeInfoConstant.ROUTE_ARGUMENT_ITEM_ID to trade.itemId.toString()
                                 )
                             )
                             navController.navigate(tradeInfoRoute)
+                        },
+                        onAddReviewClicked = { userId, itemId ->
+                            val reviewRoute = makeRoute(
+                                route = RatingConstant.ROUTE,
+                                arguments = mapOf(
+                                    RatingConstant.ROUTE_ARGUMENT_USER_ID to userId,
+                                    RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
+                                )
+                            )
+                            navController.safeNavigate(reviewRoute)
                         }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -163,22 +178,33 @@ private fun RecentTradeScreenPreview() {
                 PagingData.from(
                     listOf(
                         RecentTrade(
-                            id = 1L,
+                            itemId = 1L,
                             title = "Used Laptop",
+                            userId = 0L,
+                            nickname = "author_1",
                             price = 150000,
                             thumbnail = "https://example.com/image1.jpg",
-                            isSold = false
+                            isSold = false,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            isReviewed = false
                         ),
                         RecentTrade(
-                            id = 2L,
+                            itemId = 2L,
                             title = "Antique Vase",
+                            userId = 2L,
+                            nickname = "author_2",
                             price = 20000,
                             thumbnail = "https://example.com/image2.jpg",
-                            isSold = true
+                            isSold = true,
+                            createdAt = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            modifiedAt = LocalDateTime(2000, 1, 2, 0, 0, 0),
+                            isReviewed = false
                         )
                     )
                 )
-            ).collectAsLazyPagingItems()
+            ).collectAsLazyPagingItems(),
+            userId = 2L
         )
     )
 }

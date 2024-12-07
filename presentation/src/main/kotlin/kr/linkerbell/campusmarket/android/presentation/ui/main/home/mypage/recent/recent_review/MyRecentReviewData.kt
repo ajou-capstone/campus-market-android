@@ -6,5 +6,6 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.mypage.UserReview
 
 @Immutable
 data class MyRecentReviewData(
-    val recentReviews: LazyPagingItems<UserReview>
+    val reviewsToMe: LazyPagingItems<UserReview>,
+    val myReviews: LazyPagingItems<UserReview>
 )

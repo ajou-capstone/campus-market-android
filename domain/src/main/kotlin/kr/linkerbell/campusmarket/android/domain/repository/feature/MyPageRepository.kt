@@ -15,7 +15,7 @@ import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedT
 
 interface MyPageRepository {
 
-    suspend fun getUserReviews(
+    suspend fun getReviewsToMe(
         userId: Long
     ): Flow<PagingData<UserReview>>
 
@@ -53,4 +53,6 @@ interface MyPageRepository {
     suspend fun postItemReport(itemId: Long, category: String, description: String): Result<Unit>
 
     suspend fun postUserReport(userId: Long, category: String, description: String): Result<Unit>
+
+    suspend fun getUserReviewHistory(): Flow<PagingData<UserReview>>
 }

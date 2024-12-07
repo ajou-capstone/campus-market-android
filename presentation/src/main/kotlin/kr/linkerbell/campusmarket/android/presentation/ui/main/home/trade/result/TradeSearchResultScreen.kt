@@ -61,6 +61,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
+import kotlinx.datetime.LocalDateTime
 import kr.linkerbell.campusmarket.android.common.util.coroutine.event.MutableEventFlow
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.CategoryList
 import kr.linkerbell.campusmarket.android.domain.model.feature.trade.SummarizedTrade
@@ -101,6 +102,7 @@ fun TradeSearchResultScreen(
     var currentQuery by remember { mutableStateOf(data.currentQuery) }
     val categoryList = listOf("") + data.categoryList
     var isPriceFilterAvailable by remember { mutableStateOf(false) }
+    var isSoldItemVisibleChecked by remember { mutableStateOf(false) }
 
     val refreshState = rememberPullToRefreshState()
 
@@ -130,7 +132,7 @@ fun TradeSearchResultScreen(
         )
         Box(
             modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp, bottom = 16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
         ) {
             Column {
                 TradeSearchResultPriceFilter(
@@ -157,7 +159,31 @@ fun TradeSearchResultScreen(
                         )
                     }
                 }
-
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "거래 완료된 상품은 제외하기",
+                        style = Body1,
+                        color = Black
+                    )
+                    Checkbox(
+                        checked = isSoldItemVisibleChecked,
+                        onCheckedChange = {
+                            isSoldItemVisibleChecked = !isSoldItemVisibleChecked
+                            updateCurrentQuery(
+                                currentQuery.copy(
+                                    itemStatus =
+                                    if (isSoldItemVisibleChecked) "FORSALE" else ""
+                                )
+                            )
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Blue400,
+                            uncheckedColor = Gray900
+                        )
+                    )
+                }
             }
         }
         HorizontalDivider(
@@ -743,7 +769,23 @@ private fun TradeSearchResultScreenPreview() {
                             chatCount = 5,
                             likeCount = 2,
                             itemStatus = "",
-                            isLiked = true
+                            isLiked = true,
+                            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                        ),
+                        SummarizedTrade(
+                            itemId = 2L,
+                            userId = 2L,
+                            nickname = "유저23",
+                            thumbnail = "https://picsum.photos/200",
+                            title = "콜라 팝니다 근데_제목이_좀_길어서_이렇게_넘어가면_어케됨",
+                            price = 1000,
+                            chatCount = 5,
+                            likeCount = 2,
+                            itemStatus = "SOLDOUT",
+                            isLiked = true,
+                            createdDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
+                            lastModifiedDate = LocalDateTime(2000, 1, 1, 0, 0, 0),
                         )
                     )
                 )

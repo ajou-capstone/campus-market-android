@@ -38,13 +38,15 @@ class TradeApi @Inject constructor(
         maxPrice: Int,
         sort: String,
         page: Int,
-        size: Int
+        size: Int,
+        itemStatus: String
     ): Result<SearchTradeListRes> {
         return client.get("$baseUrl/api/v1/items") {
             parameter("name", name)
             parameter("category", category)
             parameter("minPrice", minPrice.toString())
             parameter("maxPrice", maxPrice.toString())
+            parameter("itemStatus", itemStatus)
             parameter("sort", sort)
             parameter("page", page.toString())
             parameter("size", size.toString())

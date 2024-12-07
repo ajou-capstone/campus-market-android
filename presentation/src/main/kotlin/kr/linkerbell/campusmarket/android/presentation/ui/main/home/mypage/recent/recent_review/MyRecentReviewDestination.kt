@@ -38,10 +38,12 @@ fun NavGraphBuilder.myRecentReviewDestination(
         }
 
         val data: MyRecentReviewData = let {
-            val recentReviews = viewModel.recentReviews.collectAsLazyPagingItems()
+            val reviewsToMe = viewModel.reviewsToMe.collectAsLazyPagingItems()
+            val myReviews = viewModel.myReviews.collectAsLazyPagingItems()
 
             MyRecentReviewData(
-                recentReviews = recentReviews,
+                reviewsToMe = reviewsToMe,
+                myReviews = myReviews
             )
         }
 

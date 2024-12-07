@@ -16,7 +16,8 @@ interface TradeRepository {
         category: String,
         minPrice: Int,
         maxPrice: Int,
-        sorted: String
+        sorted: String,
+        itemStatus: String
     ): Flow<PagingData<SummarizedTrade>>
 
     suspend fun getSearchHistoryList(): Flow<List<String>>

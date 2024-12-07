@@ -36,16 +36,23 @@ class RecentTradeViewModel @Inject constructor(
         MutableStateFlow(PagingData.empty())
     val recentTrades: StateFlow<PagingData<RecentTrade>> = _recentTrades.asStateFlow()
 
+    private val _userId: MutableStateFlow<Long> = MutableStateFlow(-1L)
+    val userId: StateFlow<Long> = _userId.asStateFlow()
+
     init {
         launch {
-            val userId =
-                savedStateHandle.get<Long>(RecentTradeConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
-            getOtherUserTradeHistory(userId)
+            getUserId()
+            getOtherUserTradeHistory(_userId.value)
         }
     }
 
     fun onIntent(intent: RecentTradeIntent) {
 
+    }
+
+    private fun getUserId() {
+        _userId.value =
+            savedStateHandle.get<Long>(RecentTradeConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
     }
 
     private suspend fun getOtherUserTradeHistory(userId: Long) {

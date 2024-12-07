@@ -54,6 +54,7 @@ class MyRecentTradeViewModel @Inject constructor(
     private val _userId: MutableStateFlow<Long> = MutableStateFlow(
         savedStateHandle.get<Long>(RecentTradeConstant.ROUTE_ARGUMENT_USER_ID) ?: -1L
     )
+    val userId: StateFlow<Long> = _userId.asStateFlow()
 
     init {
         launch {

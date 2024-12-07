@@ -52,12 +52,14 @@ class NotificationViewModel @Inject constructor(
             is NotificationIntent.DeleteNotificationById -> {
                 launch {
                     deleteNotificationById(intent.notificationId)
+                    getNotificationHistory()
                 }
             }
 
             is NotificationIntent.DeleteAllNotification -> {
                 launch {
                     deleteAllNotification()
+                    getNotificationHistory()
                 }
             }
         }
