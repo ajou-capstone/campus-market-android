@@ -18,10 +18,22 @@ sealed interface MyRecentTradeState {
     data object Loading : MyRecentTradeState
 }
 
-sealed interface MyRecentTradeEvent
+sealed interface MyRecentTradeEvent {
+    data object RateSuccess : MyRecentTradeEvent
+    data object RateFail : MyRecentTradeEvent
+}
 
 sealed interface MyRecentTradeIntent {
     data object RefreshAllTradeList : MyRecentTradeIntent
     data object RefreshSellTradeList : MyRecentTradeIntent
     data object RefreshBuyTradeList : MyRecentTradeIntent
+
+    data object RefreshTradeList : MyRecentTradeIntent
+
+    data class RateUser(
+        val targetUserId: Long,
+        val itemId: Long,
+        val description: String,
+        val rating: Int
+    ) : MyRecentTradeIntent
 }

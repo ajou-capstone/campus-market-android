@@ -28,6 +28,7 @@ import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.GetRoomUse
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.chat.ReadMessageUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.ChangeTradeStatusUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.GetTradeInfoUseCase
+import kr.linkerbell.campusmarket.android.domain.usecase.feature.trade.RateUserUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.GetPreSignedUrlUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.file.UploadImageUseCase
 import kr.linkerbell.campusmarket.android.domain.usecase.nonfeature.user.GetMyProfileUseCase
@@ -48,7 +49,8 @@ class ChatViewModel @Inject constructor(
     private val getPreSignedUrlUseCase: GetPreSignedUrlUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
     private val changeTradeStatusUseCase: ChangeTradeStatusUseCase,
-    private val getTradeInfoUseCase: GetTradeInfoUseCase
+    private val getTradeInfoUseCase: GetTradeInfoUseCase,
+    private val rateUserUseCase: RateUserUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<ChatState> = MutableStateFlow(ChatState.Init)
@@ -221,6 +223,12 @@ class ChatViewModel @Inject constructor(
             ChatIntent.OnSell -> {
                 sell()
             }
+
+            is ChatIntent.RateUser -> {
+                launch {
+                    rateUser(intent.description, intent.rating)
+                }
+            }
         }
     }
 
@@ -339,6 +347,32 @@ class ChatViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun rateUser(
+        description: String,
+        rating: Int
+    ) {
+        rateUserUseCase(
+            targetUserId = _trade.value?.userId ?: -1L,
+            itemId = _trade.value?.itemId ?: -1L,
+            description = description,
+            rating = rating
+        ).onSuccess {
+            _state.value = ChatState.Init
+            _event.emit(ChatEvent.RateSuccess)
+        }.onFailure { exception ->
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
+            _event.emit(ChatEvent.RateFail)
         }
     }
 }

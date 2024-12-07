@@ -45,7 +45,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
 
 @Composable
@@ -144,16 +143,7 @@ fun RecentTradeScreen(
                             )
                             navController.safeNavigate(tradeInfoRoute)
                         },
-                        onAddReviewClicked = { targetUserId, itemId ->
-                            val reviewInfoRoute = makeRoute(
-                                route = TradeInfoConstant.ROUTE,
-                                arguments = mapOf(
-                                    RatingConstant.ROUTE_ARGUMENT_USER_ID to targetUserId,
-                                    RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
-                                )
-                            )
-                            navController.safeNavigate(reviewInfoRoute)
-                        }
+                        onAddReviewClicked = { }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }

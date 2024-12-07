@@ -95,7 +95,7 @@ internal fun SummarizedTradeCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "작성 일자 : ${item.createdDate.date}",
+                        text = "작성 일자 : ${item.createdDate.toString().replace("T",", ")}",
                         style = Caption2,
                         color = Black
                     )

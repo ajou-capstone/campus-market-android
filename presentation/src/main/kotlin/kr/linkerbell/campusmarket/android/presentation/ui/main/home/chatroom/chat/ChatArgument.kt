@@ -23,6 +23,9 @@ sealed interface ChatEvent {
     sealed interface Sell : ChatEvent {
         data object Success : Sell
     }
+
+    data object RateSuccess : ChatEvent
+    data object RateFail : ChatEvent
 }
 
 sealed interface ChatIntent {
@@ -38,4 +41,9 @@ sealed interface ChatIntent {
     }
 
     data object OnSell : ChatIntent
+
+    data class RateUser(
+        val description: String,
+        val rating: Int
+    ) : ChatIntent
 }

@@ -85,7 +85,6 @@ import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.RatingStars
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.report.user.UserReportConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.review.RecentReviewConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.recent.trade.RecentTradeConstant
@@ -251,16 +250,7 @@ fun UserProfileScreen(
                                     )
                                     navController.safeNavigate(tradeInfoRoute)
                                 },
-                                onAddReviewClicked = { targetUserId, itemId ->
-                                    val reviewInfoRoute = makeRoute(
-                                        route = TradeInfoConstant.ROUTE,
-                                        arguments = mapOf(
-                                            RatingConstant.ROUTE_ARGUMENT_USER_ID to targetUserId,
-                                            RatingConstant.ROUTE_ARGUMENT_ITEM_ID to itemId
-                                        )
-                                    )
-                                    navController.safeNavigate(reviewInfoRoute)
-                                }
+                                onAddReviewClicked = {}
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }

@@ -136,7 +136,7 @@ fun TradePostScreen(
                 isValidContents = false
             }
 
-            (imageList.isEmpty()) -> {
+            (imageList.isEmpty() && originalImageList.isEmpty()) -> {
                 validationDialogContent = "한 장 이상의 이미지를 첨부해주세요"
                 hasImage = false
                 isValidContents = false

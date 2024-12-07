@@ -2,6 +2,7 @@ package kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.comm
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +44,7 @@ internal fun TradeHistoryCard(
     isOwnerOfThisTrade: Boolean,
     recentTrade: RecentTrade,
     onClicked: () -> Unit,
-    onAddReviewClicked: (Long, Long) -> Unit
+    onAddReviewClicked: () -> Unit
 ) {
     Column {
         Row(
@@ -76,29 +77,24 @@ internal fun TradeHistoryCard(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                     )
-                    if (recentTrade.isSold) {
-                        if (isOwnerOfThisTrade) {
-                            ReviewStatusIcon(
-                                isVisible = isAddReviewIconVisible,
-                                isReviewed = recentTrade.isReviewed,
-                                navigateToReview = {
-                                    onAddReviewClicked(
-                                        recentTrade.buyerId,
-                                        recentTrade.itemId
-                                    )
-                                }
-                            )
-                        } else {
-                            ReviewStatusIcon(
-                                isVisible = isAddReviewIconVisible,
-                                isReviewed = recentTrade.isReviewed,
-                                navigateToReview = {
-                                    onAddReviewClicked(
-                                        recentTrade.userId,
-                                        recentTrade.itemId
-                                    )
-                                }
-                            )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        if (recentTrade.isSold) {
+                            if (isOwnerOfThisTrade) {
+                                ReviewStatusIcon(
+                                    isVisible = isAddReviewIconVisible,
+                                    isReviewed = recentTrade.isReviewed,
+                                    isReviewDialogVisible = { onAddReviewClicked() }
+                                )
+                            } else {
+                                ReviewStatusIcon(
+                                    isVisible = isAddReviewIconVisible,
+                                    isReviewed = recentTrade.isReviewed,
+                                    isReviewDialogVisible = { onAddReviewClicked() }
+                                )
+                            }
                         }
                     }
                 }
@@ -119,7 +115,7 @@ internal fun TradeHistoryCard(
                         )
                     }
                     Text(
-                        text = "작성 일자 : ${recentTrade.createdAt.date}",
+                        text = "작성 일자 : ${recentTrade.createdAt.toString().replace("T", ", ")}",
                         style = Caption2,
                         color = Black
                     )
@@ -132,13 +128,14 @@ internal fun TradeHistoryCard(
             modifier = Modifier.padding(vertical = 8.dp)
         )
     }
+
 }
 
 @Composable
 private fun ReviewStatusIcon(
     isVisible: Boolean,
     isReviewed: Boolean,
-    navigateToReview: () -> Unit,
+    isReviewDialogVisible: () -> Unit,
 ) {
     if (isVisible) {
         if (isReviewed) {
@@ -163,7 +160,7 @@ private fun ReviewStatusIcon(
         } else {
             Row(
                 modifier = Modifier.clickable {
-                    navigateToReview()
+                    isReviewDialogVisible()
                 },
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -206,6 +203,6 @@ private fun TradeHistoryCardPreview() {
             isReviewed = false
         ),
         onClicked = {},
-        onAddReviewClicked = { _, _ -> }
+        onAddReviewClicked = {}
     )
 }

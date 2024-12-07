@@ -485,13 +485,14 @@ private fun TradeInfoContent(
         Spacer(Modifier.padding(Space4))
 
         Text(
-            text = "작성 일자 : ${tradeInfo.createdDate.date}",
+            text = "작성 일자 : ${tradeInfo.createdDate.toString().replace("T", ", ")}",
             color = Gray600,
-            style = Caption2
+            style = Caption2,
+            modifier = Modifier.padding(bottom = 4.dp)
         )
-        if (tradeInfo.createdDate.date != tradeInfo.lastModifiedDate.date) {
+        if (tradeInfo.createdDate != tradeInfo.lastModifiedDate) {
             Text(
-                text = "최종 수정 일자 : ${tradeInfo.lastModifiedDate.date}",
+                text = "최종 수정 일자 : ${tradeInfo.lastModifiedDate.toString().replace("T", ", ")}",
                 color = Gray600,
                 style = Caption2
             )

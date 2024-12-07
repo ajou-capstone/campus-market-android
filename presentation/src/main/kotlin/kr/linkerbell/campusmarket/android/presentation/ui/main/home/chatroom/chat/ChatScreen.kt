@@ -17,16 +17,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,10 +38,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -58,10 +64,13 @@ import kr.linkerbell.campusmarket.android.presentation.common.theme.Blue50
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body0
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Body2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Caption1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Gray900
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Green400
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline1
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Headline2
+import kr.linkerbell.campusmarket.android.presentation.common.theme.Red400
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space12
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space20
 import kr.linkerbell.campusmarket.android.presentation.common.theme.Space24
@@ -82,10 +91,14 @@ import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeN
 import kr.linkerbell.campusmarket.android.presentation.common.util.compose.safeNavigateUp
 import kr.linkerbell.campusmarket.android.presentation.common.view.DialogScreen
 import kr.linkerbell.campusmarket.android.presentation.common.view.RippleBox
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButton
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonProperties
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonSize
+import kr.linkerbell.campusmarket.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.linkerbell.campusmarket.android.presentation.common.view.image.PostImage
 import kr.linkerbell.campusmarket.android.presentation.common.view.textfield.TypingTextField
 import kr.linkerbell.campusmarket.android.presentation.ui.main.common.gallery.GalleryScreen
-import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.rating.RatingConstant
+import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.StarRatingBar
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.others.userprofile.UserProfileConstant
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.schedule.compare.ScheduleCompareConstant
 
@@ -105,6 +118,10 @@ fun ChatScreen(
     var isMessageMenuOpen: Boolean by remember { mutableStateOf(false) }
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isSellCompleteDialogShowing by remember { mutableStateOf(false) }
+
+    var isReviewDialogVisible by remember { mutableStateOf(false) }
+    var isReviewRequested by remember { mutableStateOf(false) }
+    var isReviewSuccessDialogVisible by remember { mutableStateOf(false) }
 
     fun navigateToUserProfile(id: Long) {
         val userProfileRoute = makeRoute(
@@ -140,19 +157,34 @@ fun ChatScreen(
             message = "상대방과의 거래를 완료했습니다.",
             isCancelable = false,
             onConfirm = {
-                navController.safeNavigateUp()
-
-                val newRoute = makeRoute(
-                    route = RatingConstant.ROUTE,
-                    arguments = mapOf(
-                        RatingConstant.ROUTE_ARGUMENT_USER_ID to data.userProfile.id,
-                        RatingConstant.ROUTE_ARGUMENT_ITEM_ID to data.trade.itemId
-                    )
-                )
-                navController.popBackStack()
-                navController.navigate(newRoute)
+                isReviewDialogVisible = true
             },
             onDismissRequest = { isSellCompleteDialogShowing = false }
+        )
+    }
+
+    if (isReviewDialogVisible) {
+        ReviewDialog(
+            isReviewRequested = isReviewRequested,
+            onReviewButtonClicked = { userDescription, userRating ->
+                argument.intent(ChatIntent.RateUser(userDescription, userRating))
+            },
+            onDismissRequest = {
+                isReviewDialogVisible = false
+                navController.safeNavigateUp()
+            }
+        )
+    }
+
+    if(isReviewSuccessDialogVisible){
+        DialogScreen(
+            title = "리뷰가 등록되었습니다!",
+            isCancelable = false,
+            onConfirm = { },
+            onDismissRequest = {
+                isReviewSuccessDialogVisible = false
+                navController.safeNavigateUp()
+            }
         )
     }
 
@@ -685,6 +717,14 @@ fun ChatScreen(
                 is ChatEvent.Sell.Success -> {
                     isSellCompleteDialogShowing = true
                 }
+
+                is ChatEvent.RateSuccess -> {
+                    isReviewSuccessDialogVisible = true
+                }
+
+                ChatEvent.RateFail -> {
+                    isReviewRequested = false
+                }
             }
         }
     }
@@ -692,6 +732,121 @@ fun ChatScreen(
     LaunchedEffect(data.messageList) {
         val lastIndex = data.messageList.lastIndex.takeIf { it > -1 } ?: return@LaunchedEffect
         scrollState.scrollToItem(lastIndex)
+    }
+}
+
+@Composable
+private fun ReviewDialog(
+    onReviewButtonClicked: (String, Int) -> Unit,
+    onDismissRequest: () -> Unit,
+    isReviewRequested: Boolean
+) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+    var userRating by remember { mutableIntStateOf(5) }
+    var userDescription by remember { mutableStateOf("") }
+
+    var descriptionLength by remember { mutableIntStateOf(0) }
+
+    Dialog(
+        onDismissRequest = {},
+    ) {
+        Column(
+            modifier = Modifier
+                .size(height = screenHeight * 0.6f, width = screenWidth * 0.8f)
+                .clip(RoundedCornerShape(16.dp))
+                .fillMaxSize()
+                .background(Color.White)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "거래는 어떠셨나요?",
+                    style = Headline2,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Text(
+                    text = "상대방에 대한 리뷰를 남겨주세요",
+                    style = Body2,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Text(
+                    text = userRating.toString(),
+                    style = Headline1,
+                    modifier = Modifier.padding(8.dp)
+                )
+                StarRatingBar(
+                    rating = userRating,
+                    180.dp,
+                    onRatingChanged = { newRating ->
+                        userRating = newRating
+                    }
+                )
+
+                TypingTextField(
+                    text = userDescription,
+                    onValueChange = {
+                        if (descriptionLength <= 200) {
+                            userDescription = it
+                            descriptionLength = userDescription.length
+                        }
+                    },
+                    maxLines = 100,
+                    modifier = Modifier
+                        .heightIn(min = 140.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                Text(
+                    text = if (descriptionLength <= 200) "(${descriptionLength}/200)"
+                    else "리뷰는 최대 200자까지만 작성할 수 있어요!",
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 16.dp),
+                    style = Caption1,
+                    color = if (descriptionLength <= 200) Gray900 else Red400
+                )
+            }
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(modifier = Modifier.wrapContentSize()) {
+                    ConfirmButton(
+                        properties = ConfirmButtonProperties(
+                            size = ConfirmButtonSize.Large,
+                            type = ConfirmButtonType.Secondary
+                        ),
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            onDismissRequest()
+                        }
+                    ) { style ->
+                        Text(
+                            text = "나중에 할게요",
+                            style = style
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    ConfirmButton(
+                        properties = ConfirmButtonProperties(
+                            size = ConfirmButtonSize.Large,
+                            type = ConfirmButtonType.Primary
+                        ),
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            if (!isReviewRequested) {
+                                onReviewButtonClicked(userDescription, userRating)
+                            }
+                        }
+                    ) { style ->
+                        Text(
+                            text = "평가하기",
+                            style = style
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
