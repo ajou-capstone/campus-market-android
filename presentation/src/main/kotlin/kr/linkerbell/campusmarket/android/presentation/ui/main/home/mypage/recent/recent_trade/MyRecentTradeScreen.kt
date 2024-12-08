@@ -262,7 +262,6 @@ fun MyRecentTradeScreen(
                             targetUserId = if (trade.userId == data.myId) trade.buyerId
                                             else trade.userId
                             itemId = trade.itemId
-                            Timber.tag("siri22").d("targetUserId = ${targetUserId}, buyer = ${trade.buyerId}, myId = ${data.myId}")
                             isReviewDialogVisible = true
                         }
                     )
