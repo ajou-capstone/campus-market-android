@@ -189,7 +189,7 @@ fun ItemReportScreen(
                     onValueChange = {
                         if (descriptionLength <= 500) {
                             userInquiryContent = it
-                            descriptionLength = userInquiryContent.length
+                            descriptionLength = it.length
                         }
                     },
                     maxLines = 100,
