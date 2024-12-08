@@ -54,6 +54,7 @@ class WithdrawalViewModel @Inject constructor(
         withdrawUseCase().onSuccess {
             deleteAllSearchHistoryUseCase()
             _state.value = WithdrawalState.Init
+            _event.emit(WithdrawalEvent.WithdrawalSuccess)
         }.onFailure { exception ->
             _state.value = WithdrawalState.Init
             when (exception) {

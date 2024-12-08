@@ -355,7 +355,7 @@ class ChatViewModel @Inject constructor(
         rating: Int
     ) {
         rateUserUseCase(
-            targetUserId = _trade.value?.userId ?: -1L,
+            targetUserId = _userProfile.value.id,
             itemId = _trade.value?.itemId ?: -1L,
             description = description,
             rating = rating

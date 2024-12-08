@@ -175,7 +175,7 @@ fun InquiryScreen(
                     text = "문의 정보 (제목)",
                     style = Headline2.merge(Gray900),
                     color = Black,
-                    modifier= Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
                 TypingTextField(
                     text = userInquiryTitle,
@@ -222,9 +222,9 @@ fun InquiryScreen(
                 TypingTextField(
                     text = userInquiryContent,
                     onValueChange = {
-                        descriptionLength = userInquiryContent.length
                         if (descriptionLength <= 500) {
                             userInquiryContent = it
+                            descriptionLength = it.length
                         }
                     },
                     maxLines = 100,

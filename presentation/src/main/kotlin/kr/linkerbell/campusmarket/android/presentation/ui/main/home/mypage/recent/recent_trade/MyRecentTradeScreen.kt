@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -83,6 +84,7 @@ import kr.linkerbell.campusmarket.android.presentation.ui.main.home.MyRecentTrad
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.StarRatingBar
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.mypage.common.TradeHistoryCard
 import kr.linkerbell.campusmarket.android.presentation.ui.main.home.trade.info.TradeInfoConstant
+import timber.log.Timber
 
 @Composable
 fun MyRecentTradeScreen(
@@ -103,8 +105,8 @@ fun MyRecentTradeScreen(
     var isReviewRequested by remember { mutableStateOf(false) }
     var isReviewSuccessDialogVisible by remember { mutableStateOf(false) }
 
-    var targetUserId by remember { mutableStateOf(-1L) }
-    var itemId by remember { mutableStateOf(-1L) }
+    var targetUserId by remember { mutableLongStateOf(-1L) }
+    var itemId by remember { mutableLongStateOf(-1L) }
 
     if (isReviewDialogVisible) {
         ReviewDialog(
@@ -258,7 +260,7 @@ fun MyRecentTradeScreen(
                         },
                         onAddReviewClicked = {
                             targetUserId = if (trade.userId == data.myId) trade.buyerId
-                            else data.myId
+                                            else trade.userId
                             itemId = trade.itemId
                             isReviewDialogVisible = true
                         }

@@ -619,7 +619,7 @@ private fun TradePostScreenTradeInfo(
             TypingTextField(
                 text = description,
                 onValueChange = { newValue ->
-                    descriptionLength = description.length
+                    descriptionLength = newValue.length
                     if (descriptionLength <= MAX_DESCRIPTION_LENGTH) {
                         changeDescription(newValue)
                     }

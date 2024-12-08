@@ -196,7 +196,7 @@ fun ChangeProfileScreen(
                     TypingTextField(
                         text = newNickname ?: originalNickname,
                         onValueChange = {
-                            if (nicknameLength <= 10) {
+                            if (it.length <= 10) {
                                 newNickname = it
                                 nicknameLength = newNickname?.length ?: originalNickname.length
                             }
